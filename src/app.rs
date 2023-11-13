@@ -5,6 +5,7 @@ use tui::backend::Backend;
 use tui::{Frame, Terminal};
 use tui::layout::{Constraint, Direction, Layout};
 use tui::widgets::{Block, Borders};
+use crate::file_list::FileList;
 use crate::tab_c::TabC;
 
 pub enum AppMode {
@@ -14,6 +15,7 @@ pub enum AppMode {
 pub struct App<'a> {
     pub mode: AppMode,
     pub tabs: TabC<'a>,
+    pub file_list: FileList,
     pub exit: bool,
 }
 
@@ -22,6 +24,7 @@ impl<'a> App<'a> {
         App {
             mode: AppMode::Tab,
             tabs: TabC::new(),
+            file_list: FileList::new(),
             exit: false,
         }
     }

@@ -8,10 +8,12 @@ use crate::app::App;
 
 mod tab_c;
 mod app;
+mod file_system;
+mod file_service;
+mod file_list;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::new();
-
     enable_raw_mode()?;
     execute!(
         std::io::stdout(),
