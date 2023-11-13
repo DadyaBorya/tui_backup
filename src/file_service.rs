@@ -33,7 +33,7 @@ pub fn get_root_system_items() -> Vec<FileSystemItem> {
 }
 
 #[cfg(target_os = "linux")]
-pub fn get_root_paths() -> Vec<FileSystemItem> {
+pub fn get_root_system_items() -> Vec<FileSystemItem> {
     return get_system_items_from_path("/".to_string());
 }
 
