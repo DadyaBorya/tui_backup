@@ -4,7 +4,7 @@ use tui::backend::Backend;
 use tui::Frame;
 use tui::layout::{Alignment, Constraint, Rect};
 use tui::style::{Color, Modifier, Style};
-use tui::widgets::{Block, Borders, Cell, Row, Table, TableState};
+use tui::widgets::{Block, Borders, BorderType, Cell, Row, Table, TableState};
 use crate::app::{App, AppMode};
 use crate::file_service;
 use crate::file_system::{FileSystem, FileSystemItem};
@@ -51,7 +51,7 @@ impl FileList {
         self.table.select(Some(i));
     }
 
-    pub fn open(&mut self) -> Result<(), std::io::Error>{
+    pub fn open(&mut self) -> Result<(), std::io::Error> {
         let current_dir =
             self.root.find_folder_by_path(&self.root.current_path.clone());
         if let Some(dir) = current_dir {
@@ -65,12 +65,13 @@ impl FileList {
                 if let Some(new_dir) = new_dir {
                     match new_dir {
                         FileSystemItem::File_(_) => {}
-                        FileSystemItem::Folder_(fodlder) => {
-                            fodlder.contents = file_service::get_system_items_from_path(fodlder.path.clone())?;
-                            fodlder.sort_contents();
-                            let content_len = fodlder.contents.len();
+                        FileSystemItem::Folder_(folder) => {
+                            let items = file_service::get_system_items_from_path(folder.path.clone())?;
+                            let _ = items.iter().for_each(|item| folder.add_existing_item(item.clone()));
+                            folder.sort_contents();
+                            let content_len = folder.contents.len();
 
-                            self.root.current_path = fodlder.path.clone();
+                            self.root.current_path = folder.path.clone();
 
                             if content_len > 0 {
                                 self.set_index_table(Some(0));
@@ -100,20 +101,23 @@ impl FileList {
                 self.root.current_path = parent.to_str().unwrap().to_string();
             }
         }
-        let index =  self.root.history_index.pop();
+        let index = self.root.history_index.pop();
 
         if index.is_none() {
             self.set_index_table(Some(0))
         } else {
             self.set_index_table(index);
         }
-
     }
 
     pub fn select(&mut self) {
         if let Some(index) = self.table.selected() {
             self.root.select(index);
         }
+    }
+
+    pub fn select_all(&mut self) {
+        self.root.select_all();
     }
 
 
@@ -128,7 +132,7 @@ impl FileList {
         }
     }
 
-    pub fn set_index_table(&mut self, index: Option<usize>)  {
+    pub fn set_index_table(&mut self, index: Option<usize>) {
         self.table.select(index);
     }
 
@@ -149,9 +153,12 @@ impl FileList {
             }
             KeyCode::Left => {
                 app.file_list.close();
-            },
+            }
             KeyCode::Char(' ') => {
                 app.file_list.select();
+            }
+            KeyCode::Char('a') => {
+                app.file_list.select_all();
             }
             _ => {}
         }
@@ -187,7 +194,7 @@ impl FileList {
 
         let t = Table::new(rows)
             .header(header)
-            .block(Block::default().borders(Borders::ALL).title_alignment(Alignment::Center)
+            .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title_alignment(Alignment::Center)
                 .title(app.file_list.root.current_path.as_str()))
             .highlight_style(selected_style)
             .highlight_symbol(">> ")

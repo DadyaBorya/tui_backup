@@ -167,15 +167,28 @@ impl FileSystem {
         if let Some(dir) = self.find_folder_by_path(current_path) {
             for (i, item) in dir.contents.iter_mut().enumerate() {
                 if i == index {
-                    match item {
-                        FileSystemItem::File_(file) => {
-                            file.selected = !file.selected;
-                        }
-                        FileSystemItem::Folder_(folder) => {
-                            folder.selected = !folder.selected;
-                        }
-                    }
+                    FileSystem::select_item(item);
                 }
+            }
+        }
+    }
+
+    pub fn select_item(item: &mut FileSystemItem) {
+        match item {
+            FileSystemItem::File_(file) => {
+                file.selected = !file.selected;
+            }
+            FileSystemItem::Folder_(folder) => {
+                folder.selected = !folder.selected;
+            }
+        }
+    }
+
+    pub fn select_all(&mut self) {
+        let current_path = &self.current_path.clone();
+        if let Some(dir) = self.find_folder_by_path(current_path) {
+            for item in dir.contents.iter_mut() {
+                FileSystem::select_item(item);
             }
         }
     }
@@ -225,6 +238,18 @@ impl Folder {
                 (FileSystemItem::File_(_), FileSystemItem::Folder_(_)) => Ordering::Greater,
             }
         });
+    }
+
+    pub fn add_existing_item(&mut self, item: FileSystemItem) {
+        if !self.contents.iter().any(|existing_item| {
+            match (existing_item, &item) {
+                (FileSystemItem::File_(existing_file), FileSystemItem::File_(new_file)) => existing_file.name == new_file.name,
+                (FileSystemItem::Folder_(existing_folder), FileSystemItem::Folder_(new_folder)) => existing_folder.name == new_folder.name,
+                _ => false,
+            }
+        }) {
+            self.contents.push(item);
+        }
     }
 }
 

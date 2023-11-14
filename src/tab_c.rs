@@ -1,10 +1,10 @@
 use crossterm::event::KeyCode;
 use tui::backend::Backend;
 use tui::Frame;
-use tui::layout::Rect;
+use tui::layout::{Rect};
 use tui::style::{Color, Modifier, Style};
 use tui::text::{Span, Spans};
-use tui::widgets::{Block, Borders, Tabs};
+use tui::widgets::{Block, Borders, BorderType, Tabs};
 use crate::app::{App, AppMode};
 
 pub struct TabC<'a> {
@@ -61,18 +61,18 @@ impl<'a> TabC<'a> {
             .iter()
             .map(|t| {
                 Spans::from(vec![
-                    Span::styled(t.to_owned(), Style::default().fg(Color::Yellow)),
+                    Span::styled(t.to_owned(), Style::default().fg(Color::White)),
                 ])
             })
             .collect();
         let tabs = Tabs::new(titles)
-            .block(Block::default().borders(Borders::ALL).title("Tabs"))
+            .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("AYLO"))
             .select(app.tabs.index)
-            .style(Style::default().fg(Color::Cyan))
+            .style(Style::default().fg(Color::White))
             .highlight_style(
                 Style::default()
                     .add_modifier(Modifier::BOLD)
-                    .bg(Color::DarkGray),
+                    .bg(Color::LightCyan),
             );
         f.render_widget(tabs, chunks[0]);
     }
