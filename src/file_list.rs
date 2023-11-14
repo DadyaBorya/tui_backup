@@ -77,11 +77,13 @@ impl FileList {
                             } else {
                                 self.set_index_table(None);
                             }
+
+                            self.root.history_index.push(index);
                         }
                     }
                 }
 
-                self.root.history_index.push(index);
+
             }
         }
     }
