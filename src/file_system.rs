@@ -14,16 +14,16 @@ pub struct FileSystem {
 }
 
 impl FileSystem {
-    pub fn new() -> Self {
-        let items = file_service::get_root_system_items();
-        let root = Folder::new("/".to_string(), "/".to_string(), false, items, true, None);
+    pub fn new() -> Result<Self, std::io::Error> {
+        let items = file_service::get_root_system_items()?;
+        let root = Folder::new("/".to_string(), "/".to_string(), false, items, true, None, "dir".to_string());
 
-        FileSystem {
+        Ok(FileSystem {
             root_dir: root,
             current_path: "/".to_string(),
             rows: vec![],
             history_index: vec![],
-        }
+        })
     }
 
     fn find_folder_by_path_recursive<'a>(folder: &'a mut Folder, target_path: &String) -> Option<&'a mut Folder> {
@@ -110,6 +110,7 @@ impl FileSystem {
                             item.selected,
                             item.access,
                             item.size,
+                            item.extension.to_owned(),
                         )
                     }
                     FileSystemItem::Folder_(item) => {
@@ -119,6 +120,7 @@ impl FileSystem {
                             item.selected,
                             item.access,
                             item.size,
+                            item.extension.to_owned(),
                         )
                     }
                 };
@@ -131,7 +133,7 @@ impl FileSystem {
         }
     }
 
-    pub fn string_item(name: String, selected: bool, access: bool, size: Option<u64>) -> String {
+    pub fn string_item(name: String, selected: bool, access: bool, size: Option<u64>, extension: String) -> String {
         let selected = match selected {
             true => {
                 "[x]"
@@ -155,7 +157,7 @@ impl FileSystem {
             Some(size) => { size.to_string() }
         };
 
-        format!("{}|{}|{}|{}", selected, name, access, size)
+        format!("{}|{}|{}|{}|{}", selected, name, extension, size, access)
     }
 
     pub fn select(&mut self, index: usize) {
@@ -192,10 +194,11 @@ pub struct Folder {
     pub contents: Vec<FileSystemItem>,
     pub access: bool,
     pub size: Option<u64>,
+    pub extension: String,
 }
 
 impl Folder {
-    pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, access: bool, size: Option<u64>) -> Self {
+    pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, access: bool, size: Option<u64>, extension: String) -> Self {
         Folder {
             name,
             path,
@@ -203,6 +206,7 @@ impl Folder {
             contents,
             access,
             size,
+            extension,
         }
     }
 }
@@ -214,16 +218,18 @@ pub struct File {
     pub selected: bool,
     pub access: bool,
     pub size: Option<u64>,
+    pub extension: String,
 }
 
 impl File {
-    pub fn new(name: String, path: String, selected: bool, access: bool, size: Option<u64>) -> Self {
+    pub fn new(name: String, path: String, selected: bool, access: bool, size: Option<u64>, extension: String) -> Self {
         File {
             name,
             path,
             selected,
             access,
             size,
+            extension,
         }
     }
 }

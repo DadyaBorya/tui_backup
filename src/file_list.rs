@@ -16,11 +16,11 @@ pub struct FileList {
 }
 
 impl FileList {
-    pub fn new() -> Self {
-        FileList {
-            root: FileSystem::new(),
+    pub fn new() -> Result<Self, std::io::Error> {
+        Ok(FileList {
+            root: FileSystem::new()?,
             table: TableState::default(),
-        }
+        })
     }
 
     pub fn next(&mut self) {
@@ -51,7 +51,7 @@ impl FileList {
         self.table.select(Some(i));
     }
 
-    pub fn open(&mut self) {
+    pub fn open(&mut self) -> Result<(), std::io::Error>{
         let current_dir =
             self.root.find_folder_by_path(&self.root.current_path.clone());
         if let Some(dir) = current_dir {
@@ -66,7 +66,7 @@ impl FileList {
                     match new_dir {
                         FileSystemItem::File_(_) => {}
                         FileSystemItem::Folder_(fodlder) => {
-                            fodlder.contents = file_service::get_system_items_from_path(fodlder.path.clone());
+                            fodlder.contents = file_service::get_system_items_from_path(fodlder.path.clone())?;
 
                             let content_len = fodlder.contents.len();
 
@@ -82,10 +82,9 @@ impl FileList {
                         }
                     }
                 }
-
-
             }
         }
+        Ok(())
     }
     pub fn close(&mut self) {
         if self.root.current_path == "/" {
@@ -129,8 +128,8 @@ impl FileList {
         }
     }
 
-    pub fn set_index_table(&mut self, index: Option<usize>) {
-        self.table.select(index)
+    pub fn set_index_table(&mut self, index: Option<usize>)  {
+        self.table.select(index);
     }
 
     pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
@@ -146,7 +145,7 @@ impl FileList {
                 app.file_list.next();
             }
             KeyCode::Right => {
-                app.file_list.open();
+                app.file_list.open()?;
             }
             KeyCode::Left => {
                 app.file_list.close();
@@ -163,7 +162,7 @@ impl FileList {
     pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
         let selected_style = Style::default().add_modifier(Modifier::REVERSED).fg(Color::Yellow);
         let normal_style = Style::default().bg(Color::White);
-        let header_cells = ["", "Name", "Access", "Size"]
+        let header_cells = ["", "Name", "Extension", "Access", "Size"]
             .iter()
             .map(|h| Cell::from(*h).style(Style::default().fg(Color::Black)));
 
@@ -195,6 +194,7 @@ impl FileList {
             .widths(&[
                 Constraint::Length(3),
                 Constraint::Length(40),
+                Constraint::Min(10),
                 Constraint::Min(10),
                 Constraint::Min(10)
             ]);

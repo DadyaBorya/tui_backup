@@ -1,4 +1,4 @@
-use crossterm::event;
+use crossterm::{event, execute};
 use crossterm::event::Event::Key;
 use crossterm::event::KeyEventKind;
 use tui::backend::Backend;
@@ -6,6 +6,9 @@ use tui::{Frame, Terminal};
 use tui::layout::{Constraint, Direction, Layout};
 use crate::file_list::FileList;
 use crate::tab_c::TabC;
+use crossterm::event::{EnableMouseCapture};
+use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen};
+
 
 pub enum AppMode {
     Tab,
@@ -20,13 +23,13 @@ pub struct App<'a> {
 }
 
 impl<'a> App<'a> {
-    pub fn new() -> Self {
-        App {
+    pub fn new() -> Result<Self, std::io::Error> {
+        Ok(App {
             mode: AppMode::Tab,
             tabs: TabC::new(),
-            file_list: FileList::new(),
+            file_list: FileList::new()?,
             exit: false,
-        }
+        })
     }
 
     pub fn change_mode(&mut self, mode: AppMode) {
@@ -67,6 +70,20 @@ impl<'a> App<'a> {
             0 => FileList::ui(self, f, &chunks),
             _ => {  },
         };
+    }
+
+    pub fn execute_alternative_screen(&self) -> Result<(), std::io::Error> {
+        enable_raw_mode()?;
+        execute!(
+        std::io::stdout(),
+        EnterAlternateScreen,
+        EnableMouseCapture)?;
+        Ok(())
+    }
+
+    pub fn disable_alternative_screen(&self) -> Result<(), std::io::Error> {
+        disable_raw_mode()?;
+        Ok(())
     }
 }
 

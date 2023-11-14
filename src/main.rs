@@ -1,7 +1,7 @@
 use std::error::Error;
-use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::execute;
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
+use crossterm::event::{DisableMouseCapture};
+use crossterm::terminal::{LeaveAlternateScreen};
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
 use crate::app::App;
@@ -13,27 +13,28 @@ mod file_service;
 mod file_list;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let mut app = App::new();
-    enable_raw_mode()?;
-    execute!(
-        std::io::stdout(),
-        EnterAlternateScreen,
-        EnableMouseCapture
-    )?;
+    let mut app = App::new()?;
 
+    app.execute_alternative_screen()?;
     let backend = CrosstermBackend::new(std::io::stdout());
     let mut terminal = Terminal::new(backend)?;
 
-    while !app.exit {
-        app.run_app(&mut terminal)?;
-    }
+    while true {
+        let res = app.run_app(&mut terminal);
 
-    disable_raw_mode()?;
-    execute!(
-        terminal.backend_mut(),
-        LeaveAlternateScreen,
-        DisableMouseCapture
-    )?;
+        if res.is_err() {
+            app.disable_alternative_screen()?;
+            execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
+            println!("{:?}", res);
+            break;
+        }
+
+        if app.exit {
+            app.disable_alternative_screen()?;
+            execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
+            break;
+        }
+    }
 
     Ok(())
 }
