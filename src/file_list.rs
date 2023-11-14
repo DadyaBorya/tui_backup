@@ -27,28 +27,28 @@ impl FileList {
         let i = match self.table.selected() {
             Some(i) => {
                 if i >= self.root.rows.len() - 1 {
-                    i
+                   Some(i)
                 } else {
-                    i + 1
+                    Some(i + 1)
                 }
             }
-            None => 0,
+            None => None,
         };
-        self.table.select(Some(i));
+        self.table.select(i);
     }
 
     pub fn previous(&mut self) {
         let i = match self.table.selected() {
             Some(i) => {
                 if i == 0 {
-                    i
+                    Some(i)
                 } else {
-                    i - 1
+                    Some(i - 1)
                 }
             }
-            None => 0,
+            None => None,
         };
-        self.table.select(Some(i));
+        self.table.select(i);
     }
 
     pub fn open(&mut self) -> Result<(), std::io::Error> {
