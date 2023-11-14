@@ -4,12 +4,12 @@ use crossterm::event::KeyEventKind;
 use tui::backend::Backend;
 use tui::{Frame, Terminal};
 use tui::layout::{Constraint, Direction, Layout};
-use tui::widgets::{Block, Borders};
 use crate::file_list::FileList;
 use crate::tab_c::TabC;
 
 pub enum AppMode {
-    Tab
+    Tab,
+    FileList
 }
 
 pub struct App<'a> {
@@ -44,7 +44,8 @@ impl<'a> App<'a> {
             if let Key(key) = event::read()? {
                 if key.kind == KeyEventKind::Press {
                     match self.mode {
-                        AppMode::Tab => TabC::event(self, key.code)?
+                        AppMode::Tab => TabC::event(self, key.code)?,
+                        AppMode::FileList => FileList::event(self, key.code)?,
                     }
                 }
             }
@@ -62,14 +63,10 @@ impl<'a> App<'a> {
 
         TabC::ui(self, f, &chunks);
 
-        let inner = match self.tabs.index {
-            0 => Block::default().title("Inner 0").borders(Borders::ALL),
-            1 => Block::default().title("Inner 1").borders(Borders::ALL),
-            2 => Block::default().title("Inner 2").borders(Borders::ALL),
-            3 => Block::default().title("Inner 3").borders(Borders::ALL),
-            _ => unreachable!(),
+        match self.tabs.index {
+            0 => FileList::ui(self, f, &chunks),
+            _ => {  },
         };
-        f.render_widget(inner, chunks[1]);
     }
 }
 

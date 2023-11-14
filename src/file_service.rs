@@ -58,14 +58,16 @@ pub fn get_system_items_from_path(path: String) -> Vec<FileSystemItem> {
                     selected: false,
                     contents: vec![],
                     access,
-                    size: get_item_size(&path_string)
+                    size: None
+                    // size: get_item_size(&path_string)
                 }),
                 false => FileSystemItem::File_(File {
                     name: file_name.clone(),
                     path: normalize_path(&mut path_string),
                     selected: false,
                     access,
-                    size: get_item_size(&path_string)
+                    size: None
+                    // size: get_item_size(&path_string)
                 }),
             };
             system_items.push(item);
@@ -75,7 +77,7 @@ pub fn get_system_items_from_path(path: String) -> Vec<FileSystemItem> {
     system_items
 }
 
-fn normalize_path(path: &mut String) -> String {
+pub fn normalize_path(path: &mut String) -> String {
     path.replace("\\", "/")
         .replace("//", "/")
 }

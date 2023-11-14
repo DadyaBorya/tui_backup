@@ -5,7 +5,7 @@ use tui::layout::Rect;
 use tui::style::{Color, Modifier, Style};
 use tui::text::{Span, Spans};
 use tui::widgets::{Block, Borders, Tabs};
-use crate::app::App;
+use crate::app::{App, AppMode};
 
 pub struct TabC<'a> {
     pub titles: Vec<&'a str>,
@@ -29,6 +29,15 @@ impl<'a> TabC<'a> {
             }
             KeyCode::Left => {
                 app.tabs.previous();
+            }
+            KeyCode::Char(' ') => {
+                match app.tabs.index {
+                    0 => {
+                        app.file_list.init_index_table();
+                        app.change_mode(AppMode::FileList)
+                    }
+                    _ => {}
+                }
             }
             _ => {}
         }
