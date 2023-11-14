@@ -23,8 +23,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         let res = app.run_app(&mut terminal);
 
         if res.is_err() {
+            app.disable_alternative_screen()?;
+            execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
             println!("{:?}", res);
-            app.exit = true;
+            break;
         }
 
         if app.exit {
