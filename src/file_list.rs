@@ -67,7 +67,7 @@ impl FileList {
                         FileSystemItem::File_(_) => {}
                         FileSystemItem::Folder_(fodlder) => {
                             fodlder.contents = file_service::get_system_items_from_path(fodlder.path.clone())?;
-
+                            fodlder.sort_contents();
                             let content_len = fodlder.contents.len();
 
                             self.root.current_path = fodlder.path.clone();

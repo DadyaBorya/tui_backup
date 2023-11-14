@@ -1,7 +1,4 @@
 use std::error::Error;
-use crossterm::execute;
-use crossterm::event::{DisableMouseCapture};
-use crossterm::terminal::{LeaveAlternateScreen};
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
 use crate::app::App;
@@ -19,19 +16,17 @@ fn main() -> Result<(), Box<dyn Error>> {
     let backend = CrosstermBackend::new(std::io::stdout());
     let mut terminal = Terminal::new(backend)?;
 
-    while true {
+    loop {
         let res = app.run_app(&mut terminal);
 
         if res.is_err() {
-            app.disable_alternative_screen()?;
-            execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
+            app.disable_alternative_screen(terminal.backend_mut())?;
             println!("{:?}", res);
             break;
         }
 
         if app.exit {
-            app.disable_alternative_screen()?;
-            execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
+            app.disable_alternative_screen(terminal.backend_mut())?;
             break;
         }
     }

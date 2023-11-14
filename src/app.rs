@@ -1,13 +1,14 @@
+use std::io::Stdout;
 use crossterm::{event, execute};
 use crossterm::event::Event::Key;
-use crossterm::event::KeyEventKind;
-use tui::backend::Backend;
+use crossterm::event::{DisableMouseCapture, KeyEventKind};
+use tui::backend::{Backend, CrosstermBackend};
 use tui::{Frame, Terminal};
 use tui::layout::{Constraint, Direction, Layout};
 use crate::file_list::FileList;
 use crate::tab_c::TabC;
 use crossterm::event::{EnableMouseCapture};
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen};
+use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
 
 
 pub enum AppMode {
@@ -81,8 +82,9 @@ impl<'a> App<'a> {
         Ok(())
     }
 
-    pub fn disable_alternative_screen(&self) -> Result<(), std::io::Error> {
+    pub fn disable_alternative_screen(&self, terminal: &mut CrosstermBackend<Stdout>) -> Result<(), std::io::Error> {
         disable_raw_mode()?;
+        execute!(terminal, LeaveAlternateScreen, DisableMouseCapture)?;
         Ok(())
     }
 }

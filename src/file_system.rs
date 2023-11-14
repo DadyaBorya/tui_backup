@@ -1,6 +1,6 @@
 use std::fs;
 use crate::file_service;
-
+use std::cmp::Ordering;
 #[cfg(target_os = "linux")]
 use std::os::unix::fs::PermissionsExt;
 use tui::style::Color;
@@ -16,7 +16,8 @@ pub struct FileSystem {
 impl FileSystem {
     pub fn new() -> Result<Self, std::io::Error> {
         let items = file_service::get_root_system_items()?;
-        let root = Folder::new("/".to_string(), "/".to_string(), false, items, true, None, "dir".to_string());
+        let mut root = Folder::new("/".to_string(), "/".to_string(), false, items, true, None, "dir".to_string());
+        root.sort_contents();
 
         Ok(FileSystem {
             root_dir: root,
@@ -105,7 +106,7 @@ impl FileSystem {
                 let item = match content {
                     FileSystemItem::File_(item) => {
                         color = Color::Blue;
-                        FileSystem::string_item(
+                        FileSystem::string_items(
                             item.name.to_owned(),
                             item.selected,
                             item.access,
@@ -115,7 +116,7 @@ impl FileSystem {
                     }
                     FileSystemItem::Folder_(item) => {
                         color = Color::Green;
-                        FileSystem::string_item(
+                        FileSystem::string_items(
                             item.name.to_owned(),
                             item.selected,
                             item.access,
@@ -124,8 +125,7 @@ impl FileSystem {
                         )
                     }
                 };
-                let item_parts: Vec<String> = item.split("|").map(|s| s.to_owned()).collect();
-                items_string.push((item_parts, color));
+                items_string.push((item, color));
             }
             self.rows = items_string
         } else {
@@ -133,7 +133,7 @@ impl FileSystem {
         }
     }
 
-    pub fn string_item(name: String, selected: bool, access: bool, size: Option<u64>, extension: String) -> String {
+    pub fn string_items(name: String, selected: bool, access: bool, size: Option<u64>, extension: String) -> Vec<String> {
         let selected = match selected {
             true => {
                 "[x]"
@@ -157,7 +157,8 @@ impl FileSystem {
             Some(size) => { size.to_string() }
         };
 
-        format!("{}|{}|{}|{}|{}", selected, name, extension, size, access)
+
+        vec![selected.to_string(), name, extension, access.to_string(), size]
     }
 
     pub fn select(&mut self, index: usize) {
@@ -208,6 +209,22 @@ impl Folder {
             size,
             extension,
         }
+    }
+
+    pub fn sort_contents(&mut self) {
+        self.contents.sort_by(|a, b| {
+            match (a, b) {
+                (FileSystemItem::Folder_(folder_a), FileSystemItem::Folder_(folder_b)) => {
+                    folder_a.name.cmp(&folder_b.name)
+                }
+                (FileSystemItem::File_(file_a), FileSystemItem::File_(file_b)) => {
+                    file_a.name.cmp(&file_b.name)
+                }
+                // Folders come before files
+                (FileSystemItem::Folder_(_), FileSystemItem::File_(_)) => Ordering::Less,
+                (FileSystemItem::File_(_), FileSystemItem::Folder_(_)) => Ordering::Greater,
+            }
+        });
     }
 }
 
