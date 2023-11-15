@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::file_system::{File, FileSystem, FileSystemItem, Folder};
+use crate::file_system::{File, FileSystemItem, Folder};
 
 #[cfg(target_os = "windows")]
 pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
@@ -14,13 +14,11 @@ pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
 
         match PathBuf::from(&path).is_dir() {
             true => {
-                let access = FileSystem::check_access(&path);
                 let item = FileSystemItem::Folder_(Folder::new(
                     format!("{}:", drive_letter),
                     path,
                     false,
-                    vec![],
-                    access, None, "dir".to_string(),
+                    vec![], "dir".to_string(),
                 ));
                 system_items.push(item);
             }
@@ -46,7 +44,6 @@ pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, s
         let path = entry.path();
         let mut path_string = path.to_str().unwrap_or_default().to_string();
         let file_name = path.file_name().unwrap_or_default().to_string_lossy().to_string();
-        let access = FileSystem::check_access(&path_string);
 
 
         let item = match entry.path().is_dir() {
@@ -55,8 +52,6 @@ pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, s
                 path: normalize_path(&mut path_string),
                 selected: false,
                 contents: vec![],
-                access,
-                size: None,
                 // size: get_item_size(&path_string)
                 extension: "dir".to_string(),
             }),
@@ -74,8 +69,6 @@ pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, s
                     name: file_name.clone(),
                     path: normalize_path(&mut path_string),
                     selected: false,
-                    access,
-                    size: None,
                     // size: get_item_size(&path_string),
                     extension,
                 })
@@ -93,11 +86,4 @@ pub fn normalize_path(path: &mut String) -> String {
         .replace("//", "/")
 }
 
-// fn get_item_size(path: &String) -> Option<u64> {
-//     let size = get_size(path);
-//
-//     match size {
-//         Ok(size) => { Some(size) }
-//         Err(_) => { None }
-//     }
-// }
+

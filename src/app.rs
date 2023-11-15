@@ -9,17 +9,21 @@ use crate::file_list::FileList;
 use crate::tab_c::TabC;
 use crossterm::event::{EnableMouseCapture};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
+use crate::popup::Popup;
 
 
+#[derive(PartialEq)]
 pub enum AppMode {
     Tab,
-    FileList
+    FileList,
+    ErrorPopup
 }
 
 pub struct App<'a> {
     pub mode: AppMode,
     pub tabs: TabC<'a>,
     pub file_list: FileList,
+    pub error: Option<String>,
     pub exit: bool,
 }
 
@@ -30,6 +34,7 @@ impl<'a> App<'a> {
             tabs: TabC::new(),
             file_list: FileList::new()?,
             exit: false,
+            error: None
         })
     }
 
@@ -50,6 +55,7 @@ impl<'a> App<'a> {
                     match self.mode {
                         AppMode::Tab => TabC::event(self, key.code)?,
                         AppMode::FileList => FileList::event(self, key.code)?,
+                        AppMode::ErrorPopup => Popup::event(self, key.code)?
                     }
                 }
             }
@@ -71,6 +77,8 @@ impl<'a> App<'a> {
             0 => FileList::ui(self, f, &chunks),
             _ => {  },
         };
+
+        Popup::error_popup(f, self);
     }
 
     pub fn execute_alternative_screen(&self) -> Result<(), std::io::Error> {

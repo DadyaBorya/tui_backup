@@ -1,3 +1,4 @@
+use std::io::ErrorKind;
 use std::path::Path;
 use crossterm::event::KeyCode;
 use tui::backend::Backend;
@@ -27,7 +28,7 @@ impl FileList {
         let i = match self.table.selected() {
             Some(i) => {
                 if i >= self.root.rows.len() - 1 {
-                   Some(i)
+                    Some(i)
                 } else {
                     Some(i + 1)
                 }
@@ -66,20 +67,28 @@ impl FileList {
                     match new_dir {
                         FileSystemItem::File_(_) => {}
                         FileSystemItem::Folder_(folder) => {
-                            let items = file_service::get_system_items_from_path(folder.path.clone())?;
-                            let _ = items.iter().for_each(|item| folder.add_existing_item(item.clone()));
-                            folder.sort_contents();
-                            let content_len = folder.contents.len();
+                            let res_items = file_service::get_system_items_from_path(folder.path.clone());
 
-                            self.root.current_path = folder.path.clone();
+                            match res_items {
+                                Ok(items) => {
+                                    let _ = items.iter().for_each(|item| folder.add_existing_item(item.clone()));
+                                    folder.sort_contents();
+                                    let content_len = folder.contents.len();
 
-                            if content_len > 0 {
-                                self.set_index_table(Some(0));
-                            } else {
-                                self.set_index_table(None);
+                                    self.root.current_path = folder.path.clone();
+
+                                    if content_len > 0 {
+                                        self.set_index_table(Some(0));
+                                    } else {
+                                        self.set_index_table(None);
+                                    }
+
+                                    self.root.history_index.push(index);
+                                }
+                                Err(error) => {
+                                   return Err(error);
+                                }
                             }
-
-                            self.root.history_index.push(index);
                         }
                     }
                 }
@@ -149,7 +158,15 @@ impl FileList {
                 app.file_list.next();
             }
             KeyCode::Right => {
-                app.file_list.open()?;
+                match app.file_list.open() {
+                    Ok(_) => {}
+                    Err(error) => {
+                        if let ErrorKind::PermissionDenied = error.kind() {
+                            app.error = Some(error.to_string());
+                            app.change_mode(AppMode::ErrorPopup);
+                        }
+                    }
+                }
             }
             KeyCode::Left => {
                 app.file_list.close();
@@ -169,7 +186,7 @@ impl FileList {
     pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
         let selected_style = Style::default().add_modifier(Modifier::REVERSED).fg(Color::Yellow);
         let normal_style = Style::default().bg(Color::White);
-        let header_cells = ["", "Name", "Extension", "Access", "Size"]
+        let header_cells = ["", "Name", "Extension"]
             .iter()
             .map(|h| Cell::from(*h).style(Style::default().fg(Color::Black)));
 
@@ -200,10 +217,8 @@ impl FileList {
             .highlight_symbol(">> ")
             .widths(&[
                 Constraint::Length(3),
-                Constraint::Length(40),
+                Constraint::Length(50),
                 Constraint::Min(10),
-                Constraint::Min(10),
-                Constraint::Min(10)
             ]);
         f.render_stateful_widget(t, chunks[1], &mut app.file_list.table);
     }

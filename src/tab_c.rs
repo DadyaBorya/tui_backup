@@ -23,6 +23,7 @@ impl<'a> TabC<'a> {
         match key_code {
             KeyCode::Char('q') => {
                 app.exit = true;
+                return Ok(());
             }
             KeyCode::Right => {
                 app.tabs.next();

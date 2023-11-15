@@ -1,4 +1,3 @@
-use std::fs;
 use crate::file_service;
 use std::cmp::Ordering;
 #[cfg(target_os = "linux")]
@@ -16,7 +15,7 @@ pub struct FileSystem {
 impl FileSystem {
     pub fn new() -> Result<Self, std::io::Error> {
         let items = file_service::get_root_system_items()?;
-        let mut root = Folder::new("/".to_string(), "/".to_string(), false, items, true, None, "dir".to_string());
+        let mut root = Folder::new("/".to_string(), "/".to_string(), false, items, "dir".to_string());
         root.sort_contents();
 
         Ok(FileSystem {
@@ -77,23 +76,6 @@ impl FileSystem {
         FileSystem::find_file_by_path_recursive(&mut self.root_dir, target_path)
     }
 
-    pub fn check_access(path: &String) -> bool {
-        return match fs::metadata(path) {
-            Ok(metadata) => {
-                let permissions = metadata.permissions();
-                #[cfg(target_os = "windows")]
-                {
-                    return permissions.readonly() == false;
-                }
-
-                #[cfg(target_os = "linux")]
-                {
-                    return permissions.mode() & 0o777 == 0o777;
-                }
-            }
-            Err(_) => { false }
-        };
-    }
 
     pub fn set_rows_of_current_dir(&mut self) {
         let current_dir = self.find_folder_by_path(&self.current_path.clone());
@@ -109,8 +91,6 @@ impl FileSystem {
                         FileSystem::string_items(
                             item.name.to_owned(),
                             item.selected,
-                            item.access,
-                            item.size,
                             item.extension.to_owned(),
                         )
                     }
@@ -119,8 +99,6 @@ impl FileSystem {
                         FileSystem::string_items(
                             item.name.to_owned(),
                             item.selected,
-                            item.access,
-                            item.size,
                             item.extension.to_owned(),
                         )
                     }
@@ -133,7 +111,7 @@ impl FileSystem {
         }
     }
 
-    pub fn string_items(name: String, selected: bool, access: bool, size: Option<u64>, extension: String) -> Vec<String> {
+    pub fn string_items(name: String, selected: bool, extension: String) -> Vec<String> {
         let selected = match selected {
             true => {
                 "[x]"
@@ -143,22 +121,7 @@ impl FileSystem {
             }
         };
 
-        let access = match access {
-            true => {
-                "Yes"
-            }
-            false => {
-                "No"
-            }
-        };
-
-        let size = match size {
-            None => { "undefined".to_string() }
-            Some(size) => { size.to_string() }
-        };
-
-
-        vec![selected.to_string(), name, extension, access.to_string(), size]
+        vec![selected.to_string(), name, extension]
     }
 
     pub fn select(&mut self, index: usize) {
@@ -206,20 +169,16 @@ pub struct Folder {
     pub path: String,
     pub selected: bool,
     pub contents: Vec<FileSystemItem>,
-    pub access: bool,
-    pub size: Option<u64>,
     pub extension: String,
 }
 
 impl Folder {
-    pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, access: bool, size: Option<u64>, extension: String) -> Self {
+    pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, extension: String) -> Self {
         Folder {
             name,
             path,
             selected,
             contents,
-            access,
-            size,
             extension,
         }
     }
@@ -258,19 +217,15 @@ pub struct File {
     pub name: String,
     pub path: String,
     pub selected: bool,
-    pub access: bool,
-    pub size: Option<u64>,
     pub extension: String,
 }
 
 impl File {
-    pub fn new(name: String, path: String, selected: bool, access: bool, size: Option<u64>, extension: String) -> Self {
+    pub fn new(name: String, path: String, selected: bool, extension: String) -> Self {
         File {
             name,
             path,
             selected,
-            access,
-            size,
             extension,
         }
     }
