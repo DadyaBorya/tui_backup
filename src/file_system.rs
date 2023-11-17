@@ -3,6 +3,7 @@ use std::cmp::Ordering;
 #[cfg(target_os = "linux")]
 use std::os::unix::fs::PermissionsExt;
 use tui::style::Color;
+use crate::file_list_filter::{FileFilter, FolderFilter};
 
 #[derive(Debug, Clone)]
 pub struct FileSystem {
@@ -15,7 +16,7 @@ pub struct FileSystem {
 impl FileSystem {
     pub fn new() -> Result<Self, std::io::Error> {
         let items = file_service::get_root_system_items()?;
-        let mut root = Folder::new("/".to_string(), "/".to_string(), false, items, "dir".to_string());
+        let mut root = Folder::new("/".to_string(), "/".to_string(), false, items, "dir".to_string(), vec![], vec![]);
         root.sort_contents();
 
         Ok(FileSystem {
@@ -170,16 +171,20 @@ pub struct Folder {
     pub selected: bool,
     pub contents: Vec<FileSystemItem>,
     pub extension: String,
+    pub file_filter_rules: Vec<FileFilter>,
+    pub folder_filter_rules: Vec<FolderFilter>,
 }
 
 impl Folder {
-    pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, extension: String) -> Self {
+    pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, extension: String, file_filter_rules: Vec<FileFilter>, folder_filter_rules: Vec<FolderFilter>) -> Self {
         Folder {
             name,
             path,
             selected,
             contents,
             extension,
+            folder_filter_rules,
+            file_filter_rules
         }
     }
 

@@ -19,6 +19,8 @@ pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
                     path,
                     false,
                     vec![], "dir".to_string(),
+                    vec![],
+                    vec![],
                 ));
                 system_items.push(item);
             }
@@ -40,21 +42,22 @@ pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, s
 
     for entry in entries {
         let entry = entry?;
-
         let path = entry.path();
         let mut path_string = path.to_str().unwrap_or_default().to_string();
         let file_name = path.file_name().unwrap_or_default().to_string_lossy().to_string();
 
 
         let item = match entry.path().is_dir() {
-            true => FileSystemItem::Folder_(Folder {
-                name: file_name.clone(),
-                path: normalize_path(&mut path_string),
-                selected: false,
-                contents: vec![],
+            true => FileSystemItem::Folder_(Folder::new(
+                file_name.clone(),
+                normalize_path(&mut path_string),
+                false,
+                vec![],
                 // size: get_item_size(&path_string)
-                extension: "dir".to_string(),
-            }),
+                "dir".to_string(),
+                vec![],
+                vec![],
+            )),
             false => {
                 let extension = match Path::new(&file_name).extension() {
                     None => {
@@ -65,13 +68,13 @@ pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, s
                     }
                 };
 
-                FileSystemItem::File_(File {
-                    name: file_name.clone(),
-                    path: normalize_path(&mut path_string),
-                    selected: false,
+                FileSystemItem::File_(File::new(
+                    file_name.clone(),
+                    normalize_path(&mut path_string),
+                    false,
                     // size: get_item_size(&path_string),
                     extension,
-                })
+                    ))
             }
         };
         system_items.push(item);

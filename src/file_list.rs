@@ -1,13 +1,14 @@
-use std::io::ErrorKind;
+use std::io::{ErrorKind};
 use std::path::Path;
 use crossterm::event::KeyCode;
 use tui::backend::Backend;
 use tui::Frame;
-use tui::layout::{Alignment, Constraint, Rect};
+use tui::layout::{Alignment, Constraint, Rect, Layout, Direction};
 use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Block, Borders, BorderType, Cell, Row, Table, TableState};
 use crate::app::{App, AppMode};
-use crate::file_service;
+use crate::file_list_filter::FileListFilter;
+use crate::file_service::get_system_items_from_path;
 use crate::file_system::{FileSystem, FileSystemItem};
 
 #[derive(Debug)]
@@ -67,7 +68,7 @@ impl FileList {
                     match new_dir {
                         FileSystemItem::File_(_) => {}
                         FileSystemItem::Folder_(folder) => {
-                            let res_items = file_service::get_system_items_from_path(folder.path.clone());
+                            let res_items = get_system_items_from_path(folder.path.clone());
 
                             match res_items {
                                 Ok(items) => {
@@ -86,7 +87,7 @@ impl FileList {
                                     self.root.history_index.push(index);
                                 }
                                 Err(error) => {
-                                   return Err(error);
+                                    return Err(error);
                                 }
                             }
                         }
@@ -145,6 +146,16 @@ impl FileList {
         self.table.select(index);
     }
 
+    pub fn get_current_item(&mut self) -> Option<&mut FileSystemItem> {
+        if let Some(folder) = self.root.find_folder_by_path(&self.root.current_path.clone()) {
+            if let Some(index) = self.table.selected() {
+                return Some(&mut folder.contents[index]);
+            }
+        }
+
+        None
+    }
+
     pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         match key_code {
             KeyCode::Esc => {
@@ -177,6 +188,26 @@ impl FileList {
             KeyCode::Char('a') => {
                 app.file_list.select_all();
             }
+            KeyCode::Char('f') => {
+                if let Some(item) = app.file_list.get_current_item() {
+                    match item {
+                        FileSystemItem::File_(_) => {}
+                        FileSystemItem::Folder_(_) => {
+                            app.change_mode(AppMode::FolderListFilter);
+                        }
+                    }
+                }
+            },
+            KeyCode::Char('F') => {
+                if let Some(item) = app.file_list.get_current_item() {
+                    match item {
+                        FileSystemItem::File_(_) => {}
+                        FileSystemItem::Folder_(_) => {
+                            app.change_mode(AppMode::FileListFilter);
+                        }
+                    }
+                }
+            },
             _ => {}
         }
 
@@ -184,6 +215,27 @@ impl FileList {
     }
 
     pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
+        let list_chunks = Layout::default()
+            .direction(Direction::Horizontal)
+            .margin(1)
+            .constraints(
+                [
+                    Constraint::Percentage(50),
+                    Constraint::Percentage(50)
+                ].as_ref()
+            )
+            .split(chunks[1]);
+
+        let action_chunks = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints(
+                [
+                    Constraint::Percentage(50),
+                    Constraint::Percentage(50)
+                ].as_ref()
+            )
+            .split(list_chunks[1]);
+
         let selected_style = Style::default().add_modifier(Modifier::REVERSED).fg(Color::Yellow);
         let normal_style = Style::default().bg(Color::White);
         let header_cells = ["", "Name", "Extension"]
@@ -196,6 +248,7 @@ impl FileList {
             .bottom_margin(1);
 
         app.file_list.root.set_rows_of_current_dir();
+
 
         let rows = app.file_list.root.rows.iter().map(|item| {
             let height = item.0
@@ -217,9 +270,19 @@ impl FileList {
             .highlight_symbol(">> ")
             .widths(&[
                 Constraint::Length(3),
-                Constraint::Length(50),
+                Constraint::Length(40),
                 Constraint::Min(10),
             ]);
-        f.render_stateful_widget(t, chunks[1], &mut app.file_list.table);
+
+        f.render_stateful_widget(t, list_chunks[0], &mut app.file_list.table);
+
+        FileListFilter::ui(app, f, &action_chunks);
+
+        let priority =
+            Block::default().title("Priority").borders(Borders::ALL)
+                .border_type(BorderType::Rounded)
+                .title_alignment(Alignment::Center);
+
+        f.render_widget(priority, action_chunks[1]);
     }
 }
