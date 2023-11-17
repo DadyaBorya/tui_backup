@@ -1,7 +1,7 @@
 use crossterm::event::KeyCode;
 use tui::backend::Backend;
 use tui::Frame;
-use tui::layout::{Alignment, Constraint, Layout};
+use tui::layout::{Alignment, Constraint, Direction, Layout};
 use tui::style::{Color, Style};
 use tui::widgets::{Block, Borders, BorderType, Clear, Paragraph};
 use crate::app::{App, AppMode};
@@ -27,50 +27,72 @@ impl FileFilterFormPopup {
 
             let chunks = Layout::default()
                 .margin(2)
+                .direction(Direction::Vertical)
                 .constraints(
                     [
-                        Constraint::Length(3),
-                        Constraint::Length(3),
-                        Constraint::Length(8),
-                        Constraint::Length(3),
+                        Constraint::Length(3), Constraint::Length(3), Constraint::Length(8), Constraint::Length(3)
                     ].as_ref()
-                )
-                .split(area);
+                ).split(area);
 
-            let regex_input = Paragraph::new(app.file_list_filter.new_regex.to_owned())
-                .block(Block::default().title("Regex").borders(Borders::ALL).border_type(BorderType::Rounded))
-                .style(match app.mode {
-                    AppMode::FileListFilterFormRegex => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                });
+            let block = Block::default()
+                .title("Regex")
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded);
+
+            let style = match app.mode {
+                AppMode::FileListFilterFormRegex => Style::default().fg(Color::Yellow),
+                _ => Style::default()
+            };
+
+            let regex_input = Paragraph::new(app.file_list_filter.new_regex.as_str())
+                .block(block)
+                .style(style);
 
             f.render_widget(regex_input, chunks[0]);
 
-            let deep_input = Paragraph::new(app.file_list_filter.new_deep.to_owned())
-                .block(Block::default().title("Deep").borders(Borders::ALL).border_type(BorderType::Rounded))
-                .style(match app.mode {
-                    AppMode::FileListFilterFormDeep => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                });
+            let style = match app.mode {
+                AppMode::FileListFilterFormDeep => Style::default().fg(Color::Yellow),
+                _ => Style::default()
+            };
+
+            let block = Block::default()
+                .title("Deep")
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded);
+
+            let deep_input = Paragraph::new(app.file_list_filter.new_deep.as_str())
+                .block(block)
+                .style(style);
 
             f.render_widget(deep_input, chunks[1]);
 
-            let content_input = Paragraph::new(app.file_list_filter.new_content.to_owned())
-                .block(Block::default().title("Content").borders(Borders::ALL).border_type(BorderType::Rounded))
-                .style(match app.mode {
-                    AppMode::FileListFilterFormContent => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                });
+            let style = match app.mode {
+                AppMode::FileListFilterFormContent => Style::default().fg(Color::Yellow),
+                _ => Style::default()
+            };
+
+            let block = Block::default()
+                .title("Content")
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded);
+
+            let content_input = Paragraph::new(app.file_list_filter.new_content.as_str())
+                .block(block)
+                .style(style);
 
             f.render_widget(content_input, chunks[2]);
 
+            let block = Block::default().borders(Borders::ALL).border_type(BorderType::Rounded);
+
+            let style = match app.mode {
+                AppMode::FileListFilterFormSubmit => Style::default().fg(Color::Yellow),
+                _ => Style::default()
+            };
+
             let submit_btn = Paragraph::new("Submit")
                 .alignment(Alignment::Center)
-                .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded))
-                .style(match app.mode {
-                    AppMode::FileListFilterFormSubmit => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                });
+                .block(block)
+                .style(style);
             f.render_widget(submit_btn, chunks[3]);
         }
     }
@@ -179,7 +201,7 @@ impl FileFilterFormPopup {
                     _ => {}
                 }
             }
-                _ => {}
+            _ => {}
         }
 
         Ok(())

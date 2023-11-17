@@ -67,18 +67,14 @@ impl FileListFilter {
             .direction(Direction::Vertical)
             .constraints(
                 [
-                    Constraint::Percentage(50),
-                    Constraint::Percentage(50),
+                    Constraint::Percentage(50), Constraint::Percentage(50)
                 ].as_ref()
             ).split(chunks[0]);
 
         let current_path = &app.file_list.root.current_path.clone();
 
-
-
         if let Some(item) = app.file_list.root.root_dir.find_folder_mut(current_path) {
             if let Some(index) = app.file_list.table.selected() {
-
                 if let Some(current_item) = &item.contents.get(index) {
                     if let FileSystemItem::Folder_(folder) = current_item {
                         app.file_list_filter.folder_filter_rules = folder.folder_filter_rules.clone();

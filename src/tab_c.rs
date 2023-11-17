@@ -66,6 +66,7 @@ impl<'a> TabC<'a> {
                 ])
             })
             .collect();
+        
         let tabs = Tabs::new(titles)
             .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("AYLO"))
             .select(app.tabs.index)

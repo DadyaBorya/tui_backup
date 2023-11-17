@@ -1,4 +1,4 @@
-use tui::layout::{Constraint, Direction, Rect, Layout};
+use tui::layout::{Constraint, Direction, Layout, Rect};
 
 #[derive(Clone, Debug)]
 pub struct Popup {}
@@ -9,25 +9,18 @@ impl Popup {
             .direction(Direction::Vertical)
             .constraints(
                 [
-                    Constraint::Percentage((100 - percent_y) / 2),
-                    Constraint::Percentage(percent_y),
-                    Constraint::Percentage((100 - percent_y) / 2),
-                ]
-                    .as_ref(),
-            )
-            .split(r);
+                    Constraint::Percentage((100 - percent_y) / 2), Constraint::Percentage(percent_y), Constraint::Percentage((100 - percent_y) / 2)
+                ].as_ref()
+            ).split(r);
 
         Layout::default()
             .direction(Direction::Horizontal)
             .constraints(
                 [
-                    Constraint::Percentage((100 - percent_x) / 2),
-                    Constraint::Percentage(percent_x),
-                    Constraint::Percentage((100 - percent_x) / 2),
-                ]
-                    .as_ref(),
-            )
-            .split(popup_layout[1])[1]
+                    Constraint::Percentage((100 - percent_x) / 2), Constraint::Percentage(percent_x), Constraint::Percentage((100 - percent_x) / 2)
+                ].as_ref()
+            ).split(popup_layout[1])[1]
+
     }
 }
 

@@ -72,12 +72,11 @@ impl FileList {
 
                 self.root.history_index.push(index);
 
-                return Ok(current_path)
+                return Ok(current_path);
             }
         }
         Ok(self.root.current_path.clone())
     }
-
     pub fn close(&mut self) {
         if self.root.current_path == "/" {
             self.root.history_index.clear();
@@ -188,25 +187,21 @@ impl FileList {
     }
     pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
         let list_chunks = Layout::default()
-            .direction(Direction::Horizontal)
             .margin(1)
+            .direction(Direction::Horizontal)
             .constraints(
                 [
-                    Constraint::Percentage(50),
-                    Constraint::Percentage(50)
+                    Constraint::Percentage(50), Constraint::Percentage(50)
                 ].as_ref()
-            )
-            .split(chunks[1]);
+            ).split(chunks[1]);
 
         let action_chunks = Layout::default()
             .direction(Direction::Vertical)
             .constraints(
                 [
-                    Constraint::Percentage(50),
-                    Constraint::Percentage(50)
+                    Constraint::Percentage(50), Constraint::Percentage(50)
                 ].as_ref()
-            )
-            .split(list_chunks[1]);
+            ).split(list_chunks[1]);
 
         let selected_style = Style::default().add_modifier(Modifier::REVERSED).fg(Color::Yellow);
         let normal_style = Style::default().bg(Color::White);
@@ -245,7 +240,6 @@ impl FileList {
                 Constraint::Length(40),
                 Constraint::Min(10),
             ]);
-
         f.render_stateful_widget(t, list_chunks[0], &mut app.file_list.table);
 
         FileListFilter::ui(app, f, &action_chunks);

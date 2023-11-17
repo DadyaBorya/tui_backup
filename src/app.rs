@@ -107,8 +107,11 @@ impl<'a> App<'a> {
         let size = f.size();
         let chunks = Layout::default()
             .direction(Direction::Vertical)
-            .constraints([Constraint::Length(3), Constraint::Min(0)].as_ref())
-            .split(size);
+            .constraints(
+                [
+                   Constraint::Length(3), Constraint::Min(0)
+                ].as_ref()
+            ).split(size);
 
         TabC::ui(self, f, &chunks);
 

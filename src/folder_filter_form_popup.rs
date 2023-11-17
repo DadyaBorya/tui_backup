@@ -29,38 +29,55 @@ impl FolderFilterFormPopup {
                 .margin(2)
                 .constraints(
                     [
-                        Constraint::Length(3),
-                        Constraint::Length(3),
-                        Constraint::Length(3),
+                        Constraint::Length(3), Constraint::Length(3), Constraint::Length(3),
                     ].as_ref()
                 )
                 .split(area);
 
-            let regex_input = Paragraph::new(app.file_list_filter.new_regex.to_owned())
-                .block(Block::default().title("Regex").borders(Borders::ALL).border_type(BorderType::Rounded))
-                .style(match app.mode {
-                    AppMode::FolderListFilterFormRegex => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                });
+            let block = Block::default()
+                .title("Regex")
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded);
+
+            let style = match app.mode {
+                AppMode::FolderListFilterFormRegex => Style::default().fg(Color::Yellow),
+                _ => Style::default()
+            };
+
+            let regex_input = Paragraph::new(app.file_list_filter.new_regex.as_str())
+                .block(block)
+                .style(style);
 
             f.render_widget(regex_input, chunks[0]);
 
-            let deep_input = Paragraph::new(app.file_list_filter.new_deep.to_owned())
-                .block(Block::default().title("Deep").borders(Borders::ALL).border_type(BorderType::Rounded))
-                .style(match app.mode {
-                    AppMode::FolderListFilterFormDeep => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                });
+            let style = match app.mode {
+                AppMode::FolderListFilterFormDeep => Style::default().fg(Color::Yellow),
+                _ => Style::default()
+            };
+
+            let block = Block::default()
+                .title("Deep")
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded);
+
+            let deep_input = Paragraph::new(app.file_list_filter.new_deep.as_str())
+                .block(block)
+                .style(style);
 
             f.render_widget(deep_input, chunks[1]);
 
+            let block = Block::default().borders(Borders::ALL).border_type(BorderType::Rounded);
+
+            let style = match app.mode {
+                AppMode::FolderListFilterFormSubmit => Style::default().fg(Color::Yellow),
+                _ => Style::default()
+            };
+
             let submit_btn = Paragraph::new("Submit")
                 .alignment(Alignment::Center)
-                .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded))
-                .style(match app.mode {
-                    AppMode::FolderListFilterFormSubmit => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                });
+                .block(block)
+                .style(style);
+
             f.render_widget(submit_btn, chunks[2]);
         }
     }
