@@ -55,7 +55,7 @@ impl FileList {
 
     pub fn open(&mut self) -> Result<(), std::io::Error> {
         let current_dir =
-            self.root.find_folder_by_path(&self.root.current_path.clone());
+            self.root.root_dir.find_folder_mut(&self.root.current_path.clone());
         if let Some(dir) = current_dir {
             let index = self
                 .table.selected();
@@ -147,7 +147,8 @@ impl FileList {
     }
 
     pub fn get_current_item(&mut self) -> Option<&mut FileSystemItem> {
-        if let Some(folder) = self.root.find_folder_by_path(&self.root.current_path.clone()) {
+
+        if let Some(folder) = self.root.root_dir.find_folder_mut(&self.root.current_path.clone()) {
             if let Some(index) = self.table.selected() {
                 return Some(&mut folder.contents[index]);
             }

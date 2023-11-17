@@ -2,6 +2,7 @@ use crate::file_service;
 use std::cmp::Ordering;
 #[cfg(target_os = "linux")]
 use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
 use tui::style::Color;
 use crate::file_list_filter::{FileFilter, FolderFilter};
 
@@ -27,59 +28,8 @@ impl FileSystem {
         })
     }
 
-    fn find_folder_by_path_recursive<'a>(folder: &'a mut Folder, target_path: &String) -> Option<&'a mut Folder> {
-        if folder.path.as_str() == target_path {
-            return Some(folder);
-        }
-
-        for content in &mut folder.contents {
-            match content {
-                FileSystemItem::File_(_) => {}
-                FileSystemItem::Folder_(subfolder) => {
-                    if let Some(found_folder) =
-                        FileSystem::find_folder_by_path_recursive(subfolder, target_path)
-                    {
-                        return Some(found_folder);
-                    }
-                }
-            }
-        }
-
-        None
-    }
-
-    pub fn find_folder_by_path(&mut self, target_path: &String) -> Option<&mut Folder> {
-        FileSystem::find_folder_by_path_recursive(&mut self.root_dir, target_path)
-    }
-
-    fn find_file_by_path_recursive<'a>(folder: &'a mut Folder, target_path: &String) -> Option<&'a mut File> {
-        for content in &mut folder.contents {
-            match content {
-                FileSystemItem::File_(file) => {
-                    if file.path.as_str() == target_path {
-                        return Some(file);
-                    }
-                }
-                FileSystemItem::Folder_(subfolder) => {
-                    if let Some(found_folder) =
-                        FileSystem::find_file_by_path_recursive(subfolder, target_path)
-                    {
-                        return Some(found_folder);
-                    }
-                }
-            }
-        }
-
-        None
-    }
-
-    pub fn find_file_by_path(&mut self, target_path: &String) -> Option<&mut File> {
-        FileSystem::find_file_by_path_recursive(&mut self.root_dir, target_path)
-    }
-
-
     pub fn set_rows_of_current_dir(&mut self) {
-        let current_dir = self.find_folder_by_path(&self.current_path.clone());
+        let current_dir = self.root_dir.find_folder_mut(&self.current_path.clone());
 
         let mut items_string = vec![];
 
@@ -128,7 +78,7 @@ impl FileSystem {
     pub fn select(&mut self, index: usize) {
         let current_path = &self.current_path.clone();
 
-        if let Some(dir) = self.find_folder_by_path(current_path) {
+        if let Some(dir) = self.root_dir.find_folder_mut(current_path) {
             for (i, item) in dir.contents.iter_mut().enumerate() {
                 if i == index {
                     FileSystem::select_item(item);
@@ -150,7 +100,8 @@ impl FileSystem {
 
     pub fn select_all(&mut self) {
         let current_path = &self.current_path.clone();
-        if let Some(dir) = self.find_folder_by_path(current_path) {
+
+        if let Some(dir) = self.root_dir.find_folder_mut(current_path) {
             for item in dir.contents.iter_mut() {
                 FileSystem::select_item(item);
             }
@@ -177,17 +128,8 @@ pub struct Folder {
 
 impl Folder {
     pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, extension: String, file_filter_rules: Vec<FileFilter>, folder_filter_rules: Vec<FolderFilter>) -> Self {
-        Folder {
-            name,
-            path,
-            selected,
-            contents,
-            extension,
-            folder_filter_rules,
-            file_filter_rules
-        }
+        Folder { name, path, selected, contents, extension, folder_filter_rules, file_filter_rules }
     }
-
     pub fn sort_contents(&mut self) {
         self.contents.sort_by(|a, b| {
             match (a, b) {
@@ -197,13 +139,55 @@ impl Folder {
                 (FileSystemItem::File_(file_a), FileSystemItem::File_(file_b)) => {
                     file_a.name.cmp(&file_b.name)
                 }
-                // Folders come before files
                 (FileSystemItem::Folder_(_), FileSystemItem::File_(_)) => Ordering::Less,
                 (FileSystemItem::File_(_), FileSystemItem::Folder_(_)) => Ordering::Greater,
             }
         });
     }
+    pub fn find_folder_mut(&mut self, path: &String) -> Option<&mut Folder> {
+        if &self.path == path {
+            return Some(self);
+        }
 
+        for content in self.contents.iter_mut() {
+            if let FileSystemItem::Folder_(folder) = content {
+                if &folder.path == path {
+                    return Some(folder);
+                } else {
+                    if let Some(found_folder) = folder.find_folder_mut(path) {
+                        return Some(found_folder);
+                    }
+                }
+            }
+        }
+
+        None
+    }
+    pub fn find_file_mut(&mut self, path: &String) -> Option<&mut File> {
+        let folder_path = Folder::get_folder_path_from_path(path);
+
+        if let Some(path) = folder_path {
+            if let Some(folder) = self.find_folder_mut(&path.to_string()) {
+                if let Some(file) = folder.contents.iter_mut().find(|item| {
+                    if let FileSystemItem::File_(file) = item {
+                        file.name == path
+                    } else {
+                        false
+                    }
+                }) {
+                    if let FileSystemItem::File_(file) = file {
+                        return Some(file);
+                    }
+                }
+            }
+        }
+
+        None
+    }
+    fn get_folder_path_from_path(file_path: &String) -> Option<&str> {
+        let path = Path::new(file_path);
+        path.parent().and_then(|parent| parent.to_str())
+    }
     pub fn add_existing_item(&mut self, item: FileSystemItem) {
         if !self.contents.iter().any(|existing_item| {
             match (existing_item, &item) {

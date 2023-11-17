@@ -74,7 +74,9 @@ impl FileListFilter {
 
         let current_path = &app.file_list.root.current_path.clone();
 
-        if let Some(item) = app.file_list.root.find_folder_by_path(current_path) {
+
+
+        if let Some(item) = app.file_list.root.root_dir.find_folder_mut(current_path) {
             if let Some(index) = app.file_list.table.selected() {
                 let current_item = &item.contents[index];
 
