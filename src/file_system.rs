@@ -97,7 +97,6 @@ impl FileSystem {
             }
         }
     }
-
     pub fn select_all(&mut self) {
         let current_path = &self.current_path.clone();
 
@@ -106,6 +105,9 @@ impl FileSystem {
                 FileSystem::select_item(item);
             }
         }
+    }
+    pub fn get_current_folder(&mut self) -> Option<&mut Folder> {
+        self.root_dir.find_folder_mut(&self.current_path)
     }
 }
 
@@ -129,6 +131,15 @@ pub struct Folder {
 impl Folder {
     pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, extension: String, file_filter_rules: Vec<FileFilter>, folder_filter_rules: Vec<FolderFilter>) -> Self {
         Folder { name, path, selected, contents, extension, folder_filter_rules, file_filter_rules }
+    }
+
+    pub fn add_children_to_folder(&mut self) -> Result<(), std::io::Error> {
+        let content = file_service::get_system_items_from_path(self.path.clone())?;
+
+        self.add_existing_items(content.clone());
+        self.delete_not_existing_items(content);
+        self.sort_contents();
+        Ok(())
     }
     pub fn sort_contents(&mut self) {
         self.contents.sort_by(|a, b| {
@@ -184,9 +195,38 @@ impl Folder {
 
         None
     }
-    fn get_folder_path_from_path(file_path: &String) -> Option<&str> {
+    pub fn find_folder_mut_in_content(&mut self, index: usize) -> Option<&mut Folder> {
+        if index >= self.contents.len() {
+            return None;
+        }
+
+        let item = &mut self.contents[index];
+
+        if let FileSystemItem::Folder_(folder) = item {
+            return Some(folder);
+        }
+
+        None
+    }
+    pub fn find_file_mut_in_content(&mut self, index: usize) -> Option<&mut File> {
+        if index >= self.contents.len() {
+            return None;
+        }
+
+        let item = &mut self.contents[index];
+
+        if let FileSystemItem::File_(file) = item {
+            return Some(file);
+        }
+
+        None
+    }
+    pub fn get_folder_path_from_path(file_path: &String) -> Option<&str> {
         let path = Path::new(file_path);
         path.parent().and_then(|parent| parent.to_str())
+    }
+    pub fn add_existing_items(&mut self, items: Vec<FileSystemItem>) {
+        items.iter().for_each(|item| self.add_existing_item(item.clone()))
     }
     pub fn add_existing_item(&mut self, item: FileSystemItem) {
         if !self.contents.iter().any(|existing_item| {
@@ -198,6 +238,21 @@ impl Folder {
         }) {
             self.contents.push(item);
         }
+    }
+    pub fn delete_not_existing_items(&mut self, items: Vec<FileSystemItem>) {
+        let mut contents = Vec::new();
+
+        for content_item in &self.contents {
+            if items.iter().any(|item| match (content_item, item) {
+                (FileSystemItem::File_(file1), FileSystemItem::File_(file2)) => file1.path == file2.path,
+                (FileSystemItem::Folder_(folder1), FileSystemItem::Folder_(folder2)) => folder1.path == folder2.path,
+                _ => false,
+            }) {
+                contents.push(content_item.clone());
+            }
+        }
+
+        self.contents = contents;
     }
 }
 

@@ -8,7 +8,6 @@ use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Block, Borders, BorderType, Cell, Row, Table, TableState};
 use crate::app::{App, AppMode};
 use crate::file_list_filter::FileListFilter;
-use crate::file_service::get_system_items_from_path;
 use crate::file_system::{FileSystem, FileSystemItem};
 
 #[derive(Debug)]
@@ -24,7 +23,6 @@ impl FileList {
             table: TableState::default(),
         })
     }
-
     pub fn next(&mut self) {
         let i = match self.table.selected() {
             Some(i) => {
@@ -38,7 +36,6 @@ impl FileList {
         };
         self.table.select(i);
     }
-
     pub fn previous(&mut self) {
         let i = match self.table.selected() {
             Some(i) => {
@@ -54,49 +51,33 @@ impl FileList {
     }
 
     pub fn open(&mut self) -> Result<(), std::io::Error> {
-        let current_dir =
-            self.root.root_dir.find_folder_mut(&self.root.current_path.clone());
-        if let Some(dir) = current_dir {
-            let index = self
-                .table.selected();
-
-
-            if let Some(index) = index {
-                let new_dir = dir.contents.get_mut(index);
-
-                if let Some(new_dir) = new_dir {
-                    match new_dir {
-                        FileSystemItem::File_(_) => {}
-                        FileSystemItem::Folder_(folder) => {
-                            let res_items = get_system_items_from_path(folder.path.clone());
-
-                            match res_items {
-                                Ok(items) => {
-                                    let _ = items.iter().for_each(|item| folder.add_existing_item(item.clone()));
-                                    folder.sort_contents();
-                                    let content_len = folder.contents.len();
-
-                                    self.root.current_path = folder.path.clone();
-
-                                    if content_len > 0 {
-                                        self.set_index_table(Some(0));
-                                    } else {
-                                        self.set_index_table(None);
-                                    }
-
-                                    self.root.history_index.push(index);
-                                }
-                                Err(error) => {
-                                    return Err(error);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        if let Some(index) = self.table.selected() {
+            let new_path = self.open_folder(index)?;
+            self.root.current_path = new_path;
         }
         Ok(())
     }
+    fn open_folder(&mut self, index: usize) -> Result<String, std::io::Error> {
+        if let Some(current_folder) = self.root.get_current_folder() {
+            if let Some(folder) = current_folder.find_folder_mut_in_content(index) {
+                folder.add_children_to_folder()?;
+
+                let current_path = folder.path.clone();
+
+                if current_folder.contents.len() > 0 {
+                    self.set_index_table(Some(0));
+                } else {
+                    self.set_index_table(None);
+                }
+
+                self.root.history_index.push(index);
+
+                return Ok(current_path)
+            }
+        }
+        Ok(self.root.current_path.clone())
+    }
+
     pub fn close(&mut self) {
         if self.root.current_path == "/" {
             self.root.history_index.clear();
@@ -119,18 +100,14 @@ impl FileList {
             self.set_index_table(index);
         }
     }
-
     pub fn select(&mut self) {
         if let Some(index) = self.table.selected() {
             self.root.select(index);
         }
     }
-
     pub fn select_all(&mut self) {
         self.root.select_all();
     }
-
-
     pub fn init_index_table(&mut self) {
         let selected = self.table.selected();
         let length = self.root.rows.len();
@@ -141,22 +118,17 @@ impl FileList {
             }
         }
     }
-
     pub fn set_index_table(&mut self, index: Option<usize>) {
         self.table.select(index);
     }
-
     pub fn get_current_item(&mut self) -> Option<&mut FileSystemItem> {
-
         if let Some(folder) = self.root.root_dir.find_folder_mut(&self.root.current_path.clone()) {
             if let Some(index) = self.table.selected() {
                 return Some(&mut folder.contents[index]);
             }
         }
-
         None
     }
-
     pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         match key_code {
             KeyCode::Esc => {
@@ -198,7 +170,7 @@ impl FileList {
                         }
                     }
                 }
-            },
+            }
             KeyCode::Char('F') => {
                 if let Some(item) = app.file_list.get_current_item() {
                     match item {
@@ -208,13 +180,12 @@ impl FileList {
                         }
                     }
                 }
-            },
+            }
             _ => {}
         }
 
         Ok(())
     }
-
     pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
         let list_chunks = Layout::default()
             .direction(Direction::Horizontal)

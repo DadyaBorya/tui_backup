@@ -78,41 +78,45 @@ impl FileListFilter {
 
         if let Some(item) = app.file_list.root.root_dir.find_folder_mut(current_path) {
             if let Some(index) = app.file_list.table.selected() {
-                let current_item = &item.contents[index];
 
-                if let FileSystemItem::Folder_(folder) = current_item {
-                    app.file_list_filter.folder_filter_rules = folder.folder_filter_rules.clone();
-                    app.file_list_filter.file_filter_rules = folder.file_filter_rules.clone();
-                    let folder_items: Vec<ListItem> = folder.folder_filter_rules.clone().into_iter()
-                        .map(|item| {
-                            ListItem::new(format!("{} ({})", item.regex, item.deep))
-                        }).collect();
+                if let Some(current_item) = &item.contents.get(index) {
+                    if let FileSystemItem::Folder_(folder) = current_item {
+                        app.file_list_filter.folder_filter_rules = folder.folder_filter_rules.clone();
+                        app.file_list_filter.file_filter_rules = folder.file_filter_rules.clone();
 
-                    let folder_list = List::new(folder_items)
-                        .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("Folder Filter").title_alignment(Alignment::Center))
-                        .style(match app.mode {
-                            AppMode::FolderListFilter => Style::default().fg(Color::Yellow),
-                            _ => Style::default()
-                        })
-                        .highlight_symbol("->")
-                        .highlight_style(Style::default().add_modifier(Modifier::BOLD));
-                    f.render_stateful_widget(folder_list, list_chunk[0], &mut app.file_list_filter.folder_filter_list);
+                        let folder_items: Vec<ListItem> = folder.folder_filter_rules.clone().into_iter()
+                            .map(|item| {
+                                ListItem::new(format!("{} ({})", item.regex, item.deep))
+                            }).collect();
 
-                    let file_items: Vec<ListItem> = folder.file_filter_rules.clone().into_iter()
-                        .map(|item| {
-                            ListItem::new(format!("{} ({})\n{}", item.regex, item.deep, item.content))
-                        }).collect();
+                        let folder_list = List::new(folder_items)
+                            .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("Folder Filter").title_alignment(Alignment::Center))
+                            .style(match app.mode {
+                                AppMode::FolderListFilter => Style::default().fg(Color::Yellow),
+                                _ => Style::default()
+                            })
+                            .highlight_symbol("->")
+                            .highlight_style(Style::default().add_modifier(Modifier::BOLD));
+                        f.render_stateful_widget(folder_list, list_chunk[0], &mut app.file_list_filter.folder_filter_list);
 
-                    let file_list = List::new(file_items)
-                        .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("File Filter").title_alignment(Alignment::Center))
-                        .style(match app.mode {
-                            AppMode::FileListFilter => Style::default().fg(Color::Yellow),
-                            _ => Style::default(),
-                        })
-                        .highlight_symbol("->")
-                        .highlight_style(Style::default().add_modifier(Modifier::BOLD));
-                    f.render_stateful_widget(file_list, list_chunk[1], &mut app.file_list_filter.file_filter_list);
+                        let file_items: Vec<ListItem> = folder.file_filter_rules.clone().into_iter()
+                            .map(|item| {
+                                ListItem::new(format!("{} ({})\n{}", item.regex, item.deep, item.content))
+                            }).collect();
+
+                        let file_list = List::new(file_items)
+                            .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("File Filter").title_alignment(Alignment::Center))
+                            .style(match app.mode {
+                                AppMode::FileListFilter => Style::default().fg(Color::Yellow),
+                                _ => Style::default(),
+                            })
+                            .highlight_symbol("->")
+                            .highlight_style(Style::default().add_modifier(Modifier::BOLD));
+                        f.render_stateful_widget(file_list, list_chunk[1], &mut app.file_list_filter.file_filter_list);
+                    }
                 }
+
+
             }
         }
     }
@@ -173,7 +177,7 @@ impl FileListFilter {
                                 match item {
                                     FileSystemItem::File_(_) => {}
                                     FileSystemItem::Folder_(folder) => {
-                                        if folder.folder_filter_rules.len() > 0 {
+                                        if folder.folder_filter_rules.len() > 0 && index < folder.folder_filter_rules.len(){
                                             folder.folder_filter_rules.remove(index);
                                         }
                                     }

@@ -17,7 +17,6 @@ mod file_filter_form_popup;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::new()?;
-
     app.execute_alternative_screen()?;
     let backend = CrosstermBackend::new(std::io::stdout());
     let mut terminal = Terminal::new(backend)?;
