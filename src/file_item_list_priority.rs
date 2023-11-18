@@ -56,7 +56,6 @@ impl FileItemListPriority {
             new_deep: "".to_string(),
         }
     }
-
     pub fn clean_inputs(&mut self) {
         self.new_regex.clear();
         self.new_priority.clear();
