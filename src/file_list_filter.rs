@@ -117,6 +117,11 @@ impl FileListFilter {
         }
     }
 
+    pub fn clear_input_fields(&mut self) {
+        self.new_content.clear();
+        self.new_deep.clear();
+        self.new_content.clear();
+    }
     pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         match app.mode {
             AppMode::FolderListFilter => {

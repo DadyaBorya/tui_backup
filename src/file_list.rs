@@ -23,7 +23,7 @@ impl FileList {
             table: TableState::default(),
         })
     }
-    pub fn next(&mut self) {
+        pub fn next(&mut self) {
         let i = match self.table.selected() {
             Some(i) => {
                 if i >= self.root.rows.len() - 1 {
@@ -128,6 +128,13 @@ impl FileList {
         }
         None
     }
+
+    pub fn show_error(app: &mut App, error: std::io::Error) {
+        if let ErrorKind::PermissionDenied = error.kind() {
+            app.error = Some(error.to_string());
+            app.change_mode(AppMode::ErrorPopup);
+        }
+    }
     pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         match key_code {
             KeyCode::Esc => {
@@ -141,14 +148,8 @@ impl FileList {
                 app.file_list.next();
             }
             KeyCode::Right => {
-                match app.file_list.open() {
-                    Ok(_) => {}
-                    Err(error) => {
-                        if let ErrorKind::PermissionDenied = error.kind() {
-                            app.error = Some(error.to_string());
-                            app.change_mode(AppMode::ErrorPopup);
-                        }
-                    }
+                if let Err(error) = app.file_list.open() {
+                    FileList::show_error(app, error);
                 }
             }
             KeyCode::Left => {

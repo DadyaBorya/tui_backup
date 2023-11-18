@@ -88,12 +88,10 @@ impl FolderFilterFormPopup {
                 match key_code {
                     KeyCode::Esc => {
                         app.is_folder_filter_form_popup = false;
-                        app.file_list_filter.new_deep = "".to_string();
-                        app.file_list_filter.new_regex = "".to_string();
+                        app.file_list_filter.clear_input_fields();
                         app.change_mode(AppMode::FolderListFilter);
                     }
                     KeyCode::Tab => app.change_mode(AppMode::FolderListFilterFormRegex),
-
                     _ => {}
                 }
             }
@@ -140,22 +138,18 @@ impl FolderFilterFormPopup {
                         let folder_filter = FolderFilter::new(regex, deep);
 
                         if let Some(item) = app.file_list.get_current_item() {
-                            match item {
-                                FileSystemItem::File_(_) => {}
-                                FileSystemItem::Folder_(folder) => {
-                                    if app.is_edit_folder_filter_form_popup {
-                                        if let Some(index) = app.file_list_filter.folder_filter_list.selected() {
-                                            folder.folder_filter_rules[index] = folder_filter;
-                                            app.is_edit_folder_filter_form_popup = false;
-                                        }
-                                    } else {
-                                        folder.folder_filter_rules.push(folder_filter);
+                            if let FileSystemItem::Folder_(folder) = item {
+                                if app.is_edit_folder_filter_form_popup {
+                                    if let Some(index) = app.file_list_filter.folder_filter_list.selected() {
+                                        folder.folder_filter_rules[index] = folder_filter;
+                                        app.is_edit_folder_filter_form_popup = false;
                                     }
-                                    app.is_folder_filter_form_popup = false;
-                                    app.file_list_filter.new_deep = "".to_string();
-                                    app.file_list_filter.new_regex = "".to_string();
-                                    app.change_mode(AppMode::FolderListFilter);
+                                } else {
+                                    folder.folder_filter_rules.push(folder_filter);
                                 }
+                                app.is_folder_filter_form_popup = false;
+                                app.file_list_filter.clear_input_fields();
+                                app.change_mode(AppMode::FolderListFilter);
                             }
                         }
                     }

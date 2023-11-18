@@ -21,7 +21,7 @@ impl FileFilterFormPopup {
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded);
 
-            let area = Popup::centered_rect(60, 65, f.size());
+            let area = Popup::centered_rect(60, 80, f.size());
             f.render_widget(Clear, area);
             f.render_widget(block, area);
 
@@ -30,7 +30,7 @@ impl FileFilterFormPopup {
                 .direction(Direction::Vertical)
                 .constraints(
                     [
-                        Constraint::Length(3), Constraint::Length(3), Constraint::Length(8), Constraint::Length(3)
+                        Constraint::Length(3), Constraint::Length(3), Constraint::Min(0), Constraint::Length(3)
                     ].as_ref()
                 ).split(area);
 
@@ -178,23 +178,20 @@ impl FileFilterFormPopup {
                         let file_filter = FileFilter::new(regex, content, deep);
 
                         if let Some(item) = app.file_list.get_current_item() {
-                            match item {
-                                FileSystemItem::File_(_) => {}
-                                FileSystemItem::Folder_(folder) => {
-                                    if app.is_edit_file_filter_form_popup {
-                                        if let Some(index) = app.file_list_filter.file_filter_list.selected() {
-                                            folder.file_filter_rules[index] = file_filter;
-                                            app.is_edit_file_filter_form_popup = false;
-                                        }
-                                    } else {
-                                        folder.file_filter_rules.push(file_filter);
+                            if let FileSystemItem::Folder_(folder) = item {
+                                if app.is_edit_file_filter_form_popup {
+                                    if let Some(index) = app.file_list_filter.file_filter_list.selected() {
+                                        folder.file_filter_rules[index] = file_filter;
+                                        app.is_edit_file_filter_form_popup = false;
                                     }
-                                    app.is_file_filter_form_popup = false;
-                                    app.file_list_filter.new_deep = "".to_string();
-                                    app.file_list_filter.new_regex = "".to_string();
-                                    app.file_list_filter.new_content = "".to_string();
-                                    app.change_mode(AppMode::FileListFilter);
+                                } else {
+                                    folder.file_filter_rules.push(file_filter);
                                 }
+                                app.is_file_filter_form_popup = false;
+                                app.file_list_filter.new_deep = "".to_string();
+                                app.file_list_filter.new_regex = "".to_string();
+                                app.file_list_filter.new_content = "".to_string();
+                                app.change_mode(AppMode::FileListFilter);
                             }
                         }
                     }

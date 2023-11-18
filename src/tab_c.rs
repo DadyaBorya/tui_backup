@@ -55,7 +55,6 @@ impl<'a> TabC<'a> {
             self.index = self.titles.len() - 1;
         }
     }
-
     pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
         let titles = app.tabs
             .titles
@@ -66,7 +65,7 @@ impl<'a> TabC<'a> {
                 ])
             })
             .collect();
-        
+
         let tabs = Tabs::new(titles)
             .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("AYLO"))
             .select(app.tabs.index)
