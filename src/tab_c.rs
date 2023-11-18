@@ -5,7 +5,8 @@ use tui::layout::{Rect};
 use tui::style::{Color, Modifier, Style};
 use tui::text::{Span, Spans};
 use tui::widgets::{Block, Borders, BorderType, Tabs};
-use crate::app::{App, AppMode};
+use crate::app::{App};
+use crate::app_mode::AppMode;
 
 pub struct TabC<'a> {
     pub titles: Vec<&'a str>,
@@ -55,7 +56,6 @@ impl<'a> TabC<'a> {
             self.index = self.titles.len() - 1;
         }
     }
-
     pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
         let titles = app.tabs
             .titles
@@ -66,6 +66,7 @@ impl<'a> TabC<'a> {
                 ])
             })
             .collect();
+
         let tabs = Tabs::new(titles)
             .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("AYLO"))
             .select(app.tabs.index)

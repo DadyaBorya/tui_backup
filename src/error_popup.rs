@@ -1,10 +1,11 @@
 use crossterm::event::KeyCode;
 use tui::backend::Backend;
 use tui::Frame;
-use tui::layout::{Alignment, Constraint, Layout};
+use tui::layout::{Alignment, Constraint, Direction, Layout};
 use tui::style::{Color, Style};
 use tui::widgets::{Block, Borders, BorderType, Clear, Paragraph};
-use crate::app::{App, AppMode};
+use crate::app::{App};
+use crate::app_mode::AppMode;
 use crate::popup::Popup;
 
 #[derive(Debug, Clone)]
@@ -25,22 +26,24 @@ impl ErrorPopup {
 
             let chunks = Layout::default()
                 .margin(2)
+                .direction(Direction::Vertical)
                 .constraints(
                     [
-                        Constraint::Length(2),
-                        Constraint::Length(2)
+                        Constraint::Length(2), Constraint::Length(2)
                     ].as_ref()
-                )
-                .split(area);
+                ).split(area);
 
             let paragraph_text = match &app.error {
                 None => { "unknown error" }
                 Some(name) => { name }
             };
 
+            let style = Style::default().fg(Color::Red);
+
             let text = Paragraph::new(paragraph_text)
-                .style(Style::default().fg(Color::Red))
+                .style(style)
                 .alignment(Alignment::Center);
+
             f.render_widget(text, chunks[0]);
 
             let keys_desc = Paragraph::new("Press (ESC) for close")
@@ -55,8 +58,6 @@ impl ErrorPopup {
             KeyCode::Esc => app.change_mode(AppMode::FileList),
             _ => {}
         }
-
-
         Ok(())
     }
 }

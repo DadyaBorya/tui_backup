@@ -9,11 +9,12 @@ mod file_system;
 mod file_service;
 mod file_list;
 mod popup;
-mod file_list_filter;
-mod file_list_priority;
+mod file_item_list_filter;
+mod file_item_list_priority;
 mod error_popup;
 mod folder_filter_form_popup;
 mod file_filter_form_popup;
+mod app_mode;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::new()?;

@@ -9,40 +9,21 @@ use crate::file_list::FileList;
 use crate::tab_c::TabC;
 use crossterm::event::{EnableMouseCapture};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
+use crate::app_mode::{AppMode, FileFolderListFilter, FolderListFilter};
 use crate::error_popup::ErrorPopup;
 use crate::file_filter_form_popup::FileFilterFormPopup;
-use crate::file_list_filter::FileListFilter;
+use crate::file_item_list_filter::FileItemListFilter;
+use crate::file_item_list_priority::FileItemListPriority;
 use crate::folder_filter_form_popup::FolderFilterFormPopup;
 
-
-#[derive(PartialEq)]
-pub enum AppMode {
-    Tab,
-    FileList,
-    ErrorPopup,
-
-    FolderListFilter,
-    FolderListFilterForm,
-    FolderListFilterFormRegex,
-    FolderListFilterFormDeep,
-    FolderListFilterFormSubmit,
-
-    FileListFilter,
-    FileListFilterForm,
-    FileListFilterFormRegex,
-    FileListFilterFormDeep,
-    FileListFilterFormContent,
-    FileListFilterFormSubmit,
-}
 
 pub struct App<'a> {
     pub mode: AppMode,
     pub tabs: TabC<'a>,
     pub file_list: FileList,
-    pub file_list_filter: FileListFilter,
-    pub is_folder_filter_form_popup: bool,
+    pub file_item_list_filter: FileItemListFilter,
+    pub file_item_list_priority: FileItemListPriority,
     pub is_edit_folder_filter_form_popup: bool,
-    pub is_file_filter_form_popup: bool,
     pub is_edit_file_filter_form_popup: bool,
     pub error: Option<String>,
     pub exit: bool,
@@ -54,13 +35,12 @@ impl<'a> App<'a> {
             mode: AppMode::Tab,
             tabs: TabC::new(),
             file_list: FileList::new()?,
-            file_list_filter: FileListFilter::new(),
+            file_item_list_filter: FileItemListFilter::new(),
+            file_item_list_priority: FileItemListPriority::new(),
             exit: false,
             error: None,
-            is_folder_filter_form_popup: false,
             is_edit_folder_filter_form_popup: false,
             is_edit_file_filter_form_popup: false,
-            is_file_filter_form_popup: false
         })
     }
 
@@ -78,23 +58,28 @@ impl<'a> App<'a> {
         if event::poll(std::time::Duration::from_millis(16))? {
             if let Key(key) = event::read()? {
                 if key.kind == KeyEventKind::Press {
-                    match self.mode {
+                    match &mut self.mode {
                         AppMode::Tab => TabC::event(self, key.code)?,
                         AppMode::FileList => FileList::event(self, key.code)?,
                         AppMode::ErrorPopup => ErrorPopup::event(self, key.code)?,
 
-                        AppMode::FolderListFilter => FileListFilter::event(self, key.code)?,
-                        AppMode::FolderListFilterForm => FolderFilterFormPopup::event(self, key.code)?,
-                        AppMode::FolderListFilterFormRegex => FolderFilterFormPopup::event(self, key.code)?,
-                        AppMode::FolderListFilterFormDeep => FolderFilterFormPopup::event(self, key.code)?,
-                        AppMode::FolderListFilterFormSubmit => FolderFilterFormPopup::event(self, key.code)?,
+                        AppMode::FolderListFilter(filter) => match filter {
+                            FolderListFilter::List => FileItemListFilter::event(self, key.code)?,
+                            FolderListFilter::Form
+                            | FolderListFilter::Regex
+                            | FolderListFilter::Deep
+                            | FolderListFilter::Submit => FolderFilterFormPopup::event(self, key.code)?,
+                        },
 
-                        AppMode::FileListFilter => FileListFilter::event(self, key.code)?,
-                        AppMode::FileListFilterForm => FileFilterFormPopup::event(self, key.code)?,
-                        AppMode::FileListFilterFormRegex => FileFilterFormPopup::event(self, key.code)?,
-                        AppMode::FileListFilterFormDeep => FileFilterFormPopup::event(self, key.code)?,
-                        AppMode::FileListFilterFormContent => FileFilterFormPopup::event(self, key.code)?,
-                        AppMode::FileListFilterFormSubmit => FileFilterFormPopup::event(self, key.code)?,
+                        AppMode::FileFolderListFilter(filter) => match filter {
+                            FileFolderListFilter::List => FileItemListFilter::event(self, key.code)?,
+                            FileFolderListFilter::Form
+                            | FileFolderListFilter::Regex
+                            | FileFolderListFilter::Deep
+                            | FileFolderListFilter::Content
+                            | FileFolderListFilter::Submit => FileFilterFormPopup::event(self, key.code)?,
+                        }
+                        _ => {}
                     }
                 }
             }
@@ -107,14 +92,17 @@ impl<'a> App<'a> {
         let size = f.size();
         let chunks = Layout::default()
             .direction(Direction::Vertical)
-            .constraints([Constraint::Length(3), Constraint::Min(0)].as_ref())
-            .split(size);
+            .constraints(
+                [
+                    Constraint::Length(3), Constraint::Min(0)
+                ].as_ref()
+            ).split(size);
 
         TabC::ui(self, f, &chunks);
 
         match self.tabs.index {
             0 => FileList::ui(self, f, &chunks),
-            _ => {  },
+            _ => {}
         };
 
         ErrorPopup::error_popup(f, self);
