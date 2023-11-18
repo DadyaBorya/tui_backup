@@ -6,8 +6,10 @@ use tui::Frame;
 use tui::layout::{Alignment, Constraint, Rect, Layout, Direction};
 use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Block, Borders, BorderType, Cell, Row, Table, TableState};
-use crate::app::{App, AppMode};
-use crate::file_list_filter::FileItemListFilter;
+use crate::app::{App};
+use crate::app_mode::{AppMode, FileFolderListFilter, FolderListFilter};
+use crate::file_item_list_filter::FileItemListFilter;
+use crate::file_item_list_priority::FileItemListPriority;
 use crate::file_system::{FileSystem, FileSystemItem};
 
 #[derive(Debug)]
@@ -62,7 +64,7 @@ impl FileList {
             if let Some(folder) = current_folder.find_folder_mut_in_content(index) {
                 folder.add_children_to_folder()?;
 
-                let current_path = folder.path.clone();
+                let current_path = folder.path.to_owned();
 
                 if current_folder.contents.len() > 0 {
                     self.set_index_table(Some(0));
@@ -75,7 +77,7 @@ impl FileList {
                 return Ok(current_path);
             }
         }
-        Ok(self.root.current_path.clone())
+        Ok(self.root.current_path.to_owned())
     }
     pub fn close(&mut self) {
         if self.root.current_path == "/" {
@@ -121,9 +123,11 @@ impl FileList {
         self.table.select(index);
     }
     pub fn get_current_item(&mut self) -> Option<&mut FileSystemItem> {
-        if let Some(folder) = self.root.root_dir.find_folder_mut(&self.root.current_path.clone()) {
+        if let Some(folder) = self.root.root_dir.find_folder_mut(&self.root.current_path.to_owned()) {
             if let Some(index) = self.table.selected() {
-                return Some(&mut folder.contents[index]);
+                if index < folder.contents.len() {
+                    return Some(&mut folder.contents[index]);
+                }
             }
         }
         None
@@ -164,14 +168,15 @@ impl FileList {
             KeyCode::Char('f') => {
                 if let Some(item) = app.file_list.get_current_item() {
                     if let FileSystemItem::Folder_(_) = item {
-                        app.change_mode(AppMode::FolderListFilter);
+                        app.change_mode(AppMode::FolderListFilter(FolderListFilter::List));
                     }
                 }
             }
             KeyCode::Char('F') => {
                 if let Some(item) = app.file_list.get_current_item() {
                     if let FileSystemItem::Folder_(_) = item {
-                        app.change_mode(AppMode::FileListFilter);
+
+                        app.change_mode(AppMode::FileFolderListFilter(FileFolderListFilter::List));
                     }
                 }
             }
@@ -181,22 +186,26 @@ impl FileList {
         Ok(())
     }
     pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
-        let list_chunks = Layout::default()
-            .margin(1)
-            .direction(Direction::Horizontal)
-            .constraints(
-                [
-                    Constraint::Percentage(50), Constraint::Percentage(50)
-                ].as_ref()
-            ).split(chunks[1]);
-
-        let action_chunks = Layout::default()
-            .direction(Direction::Vertical)
-            .constraints(
-                [
-                    Constraint::Percentage(50), Constraint::Percentage(50)
-                ].as_ref()
-            ).split(list_chunks[1]);
+        let list_chunks: Vec<Rect>;
+        if app.file_list.table.selected().is_none() {
+            list_chunks = Layout::default()
+                .margin(1)
+                .direction(Direction::Horizontal)
+                .constraints(
+                    [
+                        Constraint::Percentage(100)
+                    ].as_ref()
+                ).split(chunks[1]);
+        } else {
+            list_chunks = Layout::default()
+                .margin(1)
+                .direction(Direction::Horizontal)
+                .constraints(
+                    [
+                        Constraint::Percentage(65), Constraint::Percentage(35)
+                    ].as_ref()
+                ).split(chunks[1]);
+        }
 
         let selected_style = Style::default().add_modifier(Modifier::REVERSED).fg(Color::Yellow);
         let normal_style = Style::default().bg(Color::White);
@@ -210,7 +219,6 @@ impl FileList {
             .bottom_margin(1);
 
         app.file_list.root.set_rows_of_current_dir();
-
 
         let rows = app.file_list.root.rows.iter().map(|item| {
             let height = item.0
@@ -237,13 +245,17 @@ impl FileList {
             ]);
         f.render_stateful_widget(t, list_chunks[0], &mut app.file_list.table);
 
-        FileItemListFilter::ui(app, f, &action_chunks);
+        if app.file_list.table.selected().is_some() {
+            let action_chunks = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints(
+                    [
+                        Constraint::Percentage(50), Constraint::Percentage(50)
+                    ].as_ref()
+                ).split(list_chunks[1]);
 
-        let priority =
-            Block::default().title("Priority").borders(Borders::ALL)
-                .border_type(BorderType::Rounded)
-                .title_alignment(Alignment::Center);
-
-        f.render_widget(priority, action_chunks[1]);
+            FileItemListFilter::ui(app, f, &action_chunks);
+            FileItemListPriority::ui(app, f, &action_chunks);
+        }
     }
 }

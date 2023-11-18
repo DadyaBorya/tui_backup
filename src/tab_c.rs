@@ -5,7 +5,8 @@ use tui::layout::{Rect};
 use tui::style::{Color, Modifier, Style};
 use tui::text::{Span, Spans};
 use tui::widgets::{Block, Borders, BorderType, Tabs};
-use crate::app::{App, AppMode};
+use crate::app::{App};
+use crate::app_mode::AppMode;
 
 pub struct TabC<'a> {
     pub titles: Vec<&'a str>,

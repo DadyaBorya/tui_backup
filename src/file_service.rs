@@ -78,6 +78,7 @@ pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, s
                     false,
                     // size: get_item_size(&path_string),
                     extension,
+                    vec![]
                     ))
             }
         };

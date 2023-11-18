@@ -4,8 +4,8 @@ use std::cmp::Ordering;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use tui::style::Color;
-use crate::file_list_filter::{FileFolderFilter, FolderFilter};
-use crate::file_list_priority::{FileFolderPriority, FolderPriority};
+use crate::file_item_list_filter::{FileFolderFilter, FolderFilter};
+use crate::file_item_list_priority::{FileFolderPriority, FilePriority, FolderPriority};
 
 #[derive(Debug, Clone)]
 pub struct FileSystem {
@@ -265,15 +265,17 @@ pub struct File {
     pub path: String,
     pub selected: bool,
     pub extension: String,
+    pub file_priority_rules: Vec<FilePriority>,
 }
 
 impl File {
-    pub fn new(name: String, path: String, selected: bool, extension: String) -> Self {
+    pub fn new(name: String, path: String, selected: bool, extension: String, file_priority_rules: Vec<FilePriority>) -> Self {
         File {
             name,
             path,
             selected,
             extension,
+            file_priority_rules,
         }
     }
 }
