@@ -11,7 +11,7 @@ use crossterm::event::{EnableMouseCapture};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
 use crate::error_popup::ErrorPopup;
 use crate::file_filter_form_popup::FileFilterFormPopup;
-use crate::file_list_filter::FileListFilter;
+use crate::file_list_filter::FileItemListFilter;
 use crate::folder_filter_form_popup::FolderFilterFormPopup;
 
 
@@ -39,7 +39,7 @@ pub struct App<'a> {
     pub mode: AppMode,
     pub tabs: TabC<'a>,
     pub file_list: FileList,
-    pub file_list_filter: FileListFilter,
+    pub file_list_filter: FileItemListFilter,
     pub is_folder_filter_form_popup: bool,
     pub is_edit_folder_filter_form_popup: bool,
     pub is_file_filter_form_popup: bool,
@@ -54,7 +54,7 @@ impl<'a> App<'a> {
             mode: AppMode::Tab,
             tabs: TabC::new(),
             file_list: FileList::new()?,
-            file_list_filter: FileListFilter::new(),
+            file_list_filter: FileItemListFilter::new(),
             exit: false,
             error: None,
             is_folder_filter_form_popup: false,
@@ -83,13 +83,13 @@ impl<'a> App<'a> {
                         AppMode::FileList => FileList::event(self, key.code)?,
                         AppMode::ErrorPopup => ErrorPopup::event(self, key.code)?,
 
-                        AppMode::FolderListFilter => FileListFilter::event(self, key.code)?,
+                        AppMode::FolderListFilter => FileItemListFilter::event(self, key.code)?,
                         AppMode::FolderListFilterForm => FolderFilterFormPopup::event(self, key.code)?,
                         AppMode::FolderListFilterFormRegex => FolderFilterFormPopup::event(self, key.code)?,
                         AppMode::FolderListFilterFormDeep => FolderFilterFormPopup::event(self, key.code)?,
                         AppMode::FolderListFilterFormSubmit => FolderFilterFormPopup::event(self, key.code)?,
 
-                        AppMode::FileListFilter => FileListFilter::event(self, key.code)?,
+                        AppMode::FileListFilter => FileItemListFilter::event(self, key.code)?,
                         AppMode::FileListFilterForm => FileFilterFormPopup::event(self, key.code)?,
                         AppMode::FileListFilterFormRegex => FileFilterFormPopup::event(self, key.code)?,
                         AppMode::FileListFilterFormDeep => FileFilterFormPopup::event(self, key.code)?,

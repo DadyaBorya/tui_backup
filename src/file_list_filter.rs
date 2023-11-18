@@ -8,15 +8,15 @@ use crate::app::{App, AppMode};
 use crate::file_system::{FileSystemItem};
 
 #[derive(Debug, Clone)]
-pub struct FileFilter {
+pub struct FileFolderFilter {
     pub regex: String,
     pub content: String,
     pub deep: String,
 }
 
-impl FileFilter {
+impl FileFolderFilter {
     pub fn new(regex: String, content: String, deep: String) -> Self {
-        FileFilter {
+        FileFolderFilter {
             regex,
             content,
             deep,
@@ -39,8 +39,8 @@ impl FolderFilter {
     }
 }
 
-pub struct FileListFilter {
-    pub file_filter_rules: Vec<FileFilter>,
+pub struct FileItemListFilter {
+    pub file_filter_rules: Vec<FileFolderFilter>,
     pub file_filter_list: ListState,
     pub folder_filter_rules: Vec<FolderFilter>,
     pub folder_filter_list: ListState,
@@ -50,9 +50,9 @@ pub struct FileListFilter {
 }
 
 
-impl FileListFilter {
+impl FileItemListFilter {
     pub fn new() -> Self {
-        FileListFilter {
+        FileItemListFilter {
             folder_filter_rules: vec![],
             file_filter_rules: vec![],
             file_filter_list: ListState::default(),
@@ -120,7 +120,7 @@ impl FileListFilter {
     pub fn clear_input_fields(&mut self) {
         self.new_content.clear();
         self.new_deep.clear();
-        self.new_content.clear();
+        self.new_regex.clear();
     }
     pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         match app.mode {

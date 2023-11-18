@@ -21,6 +21,8 @@ pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
                     vec![], "dir".to_string(),
                     vec![],
                     vec![],
+                    vec![],
+                    vec![],
                 ));
                 system_items.push(item);
             }
@@ -55,6 +57,8 @@ pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, s
                 vec![],
                 // size: get_item_size(&path_string)
                 "dir".to_string(),
+                vec![],
+                vec![],
                 vec![],
                 vec![],
             )),

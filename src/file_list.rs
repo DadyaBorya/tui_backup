@@ -7,7 +7,7 @@ use tui::layout::{Alignment, Constraint, Rect, Layout, Direction};
 use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Block, Borders, BorderType, Cell, Row, Table, TableState};
 use crate::app::{App, AppMode};
-use crate::file_list_filter::FileListFilter;
+use crate::file_list_filter::FileItemListFilter;
 use crate::file_system::{FileSystem, FileSystemItem};
 
 #[derive(Debug)]
@@ -163,21 +163,15 @@ impl FileList {
             }
             KeyCode::Char('f') => {
                 if let Some(item) = app.file_list.get_current_item() {
-                    match item {
-                        FileSystemItem::File_(_) => {}
-                        FileSystemItem::Folder_(_) => {
-                            app.change_mode(AppMode::FolderListFilter);
-                        }
+                    if let FileSystemItem::Folder_(_) = item {
+                        app.change_mode(AppMode::FolderListFilter);
                     }
                 }
             }
             KeyCode::Char('F') => {
                 if let Some(item) = app.file_list.get_current_item() {
-                    match item {
-                        FileSystemItem::File_(_) => {}
-                        FileSystemItem::Folder_(_) => {
-                            app.change_mode(AppMode::FileListFilter);
-                        }
+                    if let FileSystemItem::Folder_(_) = item {
+                        app.change_mode(AppMode::FileListFilter);
                     }
                 }
             }
@@ -243,7 +237,7 @@ impl FileList {
             ]);
         f.render_stateful_widget(t, list_chunks[0], &mut app.file_list.table);
 
-        FileListFilter::ui(app, f, &action_chunks);
+        FileItemListFilter::ui(app, f, &action_chunks);
 
         let priority =
             Block::default().title("Priority").borders(Borders::ALL)

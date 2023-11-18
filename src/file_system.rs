@@ -4,7 +4,8 @@ use std::cmp::Ordering;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use tui::style::Color;
-use crate::file_list_filter::{FileFilter, FolderFilter};
+use crate::file_list_filter::{FileFolderFilter, FolderFilter};
+use crate::file_list_priority::{FileFolderPriority, FolderPriority};
 
 #[derive(Debug, Clone)]
 pub struct FileSystem {
@@ -17,7 +18,7 @@ pub struct FileSystem {
 impl FileSystem {
     pub fn new() -> Result<Self, std::io::Error> {
         let items = file_service::get_root_system_items()?;
-        let mut root = Folder::new("/".to_string(), "/".to_string(), false, items, "dir".to_string(), vec![], vec![]);
+        let mut root = Folder::new("/".to_string(), "/".to_string(), false, items, "dir".to_string(), vec![], vec![], vec![], vec![]);
         root.sort_contents();
 
         Ok(FileSystem {
@@ -124,13 +125,15 @@ pub struct Folder {
     pub selected: bool,
     pub contents: Vec<FileSystemItem>,
     pub extension: String,
-    pub file_filter_rules: Vec<FileFilter>,
+    pub file_filter_rules: Vec<FileFolderFilter>,
     pub folder_filter_rules: Vec<FolderFilter>,
+    pub file_priority_rules: Vec<FileFolderPriority>,
+    pub folder_priority_rules: Vec<FolderPriority>,
 }
 
 impl Folder {
-    pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, extension: String, file_filter_rules: Vec<FileFilter>, folder_filter_rules: Vec<FolderFilter>) -> Self {
-        Folder { name, path, selected, contents, extension, folder_filter_rules, file_filter_rules }
+    pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, extension: String, file_filter_rules: Vec<FileFolderFilter>, folder_filter_rules: Vec<FolderFilter>, file_priority_rules: Vec<FileFolderPriority>, folder_priority_rules: Vec<FolderPriority>) -> Self {
+        Folder { name, path, selected, contents, extension, folder_filter_rules, file_filter_rules, file_priority_rules, folder_priority_rules }
     }
 
     pub fn add_children_to_folder(&mut self) -> Result<(), std::io::Error> {

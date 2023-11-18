@@ -5,7 +5,7 @@ use tui::layout::{Alignment, Constraint, Direction, Layout};
 use tui::style::{Color, Style};
 use tui::widgets::{Block, Borders, BorderType, Clear, Paragraph};
 use crate::app::{App, AppMode};
-use crate::file_list_filter::FileFilter;
+use crate::file_list_filter::FileFolderFilter;
 use crate::file_system::FileSystemItem;
 use crate::popup::Popup;
 
@@ -103,9 +103,7 @@ impl FileFilterFormPopup {
                 match key_code {
                     KeyCode::Esc => {
                         app.is_file_filter_form_popup = false;
-                        app.file_list_filter.new_deep = "".to_string();
-                        app.file_list_filter.new_regex = "".to_string();
-                        app.file_list_filter.new_content = "".to_string();
+                        app.file_list_filter.clear_input_fields();
                         app.change_mode(AppMode::FileListFilter);
                     }
                     KeyCode::Tab => app.change_mode(AppMode::FileListFilterFormRegex),
@@ -175,7 +173,7 @@ impl FileFilterFormPopup {
                         let deep = app.file_list_filter.new_deep.to_owned();
                         let content = app.file_list_filter.new_content.to_owned();
 
-                        let file_filter = FileFilter::new(regex, content, deep);
+                        let file_filter = FileFolderFilter::new(regex, content, deep);
 
                         if let Some(item) = app.file_list.get_current_item() {
                             if let FileSystemItem::Folder_(folder) = item {
@@ -188,9 +186,7 @@ impl FileFilterFormPopup {
                                     folder.file_filter_rules.push(file_filter);
                                 }
                                 app.is_file_filter_form_popup = false;
-                                app.file_list_filter.new_deep = "".to_string();
-                                app.file_list_filter.new_regex = "".to_string();
-                                app.file_list_filter.new_content = "".to_string();
+                                app.file_list_filter.clear_input_fields();
                                 app.change_mode(AppMode::FileListFilter);
                             }
                         }
