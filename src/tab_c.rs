@@ -68,7 +68,7 @@ impl<'a> TabC<'a> {
             .collect();
 
         let tabs = Tabs::new(titles)
-            .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("AYLO"))
+            .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("Slow Fade"))
             .select(app.tabs.index)
             .style(Style::default().fg(Color::White))
             .highlight_style(

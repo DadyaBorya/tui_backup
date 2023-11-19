@@ -25,7 +25,11 @@ impl FileList {
             table: TableState::default(),
         })
     }
-        pub fn next(&mut self) {
+    pub fn next(&mut self) {
+        if self.root.rows.is_empty() {
+            self.table.select(None);
+        }
+
         let i = match self.table.selected() {
             Some(i) => {
                 if i >= self.root.rows.len() - 1 {
@@ -39,6 +43,10 @@ impl FileList {
         self.table.select(i);
     }
     pub fn previous(&mut self) {
+        if self.root.rows.is_empty() {
+            self.table.select(None);
+        }
+
         let i = match self.table.selected() {
             Some(i) => {
                 if i == 0 {
@@ -66,7 +74,7 @@ impl FileList {
 
                 let current_path = folder.path.to_owned();
 
-                if current_folder.contents.len() > 0 {
+                if folder.contents.len() > 0 {
                     self.set_index_table(Some(0));
                 } else {
                     self.set_index_table(None);
@@ -175,7 +183,6 @@ impl FileList {
             KeyCode::Char('F') => {
                 if let Some(item) = app.file_list.get_current_item() {
                     if let FileSystemItem::Folder_(_) = item {
-
                         app.change_mode(AppMode::FileFolderListFilter(FileFolderListFilter::List));
                     }
                 }
