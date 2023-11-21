@@ -132,11 +132,12 @@ impl FolderFilterFormPopup {
                             if let FileSystemItem::Folder_(folder) = item {
                                 if app.is_edit_folder_filter_form_popup {
                                     if let Some(index) = app.file_item_list_filter.folder_filter_list.selected() {
-                                        folder.folder_filter_rules[index] = folder_filter;
+                                        let old_folder = folder.folder_filter_rules[index].clone();
+                                        folder.edit_filter_by_folder(folder_filter, old_folder);
                                         app.is_edit_folder_filter_form_popup = false;
                                     }
                                 } else {
-                                    folder.folder_filter_rules.push(folder_filter);
+                                    folder.set_up_filter_by_folder(folder_filter);
                                 }
                                 app.file_item_list_filter.clean_inputs();
                                 app.change_mode(AppMode::FolderListFilter(FolderListFilter::List));

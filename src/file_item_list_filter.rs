@@ -171,7 +171,8 @@ impl FileItemListFilter {
                                     FileSystemItem::File_(_) => {}
                                     FileSystemItem::Folder_(folder) => {
                                         if folder.folder_filter_rules.len() > 0 && index < folder.folder_filter_rules.len(){
-                                            folder.folder_filter_rules.remove(index);
+                                            let folder_filter = folder.folder_filter_rules[index].clone();
+                                            folder.delete_filter_by_folder(folder_filter);
                                         }
                                     }
                                 }
