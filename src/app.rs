@@ -9,12 +9,15 @@ use crate::file_list::FileList;
 use crate::tab_c::TabC;
 use crossterm::event::{EnableMouseCapture};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
-use crate::app_mode::{AppMode, FileFolderListFilter, FolderListFilter};
+use crate::app_mode::{AppMode, FileFolderListFilter, FileFolderListPriority, FileListPriority, FolderListFilter, FolderListPriority};
 use crate::error_popup::ErrorPopup;
 use crate::file_filter_form_popup::FileFilterFormPopup;
+use crate::file_folder_priority_form_popup::FileFolderPriorityFormPopup;
 use crate::file_item_list_filter::FileItemListFilter;
 use crate::file_item_list_priority::FileItemListPriority;
+use crate::file_list_priority_form_popup::FileListPriorityFormPopup;
 use crate::folder_filter_form_popup::FolderFilterFormPopup;
+use crate::folder_priority_form_popup::FolderPriorityFormPopup;
 
 
 pub struct App<'a> {
@@ -25,6 +28,9 @@ pub struct App<'a> {
     pub file_item_list_priority: FileItemListPriority,
     pub is_edit_folder_filter_form_popup: bool,
     pub is_edit_file_filter_form_popup: bool,
+    pub is_edit_folder_priority_form_popup: bool,
+    pub is_edit_file_folder_priority_form_popup: bool,
+    pub is_edit_file_priority_form_popup: bool,
     pub error: Option<String>,
     pub exit: bool,
 }
@@ -41,6 +47,9 @@ impl<'a> App<'a> {
             error: None,
             is_edit_folder_filter_form_popup: false,
             is_edit_file_filter_form_popup: false,
+            is_edit_file_folder_priority_form_popup: false,
+            is_edit_file_priority_form_popup: false,
+            is_edit_folder_priority_form_popup: false,
         })
     }
 
@@ -65,19 +74,27 @@ impl<'a> App<'a> {
 
                         AppMode::FolderListFilter(filter) => match filter {
                             FolderListFilter::List => FileItemListFilter::event(self, key.code)?,
-                            FolderListFilter::Form
-                            | FolderListFilter::Regex
-                            | FolderListFilter::Deep
-                            | FolderListFilter::Submit => FolderFilterFormPopup::event(self, key.code)?,
+                            _ => FolderFilterFormPopup::event(self, key.code)?,
                         },
 
                         AppMode::FileFolderListFilter(filter) => match filter {
                             FileFolderListFilter::List => FileItemListFilter::event(self, key.code)?,
-                            FileFolderListFilter::Form
-                            | FileFolderListFilter::Regex
-                            | FileFolderListFilter::Deep
-                            | FileFolderListFilter::Content
-                            | FileFolderListFilter::Submit => FileFilterFormPopup::event(self, key.code)?,
+                            _ => FileFilterFormPopup::event(self, key.code)?,
+                        }
+
+                        AppMode::FolderListPriority(priority) => match priority {
+                            FolderListPriority::List => FileItemListPriority::event(self, key.code)?,
+                            _ => FolderPriorityFormPopup::event(self, key.code)?,
+                        }
+
+                        AppMode::FileFolderListPriority(priority) => match priority {
+                            FileFolderListPriority::List => FileItemListPriority::event(self, key.code)?,
+                            _ => FileFolderPriorityFormPopup::event(self, key.code)?
+                        }
+
+                        AppMode::FileListPriority(priority) => match priority {
+                            FileListPriority::List => FileItemListPriority::event(self, key.code)?,
+                            _ => FileListPriorityFormPopup::event(self, key.code)?
                         }
                         _ => {}
                     }
@@ -105,9 +122,16 @@ impl<'a> App<'a> {
             _ => {}
         };
 
+        match self.mode {
+            AppMode::FolderListFilter(_) => FolderFilterFormPopup::ui(f, self),
+            AppMode::FileFolderListFilter(_) => FileFilterFormPopup::ui(f, self),
+            AppMode::FolderListPriority(_) => FolderPriorityFormPopup::ui(f, self),
+            AppMode::FileFolderListPriority(_) => FileFolderPriorityFormPopup::ui(f, self),
+            AppMode::FileListPriority(_) => FileListPriorityFormPopup::ui(f, self),
+            _ => {}
+        }
+
         ErrorPopup::error_popup(f, self);
-        FolderFilterFormPopup::ui(f, self);
-        FileFilterFormPopup::ui(f, self);
     }
 
     pub fn execute_alternative_screen(&self) -> Result<(), std::io::Error> {

@@ -15,6 +15,10 @@ mod error_popup;
 mod folder_filter_form_popup;
 mod file_filter_form_popup;
 mod app_mode;
+mod folder_priority_form_popup;
+mod widget_gen;
+mod file_folder_priority_form_popup;
+mod file_list_priority_form_popup;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::new()?;

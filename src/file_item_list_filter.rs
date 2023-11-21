@@ -5,7 +5,7 @@ use tui::layout::{Rect, Layout, Direction, Constraint, Alignment};
 use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Block, Borders, BorderType, List, ListItem, ListState};
 use crate::app::{App};
-use crate::app_mode::{AppMode, FileFolderListFilter, FolderListFilter};
+use crate::app_mode::{AppMode, FileFolderListFilter, FolderListFilter, FolderListPriority};
 use crate::file_system::{FileSystemItem};
 
 #[derive(Debug, Clone)]
@@ -109,7 +109,6 @@ impl FileItemListFilter {
             }
         }
     }
-
     pub fn clean_inputs(&mut self) {
         self.new_content.clear();
         self.new_deep.clear();
@@ -146,6 +145,7 @@ impl FileItemListFilter {
                         }
                     }
                     KeyCode::Down => {
+
                         if app.file_item_list_filter.folder_filter_rules.is_empty() {
                             app.file_item_list_filter.folder_filter_list.select(None);
                         } else {
@@ -251,7 +251,7 @@ impl FileItemListFilter {
                                 match item {
                                     FileSystemItem::File_(_) => {}
                                     FileSystemItem::Folder_(folder) => {
-                                        if folder.file_filter_rules.len() > 0 {
+                                        if folder.file_filter_rules.len() > 0 && index < folder.file_filter_rules.len() {
                                             folder.file_filter_rules.remove(index);
                                         }
                                     }
@@ -277,6 +277,7 @@ impl FileItemListFilter {
                         }
                     },
                     KeyCode::BackTab => app.change_mode(AppMode::FolderListFilter(FolderListFilter::List)),
+                    KeyCode::Tab => app.change_mode(AppMode::FolderListPriority(FolderListPriority::List)),
                     _ => {}
                 }
             }

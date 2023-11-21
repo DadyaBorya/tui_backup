@@ -1,10 +1,11 @@
+use crossterm::event::KeyCode;
 use tui::backend::Backend;
 use tui::Frame;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Block, Borders, BorderType, List, ListItem, ListState};
 use crate::app::{App};
-use crate::app_mode::{AppMode, FileFolderListFilter, FolderListFilter};
+use crate::app_mode::{AppMode, FileFolderListFilter, FileFolderListPriority, FileListPriority, FolderListPriority};
 use crate::file_system::FileSystemItem;
 
 #[derive(Debug, Clone)]
@@ -12,6 +13,16 @@ pub struct FolderPriority {
     pub regex: String,
     pub deep: String,
     pub priority: String,
+}
+
+impl FolderPriority {
+    pub fn new(regex: String, deep: String, priority: String) -> Self {
+        FolderPriority {
+            regex,
+            deep,
+            priority,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -22,10 +33,30 @@ pub struct FileFolderPriority {
     pub priority: String,
 }
 
+impl FileFolderPriority {
+    pub fn new(regex: String, deep: String, content: String, priority: String) -> Self {
+        FileFolderPriority {
+            regex,
+            deep,
+            content,
+            priority,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct FilePriority {
-    pub regex: String,
+    pub content: String,
     pub priority: String,
+}
+
+impl FilePriority {
+    pub fn new(content: String, priority: String) -> Self {
+        FilePriority {
+            content,
+            priority,
+        }
+    }
 }
 
 pub struct FileItemListPriority {
@@ -79,13 +110,13 @@ impl FileItemListPriority {
 
                     let file_items: Vec<ListItem> = file.file_priority_rules.to_owned().into_iter()
                         .map(|item| {
-                            ListItem::new(format!("{} ({})", item.regex, item.priority))
+                            ListItem::new(format!("{} ({})", item.content, item.priority))
                         }).collect();
 
                     let file_list = List::new(file_items)
                         .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("File Priority").title_alignment(Alignment::Center))
                         .style(match app.mode {
-                            AppMode::FileFolderListFilter(FileFolderListFilter::List) => Style::default().fg(Color::Yellow),
+                            AppMode::FileListPriority(FileListPriority::List) => Style::default().fg(Color::Yellow),
                             _ => Style::default(),
                         })
                         .highlight_symbol("->")
@@ -112,7 +143,7 @@ impl FileItemListPriority {
                     let folder_list = List::new(folder_items)
                         .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("Folder Priority").title_alignment(Alignment::Center))
                         .style(match app.mode {
-                            AppMode::FolderListFilter(FolderListFilter::List) => Style::default().fg(Color::Yellow),
+                            AppMode::FolderListPriority(FolderListPriority::List) => Style::default().fg(Color::Yellow),
                             _ => Style::default()
                         })
                         .highlight_symbol("->")
@@ -127,7 +158,7 @@ impl FileItemListPriority {
                     let file_list = List::new(file_items)
                         .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("File Priority").title_alignment(Alignment::Center))
                         .style(match app.mode {
-                            AppMode::FileFolderListFilter(FileFolderListFilter::List) => Style::default().fg(Color::Yellow),
+                            AppMode::FileFolderListPriority(FileFolderListPriority::List) => Style::default().fg(Color::Yellow),
                             _ => Style::default(),
                         })
                         .highlight_symbol("->")
@@ -136,5 +167,256 @@ impl FileItemListPriority {
                 }
             }
         }
+    }
+
+    pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
+        match app.mode {
+            AppMode::FolderListPriority(FolderListPriority::List) => {
+                match key_code {
+                    KeyCode::Esc => {
+                        app.change_mode(AppMode::FileList);
+                        app.file_item_list_priority.folder_priority_list.select(None);
+                    }
+                    KeyCode::BackTab => app.change_mode(AppMode::FileFolderListFilter(FileFolderListFilter::List)),
+                    KeyCode::Tab => app.change_mode(AppMode::FileFolderListPriority(FileFolderListPriority::List)),
+                    KeyCode::Up => {
+                        let priority = &mut app.file_item_list_priority;
+
+                        if priority.folder_priority_rules.is_empty() {
+                            priority.folder_priority_list.select(None);
+                        } else {
+                            let selected = match priority.folder_priority_list.selected() {
+                                Some(v) => {
+                                    if v == 0 {
+                                        Some(v)
+                                    } else {
+                                        Some(v - 1)
+                                    }
+                                }
+                                None => {
+                                    Some(0)
+                                }
+                            };
+
+                            priority.folder_priority_list.select(selected);
+                        }
+                    }
+                    KeyCode::Down => {
+                        let priority = &mut app.file_item_list_priority;
+
+                        if priority.folder_priority_rules.is_empty() {
+                            priority.folder_priority_list.select(None);
+                        } else {
+                            let selected = match priority.folder_priority_list.selected() {
+                                Some(v) => {
+                                    if v == priority.folder_priority_rules.len() - 1 {
+                                        Some(v)
+                                    } else {
+                                        Some(v + 1)
+                                    }
+                                }
+                                None => {
+                                    Some(0)
+                                }
+                            };
+
+                            priority.folder_priority_list.select(selected);
+                        }
+                    }
+                    KeyCode::Char('n') => app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form)),
+                    KeyCode::Char('d') => {
+                        if let Some(index) = app.file_item_list_priority.folder_priority_list.selected() {
+                            if let Some(item) = app.file_list.get_current_item() {
+                                if let FileSystemItem::Folder_(folder) = item {
+                                    if folder.folder_priority_rules.len() > 0 && index < folder.folder_priority_rules.len() {
+                                        folder.folder_priority_rules.remove(index);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    KeyCode::Char('e') => {
+                        if let Some(index) = app.file_item_list_priority.folder_priority_list.selected() {
+                            if let Some(item) = app.file_list.get_current_item() {
+                                if let FileSystemItem::Folder_(folder) = item {
+                                    let rule = &folder.folder_priority_rules[index];
+                                    let priority = &mut app.file_item_list_priority;
+                                    priority.new_regex = rule.regex.to_owned();
+                                    priority.new_deep = rule.deep.to_owned();
+                                    priority.new_priority = rule.priority.to_owned();
+                                    app.is_edit_folder_priority_form_popup = true;
+                                    app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form));
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            AppMode::FileFolderListPriority(FileFolderListPriority::List) => {
+                match key_code {
+                    KeyCode::Esc => {
+                        app.change_mode(AppMode::FileList);
+                        app.file_item_list_priority.file_folder_priority_list.select(None);
+                    }
+                    KeyCode::BackTab => app.change_mode(AppMode::FolderListPriority(FolderListPriority::List)),
+                    KeyCode::Up => {
+                        let priority = &mut app.file_item_list_priority;
+
+                        if priority.file_folder_priority_rules.is_empty() {
+                            priority.file_folder_priority_list.select(None);
+                        } else {
+                            let selected = match priority.file_folder_priority_list.selected() {
+                                Some(v) => {
+                                    if v == 0 {
+                                        Some(v)
+                                    } else {
+                                        Some(v - 1)
+                                    }
+                                }
+                                None => {
+                                    Some(0)
+                                }
+                            };
+
+                            priority.file_folder_priority_list.select(selected);
+                        }
+                    }
+                    KeyCode::Down => {
+                        let priority = &mut app.file_item_list_priority;
+
+                        if priority.file_folder_priority_rules.is_empty() {
+                            priority.file_folder_priority_list.select(None);
+                        } else {
+                            let selected = match priority.file_folder_priority_list.selected() {
+                                Some(v) => {
+                                    if v == priority.file_folder_priority_rules.len() - 1 {
+                                        Some(v)
+                                    } else {
+                                        Some(v + 1)
+                                    }
+                                }
+                                None => {
+                                    Some(0)
+                                }
+                            };
+
+                            priority.file_folder_priority_list.select(selected);
+                        }
+                    }
+                    KeyCode::Char('n') => app.change_mode(AppMode::FileFolderListPriority(FileFolderListPriority::Form)),
+                    KeyCode::Char('d') => {
+                        if let Some(index) = app.file_item_list_priority.file_folder_priority_list.selected() {
+                            if let Some(item) = app.file_list.get_current_item() {
+                                if let FileSystemItem::Folder_(folder) = item {
+                                    if folder.file_priority_rules.len() > 0 && index < folder.file_priority_rules.len() {
+                                        folder.file_priority_rules.remove(index);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    KeyCode::Char('e') => {
+                        if let Some(index) = app.file_item_list_priority.file_folder_priority_list.selected() {
+                            if let Some(item) = app.file_list.get_current_item() {
+                                if let FileSystemItem::Folder_(folder) = item {
+                                    let rule = &folder.file_priority_rules[index];
+                                    let priority = &mut app.file_item_list_priority;
+                                    priority.new_regex = rule.regex.to_owned();
+                                    priority.new_deep = rule.deep.to_owned();
+                                    priority.new_priority = rule.priority.to_owned();
+                                    priority.new_content = rule.content.to_owned();
+                                    app.is_edit_file_folder_priority_form_popup = true;
+                                    app.change_mode(AppMode::FileFolderListPriority(FileFolderListPriority::Form));
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            AppMode::FileListPriority(FileListPriority::List) => {
+                match key_code {
+                    KeyCode::Esc => {
+                        app.change_mode(AppMode::FileList);
+                        app.file_item_list_priority.file_priority_list.select(None);
+                    }
+                    KeyCode::Up => {
+                        let priority = &mut app.file_item_list_priority;
+
+                        if priority.file_priority_rules.is_empty() {
+                            priority.file_priority_list.select(None);
+                        } else {
+                            let selected = match priority.file_priority_list.selected() {
+                                Some(v) => {
+                                    if v == 0 {
+                                        Some(v)
+                                    } else {
+                                        Some(v - 1)
+                                    }
+                                }
+                                None => {
+                                    Some(0)
+                                }
+                            };
+
+                            priority.file_priority_list.select(selected);
+                        }
+                    }
+                    KeyCode::Down => {
+                        let priority = &mut app.file_item_list_priority;
+
+                        if priority.file_priority_rules.is_empty() {
+                            priority.file_priority_list.select(None);
+                        } else {
+                            let selected = match priority.file_priority_list.selected() {
+                                Some(v) => {
+                                    if v == priority.file_priority_rules.len() - 1 {
+                                        Some(v)
+                                    } else {
+                                        Some(v + 1)
+                                    }
+                                }
+                                None => {
+                                    Some(0)
+                                }
+                            };
+
+                            priority.file_priority_list.select(selected);
+                        }
+                    }
+                    KeyCode::Char('n') => app.change_mode(AppMode::FileListPriority(FileListPriority::Form)),
+                    KeyCode::Char('d') => {
+                        if let Some(index) = app.file_item_list_priority.file_priority_list.selected() {
+                            if let Some(item) = app.file_list.get_current_item() {
+                                if let FileSystemItem::File_(file) = item {
+                                    if file.file_priority_rules.len() > 0 && index < file.file_priority_rules.len() {
+                                        file.file_priority_rules.remove(index);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    KeyCode::Char('e') => {
+                        if let Some(index) = app.file_item_list_priority.file_priority_list.selected() {
+                            if let Some(item) = app.file_list.get_current_item() {
+                                if let FileSystemItem::File_(file) = item {
+                                    let rule = &file.file_priority_rules[index];
+                                    let priority = &mut app.file_item_list_priority;
+                                    priority.new_priority = rule.priority.to_owned();
+                                    priority.new_content = rule.content.to_owned();
+                                    app.is_edit_file_priority_form_popup = true;
+                                    app.change_mode(AppMode::FileListPriority(FileListPriority::Form));
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            _ => {}
+        }
+
+        Ok(())
     }
 }

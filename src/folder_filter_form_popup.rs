@@ -3,12 +3,13 @@ use tui::backend::Backend;
 use tui::Frame;
 use tui::layout::{Alignment, Constraint, Layout};
 use tui::style::{Color, Style};
-use tui::widgets::{Block, Borders, BorderType, Clear, Paragraph};
+use tui::widgets::{Block, Borders, BorderType, Clear};
 use crate::app::{App};
 use crate::app_mode::{AppMode, FolderListFilter};
 use crate::file_item_list_filter::FolderFilter;
 use crate::file_system::FileSystemItem;
 use crate::popup::Popup;
+use crate::widget_gen::WidgetGen;
 
 #[derive(Debug, Clone)]
 pub struct FolderFilterFormPopup {}
@@ -39,49 +40,35 @@ impl FolderFilterFormPopup {
                 )
                 .split(area);
 
-            let block = Block::default()
-                .title("Regex")
-                .borders(Borders::ALL)
-                .border_type(BorderType::Rounded);
-
-            let style = match app.mode {
-                AppMode::FolderListFilter(FolderListFilter::Regex) => Style::default().fg(Color::Yellow),
-                _ => Style::default()
-            };
-
-            let regex_input = Paragraph::new(app.file_item_list_filter.new_regex.as_str())
-                .block(block)
-                .style(style);
+            let regex_input = WidgetGen::form_input(
+                "Regex",
+                app.file_item_list_filter.new_regex.as_str(),
+                match app.mode {
+                    AppMode::FolderListFilter(FolderListFilter::Regex) => Style::default().fg(Color::Yellow),
+                    _ => Style::default()
+                }
+            );
 
             f.render_widget(regex_input, chunks[0]);
 
-            let style = match app.mode {
-                AppMode::FolderListFilter(FolderListFilter::Deep) => Style::default().fg(Color::Yellow),
-                _ => Style::default()
-            };
-
-            let block = Block::default()
-                .title("Deep")
-                .borders(Borders::ALL)
-                .border_type(BorderType::Rounded);
-
-            let deep_input = Paragraph::new(app.file_item_list_filter.new_deep.as_str())
-                .block(block)
-                .style(style);
+            let deep_input = WidgetGen::form_input(
+                "Deep",
+                app.file_item_list_filter.new_deep.as_str(),
+                match app.mode {
+                    AppMode::FolderListFilter(FolderListFilter::Deep) => Style::default().fg(Color::Yellow),
+                    _ => Style::default()
+                }
+            );
 
             f.render_widget(deep_input, chunks[1]);
 
-            let block = Block::default().borders(Borders::ALL).border_type(BorderType::Rounded);
-
-            let style = match app.mode {
-                AppMode::FolderListFilter(FolderListFilter::Submit) => Style::default().fg(Color::Yellow),
-                _ => Style::default()
-            };
-
-            let submit_btn = Paragraph::new("Submit")
-                .alignment(Alignment::Center)
-                .block(block)
-                .style(style);
+            let submit_btn = WidgetGen::form_button(
+                "Submit",
+                match app.mode {
+                    AppMode::FolderListFilter(FolderListFilter::Submit) => Style::default().fg(Color::Yellow),
+                    _ => Style::default()
+                }
+            );
 
             f.render_widget(submit_btn, chunks[2]);
         }

@@ -21,14 +21,17 @@ impl FileSystem {
         let mut root = Folder::new("/".to_string(), "/".to_string(), false, items, "dir".to_string(), vec![], vec![], vec![], vec![]);
         root.sort_contents();
 
-        Ok(FileSystem {
+        let mut file_system = FileSystem {
             root_dir: root,
             current_path: "/".to_string(),
             rows: vec![],
             history_index: vec![],
-        })
-    }
+        };
 
+        file_system.set_rows_of_current_dir();
+
+        Ok(file_system)
+    }
     pub fn set_rows_of_current_dir(&mut self) {
         let current_dir = self.root_dir.find_folder_mut(&self.current_path.clone());
 
@@ -62,7 +65,6 @@ impl FileSystem {
             self.rows = items_string
         }
     }
-
     pub fn string_items(name: String, selected: bool, extension: String) -> Vec<String> {
         let selected = match selected {
             true => {
@@ -75,7 +77,6 @@ impl FileSystem {
 
         vec![selected.to_string(), name, extension]
     }
-
     pub fn select(&mut self, index: usize) {
         let current_path = &self.current_path.clone();
 
@@ -87,7 +88,6 @@ impl FileSystem {
             }
         }
     }
-
     pub fn select_item(item: &mut FileSystemItem) {
         match item {
             FileSystemItem::File_(file) => {
@@ -101,8 +101,8 @@ impl FileSystem {
     pub fn select_all(&mut self) {
         let current_path = &self.current_path.clone();
 
-        if let Some(dir) = self.root_dir.find_folder_mut(current_path) {
-            for item in dir.contents.iter_mut() {
+        if let Some(folder) = self.root_dir.find_folder_mut(current_path) {
+            for item in folder.contents.iter_mut() {
                 FileSystem::select_item(item);
             }
         }
@@ -256,6 +256,27 @@ impl Folder {
         }
 
         self.contents = contents;
+    }
+
+    pub fn select_deep_all(&mut self, bool: bool) {
+        let res = self.add_children_to_folder();
+
+        if res.is_err() {
+            return;
+        }
+
+        self.selected = bool;
+
+        for item in self.contents.iter_mut() {
+            match item {
+                FileSystemItem::File_(file) => {
+                    file.selected = bool;
+                }
+                FileSystemItem::Folder_(folder) => {
+                    folder.select_deep_all(bool);
+                }
+            }
+        }
     }
 }
 

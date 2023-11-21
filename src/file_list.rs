@@ -7,7 +7,7 @@ use tui::layout::{Alignment, Constraint, Rect, Layout, Direction};
 use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Block, Borders, BorderType, Cell, Row, Table, TableState};
 use crate::app::{App};
-use crate::app_mode::{AppMode, FileFolderListFilter, FolderListFilter};
+use crate::app_mode::{AppMode, FileFolderListFilter, FileFolderListPriority, FileListPriority, FolderListFilter, FolderListPriority};
 use crate::file_item_list_filter::FileItemListFilter;
 use crate::file_item_list_priority::FileItemListPriority;
 use crate::file_system::{FileSystem, FileSystemItem};
@@ -64,6 +64,7 @@ impl FileList {
         if let Some(index) = self.table.selected() {
             let new_path = self.open_folder(index)?;
             self.root.current_path = new_path;
+            self.root.set_rows_of_current_dir();
         }
         Ok(())
     }
@@ -90,6 +91,7 @@ impl FileList {
     pub fn close(&mut self) {
         if self.root.current_path == "/" {
             self.root.history_index.clear();
+            self.root.set_rows_of_current_dir();
             return;
         }
         let paths: Vec<&str> = self.root.current_path.split('/').filter(|path| !path.is_empty()).collect();
@@ -108,14 +110,28 @@ impl FileList {
         } else {
             self.set_index_table(index);
         }
+
+        self.root.set_rows_of_current_dir();
     }
     pub fn select(&mut self) {
         if let Some(index) = self.table.selected() {
             self.root.select(index);
+            self.root.set_rows_of_current_dir();
         }
     }
     pub fn select_all(&mut self) {
         self.root.select_all();
+        self.root.set_rows_of_current_dir();
+    }
+
+    pub fn select_deep_all(&mut self) {
+        if let Some(item) = self.get_current_item() {
+            if let FileSystemItem::Folder_(folder) = item {
+                let bool = !folder.selected;
+                folder.select_deep_all(bool);
+                self.root.set_rows_of_current_dir();
+            }
+        }
     }
     pub fn init_index_table(&mut self) {
         let selected = self.table.selected();
@@ -173,6 +189,9 @@ impl FileList {
             KeyCode::Char('a') => {
                 app.file_list.select_all();
             }
+            KeyCode::Char('s') => {
+                app.file_list.select_deep_all();
+            }
             KeyCode::Char('f') => {
                 if let Some(item) = app.file_list.get_current_item() {
                     if let FileSystemItem::Folder_(_) = item {
@@ -184,6 +203,22 @@ impl FileList {
                 if let Some(item) = app.file_list.get_current_item() {
                     if let FileSystemItem::Folder_(_) = item {
                         app.change_mode(AppMode::FileFolderListFilter(FileFolderListFilter::List));
+                    }
+                }
+            }
+            KeyCode::Char('p') => {
+                if let Some(item) = app.file_list.get_current_item() {
+                    if let FileSystemItem::Folder_(_) = item {
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::List));
+                    } else if let FileSystemItem::File_(_) = item {
+                        app.change_mode(AppMode::FileListPriority(FileListPriority::List));
+                    }
+                }
+            }
+            KeyCode::Char('P') => {
+                if let Some(item) = app.file_list.get_current_item() {
+                    if let FileSystemItem::Folder_(_) = item {
+                        app.change_mode(AppMode::FileFolderListPriority(FileFolderListPriority::List));
                     }
                 }
             }
@@ -224,8 +259,6 @@ impl FileList {
             .style(normal_style)
             .height(1)
             .bottom_margin(1);
-
-        app.file_list.root.set_rows_of_current_dir();
 
         let rows = app.file_list.root.rows.iter().map(|item| {
             let height = item.0
