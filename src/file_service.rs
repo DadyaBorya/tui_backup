@@ -37,6 +37,11 @@ pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
     return get_system_items_from_path("/".to_string());
 }
 
+pub fn get_file_content(path: &String) -> Result<String, std::io::Error> {
+    fs::read_to_string(path)
+
+}
+
 pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, std::io::Error> {
     let entries = fs::read_dir(path)?;
 
@@ -78,8 +83,8 @@ pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, s
                     false,
                     // size: get_item_size(&path_string),
                     extension,
-                    vec![]
-                    ))
+                    vec![],
+                ))
             }
         };
         system_items.push(item);

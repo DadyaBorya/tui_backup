@@ -9,6 +9,7 @@ use crate::file_list::FileList;
 use crate::tab_c::TabC;
 use crossterm::event::{EnableMouseCapture};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
+use tui::widgets::{Block, Borders, BorderType, Paragraph};
 use crate::app_mode::{AppMode, FileFolderListFilter, FileFolderListPriority, FileListPriority, FolderListFilter, FolderListPriority};
 use crate::error_popup::ErrorPopup;
 use crate::file_filter_form_popup::FileFilterFormPopup;
@@ -18,6 +19,7 @@ use crate::file_item_list_priority::FileItemListPriority;
 use crate::file_list_priority_form_popup::FileListPriorityFormPopup;
 use crate::folder_filter_form_popup::FolderFilterFormPopup;
 use crate::folder_priority_form_popup::FolderPriorityFormPopup;
+use crate::help_block::HelpBlock;
 
 
 pub struct App<'a> {
@@ -111,7 +113,7 @@ impl<'a> App<'a> {
             .direction(Direction::Vertical)
             .constraints(
                 [
-                    Constraint::Length(3), Constraint::Min(0)
+                    Constraint::Length(3), Constraint::Min(0), Constraint::Length(3)
                 ].as_ref()
             ).split(size);
 
@@ -132,6 +134,8 @@ impl<'a> App<'a> {
         }
 
         ErrorPopup::error_popup(f, self);
+
+        HelpBlock::ui(f, self, &chunks);
     }
 
     pub fn execute_alternative_screen(&self) -> Result<(), std::io::Error> {

@@ -29,7 +29,7 @@ impl ErrorPopup {
                 .direction(Direction::Vertical)
                 .constraints(
                     [
-                        Constraint::Length(2), Constraint::Length(2)
+                        Constraint::Length(2)
                     ].as_ref()
                 ).split(area);
 
@@ -45,11 +45,6 @@ impl ErrorPopup {
                 .alignment(Alignment::Center);
 
             f.render_widget(text, chunks[0]);
-
-            let keys_desc = Paragraph::new("Press (ESC) for close")
-                .alignment(Alignment::Center);
-
-            f.render_widget(keys_desc, chunks[1]);
         }
     }
 

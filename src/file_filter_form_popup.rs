@@ -170,7 +170,7 @@ impl FileFilterFormPopup {
                                         app.is_edit_file_filter_form_popup = false;
                                     }
                                 } else {
-                                    folder.file_filter_rules.push(file_filter);
+                                    folder.set_up_filter_by_file_folder(file_filter);
                                 }
                                 app.file_item_list_filter.clean_inputs();
                                 app.change_mode(AppMode::FileFolderListFilter(FileFolderListFilter::List));

@@ -136,18 +136,52 @@ impl Folder {
     pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, extension: String, file_filter_rules: Vec<FileFolderFilter>, folder_filter_rules: Vec<FolderFilter>, file_priority_rules: Vec<FileFolderPriority>, folder_priority_rules: Vec<FolderPriority>) -> Self {
         Folder { name, path, selected, contents, extension, folder_filter_rules, file_filter_rules, file_priority_rules, folder_priority_rules }
     }
-    pub fn set_up_filter_by_folder(&mut self, folder_filter: FolderFilter) {
-        if let Ok(deep) = folder_filter.deep.parse::<i32>() {
+
+    pub fn set_up_filter_by_file_folder(&mut self, filter: FileFolderFilter) {
+        if let Ok(deep) = filter.deep.parse::<i32>() {
             if deep > -1 {
                 if self.add_children_to_folder().is_ok() {
-                    self.folder_filter_rules.push(folder_filter.clone());
+                    self.file_filter_rules.push(filter.clone());
+
+                    self.contents
+                        .iter_mut()
+                        .filter_map(|item| {
+                            match item {
+                                FileSystemItem::Folder_(folder) => {
+                                    Some(folder.set_up_filter_by_file_folder(
+                                        FileFolderFilter::new(filter.regex.to_owned(), filter.content.to_owned(), (deep - 1).to_string())
+                                    ))
+                                }
+                                _ => { None }
+                            }
+                        })
+                        .for_each(|_| {})
+                }
+            }
+        }
+    }
+
+    pub fn edit_filter_by_file_folder(&mut self, new_filter: FileFolderFilter, old_filter: FileFolderFilter) {
+        let deep = new_filter.deep.clone().parse::<i32>();
+        let old_deep = old_filter.deep.clone().parse::<i32>();
+
+        if let (Ok(deep), Ok(old_deep)) = (deep, old_deep) {
+
+        }
+    }
+
+    pub fn set_up_filter_by_folder(&mut self, filter: FolderFilter) {
+        if let Ok(deep) = filter.deep.parse::<i32>() {
+            if deep > -1 {
+                if self.add_children_to_folder().is_ok() {
+                    self.folder_filter_rules.push(filter.clone());
 
                     self.contents
                         .iter_mut()
                         .filter_map(|item| {
                             if let FileSystemItem::Folder_(folder) = item {
                                 Some(folder.set_up_filter_by_folder(
-                                    FolderFilter::new(folder_filter.regex.to_owned(), (deep - 1).to_string()),
+                                    FolderFilter::new(filter.regex.to_owned(), (deep - 1).to_string()),
                                 ))
                             } else {
                                 None
@@ -158,13 +192,13 @@ impl Folder {
             }
         }
     }
-    pub fn delete_filter_by_folder(&mut self, old_folder_filter: FolderFilter) {
-        if let Ok(old_deep) = old_folder_filter.deep.parse::<i32>() {
+    pub fn delete_filter_by_folder(&mut self, old_filter: FolderFilter) {
+        if let Ok(old_deep) = old_filter.deep.parse::<i32>() {
             if old_deep > -1 {
                 if let Some(index) = self
                     .folder_filter_rules
                     .iter()
-                    .position(|folder| folder.deep == old_folder_filter.deep && folder.regex == old_folder_filter.regex)
+                    .position(|folder| folder.deep == old_filter.deep && folder.regex == old_filter.regex)
                 {
                     self.folder_filter_rules.remove(index);
                 }
@@ -174,7 +208,7 @@ impl Folder {
                     .filter_map(|item| {
                         if let FileSystemItem::Folder_(folder) = item {
                             Some(folder.delete_filter_by_folder(FolderFilter::new(
-                                old_folder_filter.regex.to_owned(),
+                                old_filter.regex.to_owned(),
                                 (old_deep - 1).to_string(),
                             )))
                         } else {
@@ -185,9 +219,9 @@ impl Folder {
             }
         }
     }
-    pub fn edit_filter_by_folder(&mut self, new_folder_filter: FolderFilter, old_folder_filter: FolderFilter) {
-        let deep = new_folder_filter.deep.clone().parse::<i32>();
-        let old_deep = old_folder_filter.deep.clone().parse::<i32>();
+    pub fn edit_filter_by_folder(&mut self, new_filter: FolderFilter, old_filter: FolderFilter) {
+        let deep = new_filter.deep.clone().parse::<i32>();
+        let old_deep = old_filter.deep.clone().parse::<i32>();
 
         if let (Ok(deep), Ok(old_deep)) = (deep, old_deep) {
             if old_deep <= -1 && deep <= -1 {
@@ -195,7 +229,7 @@ impl Folder {
             }
 
             if let Ok(_) = self.add_children_to_folder() {
-                let index = self.folder_filter_rules.iter().position(|folder| folder.deep == old_folder_filter.deep && folder.regex == old_folder_filter.regex);
+                let index = self.folder_filter_rules.iter().position(|folder| folder.deep == old_filter.deep && folder.regex == old_filter.regex);
 
                 if deep <= -1 {
                     if let Some(index) = index {
@@ -203,17 +237,17 @@ impl Folder {
                     }
                 } else {
                     if let Some(index) = index {
-                        self.folder_filter_rules[index] = new_folder_filter.clone();
+                        self.folder_filter_rules[index] = new_filter.clone();
                     } else {
-                        self.folder_filter_rules.push(new_folder_filter.clone());
+                        self.folder_filter_rules.push(new_filter.clone());
                     }
                 }
 
                 for item in &mut self.contents {
                     if let FileSystemItem::Folder_(folder) = item {
                         folder.edit_filter_by_folder(
-                            FolderFilter::new(new_folder_filter.regex.to_owned(), (deep - 1).to_string()),
-                            FolderFilter::new(old_folder_filter.regex.to_owned(), (old_deep - 1).to_string()),
+                            FolderFilter::new(new_filter.regex.to_owned(), (deep - 1).to_string()),
+                            FolderFilter::new(old_filter.regex.to_owned(), (old_deep - 1).to_string()),
                         );
                     }
                 }
