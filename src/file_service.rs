@@ -8,12 +8,9 @@ use crate::file_system::{File, FileSystemItem, Folder};
 #[cfg(target_os = "windows")]
 pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
     let mut system_items = Vec::new();
-
     for drive_value in b'A'..=b'Z' {
         let drive_letter = char::from(drive_value);
         let path = format!("{}:/", drive_letter);
-
-
         match PathBuf::from(&path).is_dir() {
             true => {
                 let item = FileSystemItem::Folder_(Folder::new(

@@ -61,7 +61,7 @@ impl<'a> App<'a> {
     pub fn run_app<B: Backend>(&mut self, terminal: &mut Terminal<B>) -> Result<(), std::io::Error> {
         terminal.draw(|f| self.ui(f))?;
         self.event()?;
-        Ok(())
+        Ok(()) 
     }
 
     pub fn event(&mut self) -> Result<(), std::io::Error> {

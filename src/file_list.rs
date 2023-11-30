@@ -70,7 +70,7 @@ impl FileList {
     }
     fn open_folder(&mut self, index: usize) -> Result<String, std::io::Error> {
         if let Some(current_folder) = self.root.get_current_folder() {
-            if let Some(folder) = current_folder.find_folder_mut_in_content(index) {
+            if let Some(folder) = qcurrent_folder.find_folder_mut_in_content(index) {
                 folder.add_children_to_folder()?;
 
                 let current_path = folder.path.to_owned();
