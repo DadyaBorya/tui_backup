@@ -175,11 +175,12 @@ impl FolderPriorityFormPopup {
                             if let FileSystemItem::Folder_(folder) = item {
                                 if app.is_edit_folder_priority_form_popup {
                                     if let Some(index) = app.file_item_list_priority.folder_priority_list.selected() {
-                                        folder.folder_priority_rules[index] = folder_priority;
+                                        let old_priority = folder.folder_priority_rules[index].clone();
+                                        folder.edit_priority_by_folder(folder_priority, old_priority);
                                         app.is_edit_folder_priority_form_popup = false;
                                     }
                                 } else {
-                                    folder.folder_priority_rules.push(folder_priority);
+                                    folder.set_up_priority_by_folder(folder_priority)
                                 }
 
                                 app.file_item_list_priority.clean_inputs();

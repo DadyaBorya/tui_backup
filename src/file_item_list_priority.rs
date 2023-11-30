@@ -110,7 +110,7 @@ impl FileItemListPriority {
 
                     let file_items: Vec<ListItem> = file.file_priority_rules.to_owned().into_iter()
                         .map(|item| {
-                            ListItem::new(format!("{} ({})", item.content, item.priority))
+                            ListItem::new(format!("priority: {}\ncontent: {}", item.content, item.priority))
                         }).collect();
 
                     let file_list = List::new(file_items)
@@ -137,7 +137,7 @@ impl FileItemListPriority {
 
                     let folder_items: Vec<ListItem> = folder.folder_priority_rules.to_owned().into_iter()
                         .map(|item| {
-                            ListItem::new(format!("{} ({} -> {})", item.regex, item.deep, item.priority))
+                            ListItem::new(format!("regex: {}; deep: {}; priority: {}", item.regex, item.deep, item.priority))
                         }).collect();
 
                     let folder_list = List::new(folder_items)
@@ -152,7 +152,7 @@ impl FileItemListPriority {
 
                     let file_items: Vec<ListItem> = folder.file_priority_rules.to_owned().into_iter()
                         .map(|item| {
-                            ListItem::new(format!("{} ({} -> {})\n{}", item.regex, item.deep, item.priority, item.content))
+                            ListItem::new(format!("regex: {}; deep: {}; priority: {}\ncontent: {}", item.regex, item.deep, item.priority, item.content))
                         }).collect();
 
                     let file_list = List::new(file_items)
@@ -229,7 +229,8 @@ impl FileItemListPriority {
                             if let Some(item) = app.file_list.get_current_item() {
                                 if let FileSystemItem::Folder_(folder) = item {
                                     if folder.folder_priority_rules.len() > 0 && index < folder.folder_priority_rules.len() {
-                                        folder.folder_priority_rules.remove(index);
+                                        let folder_priority = folder.folder_priority_rules[index].to_owned();
+                                        folder.delete_priority_by_folder(folder_priority);
                                     }
                                 }
                             }
@@ -310,7 +311,8 @@ impl FileItemListPriority {
                             if let Some(item) = app.file_list.get_current_item() {
                                 if let FileSystemItem::Folder_(folder) = item {
                                     if folder.file_priority_rules.len() > 0 && index < folder.file_priority_rules.len() {
-                                        folder.file_priority_rules.remove(index);
+                                        let folder_priority = folder.file_priority_rules[index].to_owned();
+                                        folder.delete_priority_by_file_folder(folder_priority);
                                     }
                                 }
                             }
@@ -391,6 +393,7 @@ impl FileItemListPriority {
                             if let Some(item) = app.file_list.get_current_item() {
                                 if let FileSystemItem::File_(file) = item {
                                     if file.file_priority_rules.len() > 0 && index < file.file_priority_rules.len() {
+
                                         file.file_priority_rules.remove(index);
                                     }
                                 }

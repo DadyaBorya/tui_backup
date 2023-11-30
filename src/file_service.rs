@@ -1,4 +1,6 @@
 use std::fs;
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use crate::file_system::{File, FileSystemItem, Folder};
@@ -39,7 +41,15 @@ pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
 
 pub fn get_file_content(path: &String) -> Result<String, std::io::Error> {
     fs::read_to_string(path)
+}
 
+pub fn log(data: &str) {
+    let mut file = OpenOptions::new()
+        .append(true)
+        .open("log.txt")
+        .unwrap();
+
+    file.write_all(data.as_bytes()).unwrap();
 }
 
 pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, std::io::Error> {

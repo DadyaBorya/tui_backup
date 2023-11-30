@@ -166,7 +166,8 @@ impl FileFilterFormPopup {
                             if let FileSystemItem::Folder_(folder) = item {
                                 if app.is_edit_file_filter_form_popup {
                                     if let Some(index) = app.file_item_list_filter.file_filter_list.selected() {
-                                        folder.file_filter_rules[index] = file_filter;
+                                        let old_folder = folder.file_filter_rules[index].clone();
+                                        folder.edit_filter_by_file_folder(file_filter, old_folder);
                                         app.is_edit_file_filter_form_popup = false;
                                     }
                                 } else {

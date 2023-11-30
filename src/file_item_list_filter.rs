@@ -79,7 +79,7 @@ impl FileItemListFilter {
 
                 let folder_items: Vec<ListItem> = folder.folder_filter_rules.to_owned().into_iter()
                     .map(|item| {
-                        ListItem::new(format!("{} ({})", item.regex, item.deep))
+                        ListItem::new(format!("regex: {}; deep: {}", item.regex, item.deep))
                     }).collect();
 
                 let folder_list = List::new(folder_items)
@@ -94,7 +94,7 @@ impl FileItemListFilter {
 
                 let file_items: Vec<ListItem> = folder.file_filter_rules.to_owned().into_iter()
                     .map(|item| {
-                        ListItem::new(format!("{} ({})\n{}", item.regex, item.deep, item.content))
+                        ListItem::new(format!("regex: {}; deep: {}\ncontent: {}", item.regex, item.deep, item.content))
                     }).collect();
 
                 let file_list = List::new(file_items)
@@ -253,7 +253,8 @@ impl FileItemListFilter {
                                     FileSystemItem::File_(_) => {}
                                     FileSystemItem::Folder_(folder) => {
                                         if folder.file_filter_rules.len() > 0 && index < folder.file_filter_rules.len() {
-                                            folder.file_filter_rules.remove(index);
+                                            let folder_filter = folder.file_filter_rules[index].clone();
+                                            folder.delete_filter_by_file_folder(folder_filter);
                                         }
                                     }
                                 }

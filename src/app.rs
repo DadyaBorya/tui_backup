@@ -9,7 +9,6 @@ use crate::file_list::FileList;
 use crate::tab_c::TabC;
 use crossterm::event::{EnableMouseCapture};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
-use tui::widgets::{Block, Borders, BorderType, Paragraph};
 use crate::app_mode::{AppMode, FileFolderListFilter, FileFolderListPriority, FileListPriority, FolderListFilter, FolderListPriority};
 use crate::error_popup::ErrorPopup;
 use crate::file_filter_form_popup::FileFilterFormPopup;
@@ -98,7 +97,6 @@ impl<'a> App<'a> {
                             FileListPriority::List => FileItemListPriority::event(self, key.code)?,
                             _ => FileListPriorityFormPopup::event(self, key.code)?
                         }
-                        _ => {}
                     }
                 }
             }
