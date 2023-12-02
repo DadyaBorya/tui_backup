@@ -4,7 +4,7 @@ use tui::Frame;
 use tui::layout::{Alignment, Constraint, Direction, Layout};
 use tui::style::{Color, Style};
 use tui::widgets::{Block, Borders, BorderType, Clear, Paragraph};
-use crate::app::{App};
+use crate::app::App;
 use crate::app_mode::AppMode;
 use crate::popup::Popup;
 

@@ -1,11 +1,13 @@
 use crate::file_service;
 use std::cmp::Ordering;
+use std::collections::HashSet;
 #[cfg(target_os = "linux")]
 use std::os::unix::fs::PermissionsExt;
 use regex::Regex;
 use tui::style::Color;
-use crate::file_item_list_filter::{FileFolderFilter, FolderFilter};
-use crate::file_item_list_priority::{FileFolderPriority, FilePriority, FolderPriority};
+use crate::file_item_list_filter::{ FileFolderFilter, FolderFilter };
+use crate::file_item_list_priority::{ FileFolderPriority, FilePriority, FolderPriority };
+use rayon::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct FileSystem {
@@ -18,7 +20,17 @@ pub struct FileSystem {
 impl FileSystem {
     pub fn new() -> Result<Self, std::io::Error> {
         let items = file_service::get_root_system_items()?;
-        let mut root = Folder::new("/".to_string(), "/".to_string(), false, items, "dir".to_string(), vec![], vec![], vec![], vec![]);
+        let mut root = Folder::new(
+            "/".to_string(),
+            "/".to_string(),
+            false,
+            items,
+            "dir".to_string(),
+            vec![],
+            vec![],
+            vec![],
+            vec![]
+        );
         root.sort_contents();
 
         let mut file_system = FileSystem {
@@ -36,7 +48,6 @@ impl FileSystem {
         let current_dir = self.root_dir.find_folder_mut(&self.current_path.clone());
 
         let mut items_string = vec![];
-
         if let Some(dir) = current_dir {
             for content in dir.contents.iter() {
                 let color;
@@ -46,7 +57,7 @@ impl FileSystem {
                         FileSystem::string_items(
                             item.name.to_owned(),
                             item.selected,
-                            item.extension.to_owned(),
+                            item.extension.to_owned()
                         )
                     }
                     FileSystemItem::Folder_(item) => {
@@ -54,25 +65,21 @@ impl FileSystem {
                         FileSystem::string_items(
                             item.name.to_owned(),
                             item.selected,
-                            item.extension.to_owned(),
+                            item.extension.to_owned()
                         )
                     }
                 };
                 items_string.push((item, color));
             }
-            self.rows = items_string
+            self.rows = items_string;
         } else {
-            self.rows = items_string
+            self.rows = items_string;
         }
     }
     pub fn string_items(name: String, selected: bool, extension: String) -> Vec<String> {
         let selected = match selected {
-            true => {
-                "[x]"
-            }
-            false => {
-                "[ ]"
-            }
+            true => { "[x]" }
+            false => { "[ ]" }
         };
 
         vec![selected.to_string(), name, extension]
@@ -132,8 +139,28 @@ pub struct Folder {
 }
 
 impl Folder {
-    pub fn new(name: String, path: String, selected: bool, contents: Vec<FileSystemItem>, extension: String, file_filter_rules: Vec<FileFolderFilter>, folder_filter_rules: Vec<FolderFilter>, file_priority_rules: Vec<FileFolderPriority>, folder_priority_rules: Vec<FolderPriority>) -> Self {
-        Folder { name, path, selected, contents, extension, folder_filter_rules, file_filter_rules, file_priority_rules, folder_priority_rules }
+    pub fn new(
+        name: String,
+        path: String,
+        selected: bool,
+        contents: Vec<FileSystemItem>,
+        extension: String,
+        file_filter_rules: Vec<FileFolderFilter>,
+        folder_filter_rules: Vec<FolderFilter>,
+        file_priority_rules: Vec<FileFolderPriority>,
+        folder_priority_rules: Vec<FolderPriority>
+    ) -> Self {
+        Folder {
+            name,
+            path,
+            selected,
+            contents,
+            extension,
+            folder_filter_rules,
+            file_filter_rules,
+            file_priority_rules,
+            folder_priority_rules,
+        }
     }
 
     pub fn set_up_priority_by_file_folder(&mut self, priority: FileFolderPriority) {
@@ -147,9 +174,16 @@ impl Folder {
                         .filter_map(|item| {
                             match item {
                                 FileSystemItem::Folder_(folder) => {
-                                    Some(folder.set_up_priority_by_file_folder(
-                                        FileFolderPriority::new(priority.regex.to_owned(), (deep - 1).to_string(), priority.content.to_owned(), priority.priority.to_owned())
-                                    ))
+                                    Some(
+                                        folder.set_up_priority_by_file_folder(
+                                            FileFolderPriority::new(
+                                                priority.regex.to_owned(),
+                                                (deep - 1).to_string(),
+                                                priority.content.to_owned(),
+                                                priority.priority.to_owned()
+                                            )
+                                        )
+                                    )
                                 }
                                 _ => { None }
                             }
@@ -159,7 +193,11 @@ impl Folder {
             }
         }
     }
-    pub fn edit_priority_by_file_folder(&mut self, new_priority: FileFolderPriority, old_priority: FileFolderPriority) {
+    pub fn edit_priority_by_file_folder(
+        &mut self,
+        new_priority: FileFolderPriority,
+        old_priority: FileFolderPriority
+    ) {
         let deep = new_priority.deep.clone().parse::<i32>();
         let old_deep = old_priority.deep.clone().parse::<i32>();
 
@@ -169,9 +207,14 @@ impl Folder {
             }
 
             if let Ok(_) = self.add_children_to_folder() {
-                let index = self.file_priority_rules.iter().position(|folder| {
-                    folder.deep == old_priority.deep && folder.regex == old_priority.regex && folder.priority == old_priority.priority && folder.content == old_priority.content
-                });
+                let index = self.file_priority_rules
+                    .iter()
+                    .position(|folder| {
+                        folder.deep == old_priority.deep &&
+                            folder.regex == old_priority.regex &&
+                            folder.priority == old_priority.priority &&
+                            folder.content == old_priority.content
+                    });
 
                 if deep <= -1 {
                     if let Some(index) = index {
@@ -188,8 +231,18 @@ impl Folder {
                 for item in &mut self.contents {
                     if let FileSystemItem::Folder_(folder) = item {
                         folder.edit_priority_by_file_folder(
-                            FileFolderPriority::new(new_priority.regex.to_owned(), (deep - 1).to_string(), new_priority.content.to_owned(), new_priority.priority.to_owned()),
-                            FileFolderPriority::new(old_priority.regex.to_owned(), (old_deep - 1).to_string(), old_priority.content.to_owned(), old_priority.priority.to_owned())
+                            FileFolderPriority::new(
+                                new_priority.regex.to_owned(),
+                                (deep - 1).to_string(),
+                                new_priority.content.to_owned(),
+                                new_priority.priority.to_owned()
+                            ),
+                            FileFolderPriority::new(
+                                old_priority.regex.to_owned(),
+                                (old_deep - 1).to_string(),
+                                old_priority.content.to_owned(),
+                                old_priority.priority.to_owned()
+                            )
                         );
                     }
                 }
@@ -199,10 +252,16 @@ impl Folder {
     pub fn delete_priority_by_file_folder(&mut self, old_priority: FileFolderPriority) {
         if let Ok(old_deep) = old_priority.deep.parse::<i32>() {
             if old_deep > -1 {
-                if let Some(index) = self
-                    .file_priority_rules
-                    .iter()
-                    .position(|folder| folder.deep == old_priority.deep && folder.regex == old_priority.regex && folder.priority == old_priority.priority && folder.content == old_priority.content)
+                if
+                    let Some(index) = self.file_priority_rules
+                        .iter()
+                        .position(
+                            |folder|
+                                folder.deep == old_priority.deep &&
+                                folder.regex == old_priority.regex &&
+                                folder.priority == old_priority.priority &&
+                                folder.content == old_priority.content
+                        )
                 {
                     self.file_priority_rules.remove(index);
                 }
@@ -211,12 +270,16 @@ impl Folder {
                     .iter_mut()
                     .filter_map(|item| {
                         if let FileSystemItem::Folder_(folder) = item {
-                            Some(folder.delete_priority_by_file_folder(FileFolderPriority::new(
-                                old_priority.regex.to_owned(),
-                                (old_deep - 1).to_string(),
-                                old_priority.content.to_owned(),
-                                old_priority.priority.to_owned()
-                            )))
+                            Some(
+                                folder.delete_priority_by_file_folder(
+                                    FileFolderPriority::new(
+                                        old_priority.regex.to_owned(),
+                                        (old_deep - 1).to_string(),
+                                        old_priority.content.to_owned(),
+                                        old_priority.priority.to_owned()
+                                    )
+                                )
+                            )
                         } else {
                             None
                         }
@@ -237,9 +300,15 @@ impl Folder {
                         .filter_map(|item| {
                             match item {
                                 FileSystemItem::Folder_(folder) => {
-                                    Some(folder.set_up_priority_by_folder(
-                                        FolderPriority::new(priority.regex.to_owned(), (deep - 1).to_string(), priority.priority.to_owned())
-                                    ))
+                                    Some(
+                                        folder.set_up_priority_by_folder(
+                                            FolderPriority::new(
+                                                priority.regex.to_owned(),
+                                                (deep - 1).to_string(),
+                                                priority.priority.to_owned()
+                                            )
+                                        )
+                                    )
                                 }
                                 _ => { None }
                             }
@@ -249,7 +318,11 @@ impl Folder {
             }
         }
     }
-    pub fn edit_priority_by_folder(&mut self, new_priority: FolderPriority, old_priority: FolderPriority) {
+    pub fn edit_priority_by_folder(
+        &mut self,
+        new_priority: FolderPriority,
+        old_priority: FolderPriority
+    ) {
         let deep = new_priority.deep.clone().parse::<i32>();
         let old_deep = old_priority.deep.clone().parse::<i32>();
 
@@ -259,7 +332,14 @@ impl Folder {
             }
 
             if let Ok(_) = self.add_children_to_folder() {
-                let index = self.folder_priority_rules.iter().position(|folder| folder.deep == old_priority.deep && folder.regex == old_priority.regex && folder.priority == old_priority.priority);
+                let index = self.folder_priority_rules
+                    .iter()
+                    .position(
+                        |folder|
+                            folder.deep == old_priority.deep &&
+                            folder.regex == old_priority.regex &&
+                            folder.priority == old_priority.priority
+                    );
 
                 if deep <= -1 {
                     if let Some(index) = index {
@@ -276,8 +356,16 @@ impl Folder {
                 for item in &mut self.contents {
                     if let FileSystemItem::Folder_(folder) = item {
                         folder.edit_priority_by_folder(
-                            FolderPriority::new(new_priority.regex.to_owned(), (deep - 1).to_string(), new_priority.priority.to_owned()),
-                            FolderPriority::new(old_priority.regex.to_owned(), (old_deep - 1).to_string(), old_priority.priority.to_owned()),
+                            FolderPriority::new(
+                                new_priority.regex.to_owned(),
+                                (deep - 1).to_string(),
+                                new_priority.priority.to_owned()
+                            ),
+                            FolderPriority::new(
+                                old_priority.regex.to_owned(),
+                                (old_deep - 1).to_string(),
+                                old_priority.priority.to_owned()
+                            )
                         );
                     }
                 }
@@ -287,10 +375,15 @@ impl Folder {
     pub fn delete_priority_by_folder(&mut self, old_priority: FolderPriority) {
         if let Ok(old_deep) = old_priority.deep.parse::<i32>() {
             if old_deep > -1 {
-                if let Some(index) = self
-                    .folder_priority_rules
-                    .iter()
-                    .position(|folder| folder.deep == old_priority.deep && folder.regex == old_priority.regex && folder.priority == old_priority.priority)
+                if
+                    let Some(index) = self.folder_priority_rules
+                        .iter()
+                        .position(
+                            |folder|
+                                folder.deep == old_priority.deep &&
+                                folder.regex == old_priority.regex &&
+                                folder.priority == old_priority.priority
+                        )
                 {
                     self.folder_priority_rules.remove(index);
                 }
@@ -299,11 +392,15 @@ impl Folder {
                     .iter_mut()
                     .filter_map(|item| {
                         if let FileSystemItem::Folder_(folder) = item {
-                            Some(folder.delete_priority_by_folder(FolderPriority::new(
-                                old_priority.regex.to_owned(),
-                                (old_deep - 1).to_string(),
-                                old_priority.priority.to_owned()
-                            )))
+                            Some(
+                                folder.delete_priority_by_folder(
+                                    FolderPriority::new(
+                                        old_priority.regex.to_owned(),
+                                        (old_deep - 1).to_string(),
+                                        old_priority.priority.to_owned()
+                                    )
+                                )
+                            )
                         } else {
                             None
                         }
@@ -324,9 +421,15 @@ impl Folder {
                         .filter_map(|item| {
                             match item {
                                 FileSystemItem::Folder_(folder) => {
-                                    Some(folder.set_up_filter_by_file_folder(
-                                        FileFolderFilter::new(filter.regex.to_owned(), filter.content.to_owned(), (deep - 1).to_string())
-                                    ))
+                                    Some(
+                                        folder.set_up_filter_by_file_folder(
+                                            FileFolderFilter::new(
+                                                filter.regex.to_owned(),
+                                                filter.content.to_owned(),
+                                                (deep - 1).to_string()
+                                            )
+                                        )
+                                    )
                                 }
                                 _ => { None }
                             }
@@ -336,7 +439,11 @@ impl Folder {
             }
         }
     }
-    pub fn edit_filter_by_file_folder(&mut self, new_filter: FileFolderFilter, old_filter: FileFolderFilter) {
+    pub fn edit_filter_by_file_folder(
+        &mut self,
+        new_filter: FileFolderFilter,
+        old_filter: FileFolderFilter
+    ) {
         let deep = new_filter.deep.clone().parse::<i32>();
         let old_deep = old_filter.deep.clone().parse::<i32>();
 
@@ -346,7 +453,14 @@ impl Folder {
             }
 
             if let Ok(_) = self.add_children_to_folder() {
-                let index = self.file_filter_rules.iter().position(|folder| folder.deep == old_filter.deep && folder.regex == old_filter.regex && folder.content == old_filter.content);
+                let index = self.file_filter_rules
+                    .iter()
+                    .position(
+                        |folder|
+                            folder.deep == old_filter.deep &&
+                            folder.regex == old_filter.regex &&
+                            folder.content == old_filter.content
+                    );
 
                 if deep <= -1 {
                     if let Some(index) = index {
@@ -363,8 +477,16 @@ impl Folder {
                 for item in &mut self.contents {
                     if let FileSystemItem::Folder_(folder) = item {
                         folder.edit_filter_by_file_folder(
-                            FileFolderFilter::new(new_filter.regex.to_owned(), new_filter.content.to_owned(), (deep - 1).to_string()),
-                            FileFolderFilter::new(old_filter.regex.to_owned(), old_filter.content.to_owned(), (old_deep - 1).to_string()),
+                            FileFolderFilter::new(
+                                new_filter.regex.to_owned(),
+                                new_filter.content.to_owned(),
+                                (deep - 1).to_string()
+                            ),
+                            FileFolderFilter::new(
+                                old_filter.regex.to_owned(),
+                                old_filter.content.to_owned(),
+                                (old_deep - 1).to_string()
+                            )
                         );
                     }
                 }
@@ -374,10 +496,15 @@ impl Folder {
     pub fn delete_filter_by_file_folder(&mut self, old_filter: FileFolderFilter) {
         if let Ok(old_deep) = old_filter.deep.parse::<i32>() {
             if old_deep > -1 {
-                if let Some(index) = self
-                    .file_filter_rules
-                    .iter()
-                    .position(|folder| folder.deep == old_filter.deep && folder.regex == old_filter.regex && folder.content == old_filter.content)
+                if
+                    let Some(index) = self.file_filter_rules
+                        .iter()
+                        .position(
+                            |folder|
+                                folder.deep == old_filter.deep &&
+                                folder.regex == old_filter.regex &&
+                                folder.content == old_filter.content
+                        )
                 {
                     self.file_filter_rules.remove(index);
                 }
@@ -386,11 +513,15 @@ impl Folder {
                     .iter_mut()
                     .filter_map(|item| {
                         if let FileSystemItem::Folder_(folder) = item {
-                            Some(folder.delete_filter_by_file_folder(FileFolderFilter::new(
-                                old_filter.regex.to_owned(),
-                                old_filter.content.to_owned(),
-                                (old_deep - 1).to_string(),
-                            )))
+                            Some(
+                                folder.delete_filter_by_file_folder(
+                                    FileFolderFilter::new(
+                                        old_filter.regex.to_owned(),
+                                        old_filter.content.to_owned(),
+                                        (old_deep - 1).to_string()
+                                    )
+                                )
+                            )
                         } else {
                             None
                         }
@@ -444,9 +575,14 @@ impl Folder {
                         .iter_mut()
                         .filter_map(|item| {
                             if let FileSystemItem::Folder_(folder) = item {
-                                Some(folder.set_up_filter_by_folder(
-                                    FolderFilter::new(filter.regex.to_owned(), (deep - 1).to_string()),
-                                ))
+                                Some(
+                                    folder.set_up_filter_by_folder(
+                                        FolderFilter::new(
+                                            filter.regex.to_owned(),
+                                            (deep - 1).to_string()
+                                        )
+                                    )
+                                )
                             } else {
                                 None
                             }
@@ -459,10 +595,13 @@ impl Folder {
     pub fn delete_filter_by_folder(&mut self, old_filter: FolderFilter) {
         if let Ok(old_deep) = old_filter.deep.parse::<i32>() {
             if old_deep > -1 {
-                if let Some(index) = self
-                    .folder_filter_rules
-                    .iter()
-                    .position(|folder| folder.deep == old_filter.deep && folder.regex == old_filter.regex)
+                if
+                    let Some(index) = self.folder_filter_rules
+                        .iter()
+                        .position(
+                            |folder|
+                                folder.deep == old_filter.deep && folder.regex == old_filter.regex
+                        )
                 {
                     self.folder_filter_rules.remove(index);
                 }
@@ -471,10 +610,14 @@ impl Folder {
                     .iter_mut()
                     .filter_map(|item| {
                         if let FileSystemItem::Folder_(folder) = item {
-                            Some(folder.delete_filter_by_folder(FolderFilter::new(
-                                old_filter.regex.to_owned(),
-                                (old_deep - 1).to_string(),
-                            )))
+                            Some(
+                                folder.delete_filter_by_folder(
+                                    FolderFilter::new(
+                                        old_filter.regex.to_owned(),
+                                        (old_deep - 1).to_string()
+                                    )
+                                )
+                            )
                         } else {
                             None
                         }
@@ -493,7 +636,11 @@ impl Folder {
             }
 
             if let Ok(_) = self.add_children_to_folder() {
-                let index = self.folder_filter_rules.iter().position(|folder| folder.deep == old_filter.deep && folder.regex == old_filter.regex);
+                let index = self.folder_filter_rules
+                    .iter()
+                    .position(
+                        |folder| folder.deep == old_filter.deep && folder.regex == old_filter.regex
+                    );
 
                 if deep <= -1 {
                     if let Some(index) = index {
@@ -511,7 +658,10 @@ impl Folder {
                     if let FileSystemItem::Folder_(folder) = item {
                         folder.edit_filter_by_folder(
                             FolderFilter::new(new_filter.regex.to_owned(), (deep - 1).to_string()),
-                            FolderFilter::new(old_filter.regex.to_owned(), (old_deep - 1).to_string()),
+                            FolderFilter::new(
+                                old_filter.regex.to_owned(),
+                                (old_deep - 1).to_string()
+                            )
                         );
                     }
                 }
@@ -547,10 +697,15 @@ impl Folder {
         let content = file_service::get_system_items_from_path(self.path.clone())?;
 
         self.add_existing_items(content.clone());
+
         self.delete_not_existing_items(content);
+
         self.filter_by_folder();
+
         self.filter_by_file_folder();
+
         self.sort_contents();
+
         Ok(())
     }
     pub fn sort_contents(&mut self) {
@@ -568,25 +723,46 @@ impl Folder {
         });
     }
     pub fn find_folder_mut(&mut self, path: &String) -> Option<&mut Folder> {
+        // if &self.path == path {
+        //     return Some(self);
+        // }
+
+        // for content in self.contents.iter_mut() {
+        //     if let FileSystemItem::Folder_(folder) = content {
+        //         if &folder.path == path {
+        //             return Some(folder);
+        //         } else {
+        //             if path.starts_with(&folder.path) {
+        //                 if let Some(found_folder) = folder.find_folder_mut(path) {
+        //                     return Some(found_folder);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        // None
+
         if &self.path == path {
             return Some(self);
         }
 
-        for content in self.contents.iter_mut() {
+        // Parallelize the loop using Rayon
+        let result: Option<&mut Folder> = self.contents.par_iter_mut().find_map_any(|content| {
             if let FileSystemItem::Folder_(folder) = content {
                 if &folder.path == path {
-                    return Some(folder);
+                    Some(folder)
+                } else if path.contains(&folder.path) {
+                    folder.find_folder_mut(path)
                 } else {
-                    if path.contains(&folder.path) {
-                        if let Some(found_folder) = folder.find_folder_mut(path) {
-                            return Some(found_folder);
-                        }
-                    }
+                    None
                 }
+            } else {
+                None
             }
-        }
+        });
 
-        None
+        result
     }
     // pub fn find_file_mut(&mut self, path: &String) -> Option<&mut File> {
     //     let folder_path = Folder::get_folder_path_from_path(path);
@@ -643,50 +819,88 @@ impl Folder {
         items.iter().for_each(|item| self.add_existing_item(item.clone()))
     }
     pub fn add_existing_item(&mut self, item: FileSystemItem) {
-        if !self.contents.iter().any(|existing_item| {
-            match (existing_item, &item) {
-                (FileSystemItem::File_(existing_file), FileSystemItem::File_(new_file)) => existing_file.name == new_file.name,
-                (FileSystemItem::Folder_(existing_folder), FileSystemItem::Folder_(new_folder)) => existing_folder.name == new_folder.name,
-                _ => false,
-            }
-        }) {
+        if
+            !self.contents.iter().any(|existing_item| {
+                match (existing_item, &item) {
+                    (FileSystemItem::File_(existing_file), FileSystemItem::File_(new_file)) =>
+                        existing_file.name == new_file.name,
+                    (
+                        FileSystemItem::Folder_(existing_folder),
+                        FileSystemItem::Folder_(new_folder),
+                    ) => existing_folder.name == new_folder.name,
+                    _ => false,
+                }
+            })
+        {
             self.contents.push(item);
         }
     }
     pub fn delete_not_existing_items(&mut self, items: Vec<FileSystemItem>) {
-        let mut contents = Vec::new();
+        let unique_paths: HashSet<String> = items
+            .iter()
+            .map(|item| {
+                match item {
+                    FileSystemItem::File_(file) => { file.path.to_owned() }
+                    FileSystemItem::Folder_(folder) => { folder.path.to_owned() }
+                }
+            })
+            .collect();
 
-        for content_item in &self.contents {
-            if items.iter().any(|item| match (content_item, item) {
-                (FileSystemItem::File_(file1), FileSystemItem::File_(file2)) => file1.path == file2.path,
-                (FileSystemItem::Folder_(folder1), FileSystemItem::Folder_(folder2)) => folder1.path == folder2.path,
-                _ => false,
-            }) {
-                contents.push(content_item.clone());
+        let mut remove_indexes = Vec::new();
+
+        for (index, content_item) in self.contents.iter_mut().enumerate() {
+            match content_item {
+                FileSystemItem::File_(file) => {
+                    if !unique_paths.contains(&file.path) {
+                        remove_indexes.push(index);
+                    }
+                }
+                FileSystemItem::Folder_(folder) => {
+                    if !unique_paths.contains(&folder.path) {
+                        remove_indexes.push(index);
+                    }
+                }
             }
         }
 
-        self.contents = contents;
+        for (index, current_index) in remove_indexes.iter().enumerate() {
+            self.contents.remove(current_index - index);
+        }
+
+        // let mut contents = Vec::new();
+
+        // for content_item in &self.contents {
+        //     if
+        //         items.iter().any(|item| {
+        //             match (content_item, item) {
+        //                 (FileSystemItem::File_(file1), FileSystemItem::File_(file2)) =>
+        //                     file1.path == file2.path,
+        //                 (FileSystemItem::Folder_(folder1), FileSystemItem::Folder_(folder2)) =>
+        //                     folder1.path == folder2.path,
+        //                 _ => false,
+        //             }
+        //         })
+        //     {
+        //         contents.push(content_item.clone());
+        //     }
+        // }
+
+        // self.contents = contents;
     }
     pub fn select_deep_all(&mut self, bool: bool) {
-        let res = self.add_children_to_folder();
-
-        if res.is_err() {
+        if let Err(_) = self.add_children_to_folder() {
             return;
         }
 
         self.selected = bool;
 
-        for item in self.contents.iter_mut() {
-            match item {
-                FileSystemItem::File_(file) => {
-                    file.selected = bool;
-                }
-                FileSystemItem::Folder_(folder) => {
-                    folder.select_deep_all(bool);
-                }
+        self.contents.par_iter_mut().for_each(|item| {
+            if let FileSystemItem::File_(file) = item {
+                file.selected = bool;
+            } else if let FileSystemItem::Folder_(folder) = item {
+                folder.select_deep_all(bool);
             }
-        }
+        });
     }
 }
 
@@ -700,7 +914,13 @@ pub struct File {
 }
 
 impl File {
-    pub fn new(name: String, path: String, selected: bool, extension: String, file_priority_rules: Vec<FilePriority>) -> Self {
+    pub fn new(
+        name: String,
+        path: String,
+        selected: bool,
+        extension: String,
+        file_priority_rules: Vec<FilePriority>
+    ) -> Self {
         File {
             name,
             path,

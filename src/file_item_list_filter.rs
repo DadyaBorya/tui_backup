@@ -4,9 +4,9 @@ use tui::Frame;
 use tui::layout::{Rect, Layout, Direction, Constraint, Alignment};
 use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Block, Borders, BorderType, List, ListItem, ListState};
-use crate::app::{App};
+use crate::app::App;
 use crate::app_mode::{AppMode, FileFolderListFilter, FolderListFilter, FolderListPriority};
-use crate::file_system::{FileSystemItem};
+use crate::file_system::FileSystemItem;
 
 #[derive(Debug, Clone)]
 pub struct FileFolderFilter {

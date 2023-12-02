@@ -1,16 +1,23 @@
-use std::io::{ErrorKind};
+use std::io::ErrorKind;
 use std::path::Path;
 use crossterm::event::KeyCode;
 use tui::backend::Backend;
 use tui::Frame;
-use tui::layout::{Alignment, Constraint, Rect, Layout, Direction};
-use tui::style::{Color, Modifier, Style};
-use tui::widgets::{Block, Borders, BorderType, Cell, Row, Table, TableState};
-use crate::app::{App};
-use crate::app_mode::{AppMode, FileFolderListFilter, FileFolderListPriority, FileListPriority, FolderListFilter, FolderListPriority};
+use tui::layout::{ Alignment, Constraint, Rect, Layout, Direction };
+use tui::style::{ Color, Modifier, Style };
+use tui::widgets::{ Block, Borders, BorderType, Cell, Row, Table, TableState };
+use crate::app::App;
+use crate::app_mode::{
+    AppMode,
+    FileFolderListFilter,
+    FileFolderListPriority,
+    FileListPriority,
+    FolderListFilter,
+    FolderListPriority,
+};
 use crate::file_item_list_filter::FileItemListFilter;
 use crate::file_item_list_priority::FileItemListPriority;
-use crate::file_system::{FileSystem, FileSystemItem};
+use crate::file_system::{ FileSystem, FileSystemItem };
 
 #[derive(Debug)]
 pub struct FileList {
@@ -32,11 +39,7 @@ impl FileList {
 
         let i = match self.table.selected() {
             Some(i) => {
-                if i >= self.root.rows.len() - 1 {
-                    Some(i)
-                } else {
-                    Some(i + 1)
-                }
+                if i >= self.root.rows.len() - 1 { Some(i) } else { Some(i + 1) }
             }
             None => None,
         };
@@ -49,11 +52,7 @@ impl FileList {
 
         let i = match self.table.selected() {
             Some(i) => {
-                if i == 0 {
-                    Some(i)
-                } else {
-                    Some(i - 1)
-                }
+                if i == 0 { Some(i) } else { Some(i - 1) }
             }
             None => None,
         };
@@ -70,7 +69,7 @@ impl FileList {
     }
     fn open_folder(&mut self, index: usize) -> Result<String, std::io::Error> {
         if let Some(current_folder) = self.root.get_current_folder() {
-            if let Some(folder) = qcurrent_folder.find_folder_mut_in_content(index) {
+            if let Some(folder) = current_folder.find_folder_mut_in_content(index) {
                 folder.add_children_to_folder()?;
 
                 let current_path = folder.path.to_owned();
@@ -94,7 +93,10 @@ impl FileList {
             self.root.set_rows_of_current_dir();
             return;
         }
-        let paths: Vec<&str> = self.root.current_path.split('/').filter(|path| !path.is_empty()).collect();
+        let paths: Vec<&str> = self.root.current_path
+            .split('/')
+            .filter(|path| !path.is_empty())
+            .collect();
 
         if paths.len() == 1 {
             self.root.current_path = "/".to_string();
@@ -106,7 +108,7 @@ impl FileList {
         let index = self.root.history_index.pop();
 
         if index.is_none() {
-            self.set_index_table(Some(0))
+            self.set_index_table(Some(0));
         } else {
             self.set_index_table(index);
         }
@@ -147,7 +149,11 @@ impl FileList {
         self.table.select(index);
     }
     pub fn get_current_item(&mut self) -> Option<&mut FileSystemItem> {
-        if let Some(folder) = self.root.root_dir.find_folder_mut(&self.root.current_path.to_owned()) {
+        if
+            let Some(folder) = self.root.root_dir.find_folder_mut(
+                &self.root.current_path.to_owned()
+            )
+        {
             if let Some(index) = self.table.selected() {
                 if index < folder.contents.len() {
                     return Some(&mut folder.contents[index]);
@@ -218,7 +224,9 @@ impl FileList {
             KeyCode::Char('P') => {
                 if let Some(item) = app.file_list.get_current_item() {
                     if let FileSystemItem::Folder_(_) = item {
-                        app.change_mode(AppMode::FileFolderListPriority(FileFolderListPriority::List));
+                        app.change_mode(
+                            AppMode::FileFolderListPriority(FileFolderListPriority::List)
+                        );
                     }
                 }
             }
@@ -233,20 +241,14 @@ impl FileList {
             list_chunks = Layout::default()
                 .margin(1)
                 .direction(Direction::Horizontal)
-                .constraints(
-                    [
-                        Constraint::Percentage(100)
-                    ].as_ref()
-                ).split(chunks[1]);
+                .constraints([Constraint::Percentage(100)].as_ref())
+                .split(chunks[1]);
         } else {
             list_chunks = Layout::default()
                 .margin(1)
                 .direction(Direction::Horizontal)
-                .constraints(
-                    [
-                        Constraint::Percentage(65), Constraint::Percentage(35)
-                    ].as_ref()
-                ).split(chunks[1]);
+                .constraints([Constraint::Percentage(65), Constraint::Percentage(35)].as_ref())
+                .split(chunks[1]);
         }
 
         let selected_style = Style::default().add_modifier(Modifier::REVERSED).fg(Color::Yellow);
@@ -255,44 +257,46 @@ impl FileList {
             .iter()
             .map(|h| Cell::from(*h).style(Style::default().fg(Color::Black)));
 
-        let header = Row::new(header_cells)
-            .style(normal_style)
-            .height(1)
-            .bottom_margin(1);
+        let header = Row::new(header_cells).style(normal_style).height(1).bottom_margin(1);
 
         let rows = app.file_list.root.rows.iter().map(|item| {
-            let height = item.0
-                .iter()
-                .map(|content| content.chars().filter(|c| *c == '\n').count())
-                .max()
-                .unwrap_or(0)
-                + 1;
-            let cells = item.0.iter()
-                .map(|c| Cell::from(c.as_str()));
-            Row::new(cells).style(Style::default().fg(item.1)).height(height as u16).bottom_margin(1)
+            let height =
+                item.0
+                    .iter()
+                    .map(|content|
+                        content
+                            .chars()
+                            .filter(|c| *c == '\n')
+                            .count()
+                    )
+                    .max()
+                    .unwrap_or(0) + 1;
+            let cells = item.0.iter().map(|c| Cell::from(c.as_str()));
+            Row::new(cells)
+                .style(Style::default().fg(item.1))
+                .height(height as u16)
+                .bottom_margin(1)
         });
 
         let t = Table::new(rows)
             .header(header)
-            .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title_alignment(Alignment::Center)
-                .title(app.file_list.root.current_path.as_str()))
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded)
+                    .title_alignment(Alignment::Center)
+                    .title(app.file_list.root.current_path.as_str())
+            )
             .highlight_style(selected_style)
             .highlight_symbol(">> ")
-            .widths(&[
-                Constraint::Length(3),
-                Constraint::Length(40),
-                Constraint::Min(10),
-            ]);
+            .widths(&[Constraint::Length(3), Constraint::Length(40), Constraint::Min(10)]);
         f.render_stateful_widget(t, list_chunks[0], &mut app.file_list.table);
 
         if app.file_list.table.selected().is_some() {
             let action_chunks = Layout::default()
                 .direction(Direction::Vertical)
-                .constraints(
-                    [
-                        Constraint::Percentage(50), Constraint::Percentage(50)
-                    ].as_ref()
-                ).split(list_chunks[1]);
+                .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
+                .split(list_chunks[1]);
 
             FileItemListFilter::ui(app, f, &action_chunks);
             FileItemListPriority::ui(app, f, &action_chunks);
