@@ -1,8 +1,9 @@
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 pub enum AppMode {
     Tab,
     FileList,
     ErrorPopup,
+    HelpPopup,
     FolderListFilter(FolderListFilter),
     FileFolderListFilter(FileFolderListFilter),
     FolderListPriority(FolderListPriority),

@@ -1,11 +1,11 @@
 use crossterm::event::KeyCode;
 use tui::backend::Backend;
 use tui::Frame;
-use tui::layout::{Alignment, Constraint, Layout};
-use tui::style::{Color, Style};
-use tui::widgets::{Block, Borders, BorderType, Clear};
-use crate::app::{App};
-use crate::app_mode::{AppMode, FolderListFilter};
+use tui::layout::{ Alignment, Constraint, Layout };
+use tui::style::{ Color, Style };
+use tui::widgets::{ Block, Borders, BorderType, Clear };
+use crate::app::{ App };
+use crate::app_mode::{ AppMode, FolderListFilter };
 use crate::file_item_list_filter::FolderFilter;
 use crate::file_system::FileSystemItem;
 use crate::popup::Popup;
@@ -34,9 +34,7 @@ impl FolderFilterFormPopup {
             let chunks = Layout::default()
                 .margin(2)
                 .constraints(
-                    [
-                        Constraint::Length(3), Constraint::Length(3), Constraint::Length(3),
-                    ].as_ref()
+                    [Constraint::Length(3), Constraint::Length(3), Constraint::Length(3)].as_ref()
                 )
                 .split(area);
 
@@ -44,8 +42,9 @@ impl FolderFilterFormPopup {
                 "Regex",
                 app.file_item_list_filter.new_regex.as_str(),
                 match app.mode {
-                    AppMode::FolderListFilter(FolderListFilter::Regex) => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
+                    AppMode::FolderListFilter(FolderListFilter::Regex) =>
+                        Style::default().fg(Color::Yellow),
+                    _ => Style::default(),
                 }
             );
 
@@ -55,20 +54,19 @@ impl FolderFilterFormPopup {
                 "Deep",
                 app.file_item_list_filter.new_deep.as_str(),
                 match app.mode {
-                    AppMode::FolderListFilter(FolderListFilter::Deep) => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
+                    AppMode::FolderListFilter(FolderListFilter::Deep) =>
+                        Style::default().fg(Color::Yellow),
+                    _ => Style::default(),
                 }
             );
 
             f.render_widget(deep_input, chunks[1]);
 
-            let submit_btn = WidgetGen::form_button(
-                "Submit",
-                match app.mode {
-                    AppMode::FolderListFilter(FolderListFilter::Submit) => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                }
-            );
+            let submit_btn = WidgetGen::form_button("Submit", match app.mode {
+                AppMode::FolderListFilter(FolderListFilter::Submit) =>
+                    Style::default().fg(Color::Yellow),
+                _ => Style::default(),
+            });
 
             f.render_widget(submit_btn, chunks[2]);
         }
@@ -82,16 +80,22 @@ impl FolderFilterFormPopup {
                         app.file_item_list_filter.clean_inputs();
                         app.change_mode(AppMode::FolderListFilter(FolderListFilter::List));
                     }
-                    KeyCode::Tab => app.change_mode(AppMode::FolderListFilter(FolderListFilter::Regex)),
+                    KeyCode::Tab =>
+                        app.change_mode(AppMode::FolderListFilter(FolderListFilter::Regex)),
+                    KeyCode::Char('h') => {
+                        app.prev_mode = AppMode::FolderListFilter(FolderListFilter::Form);
+                        app.change_mode(AppMode::HelpPopup);
+                    }
                     _ => {}
                 }
             }
-            AppMode::FolderListFilter(FolderListFilter::Regex)=> {
+            AppMode::FolderListFilter(FolderListFilter::Regex) => {
                 match key_code {
                     KeyCode::Esc => {
                         app.change_mode(AppMode::FolderListFilter(FolderListFilter::Form));
                     }
-                    KeyCode::Tab => app.change_mode(AppMode::FolderListFilter(FolderListFilter::Deep)),
+                    KeyCode::Tab =>
+                        app.change_mode(AppMode::FolderListFilter(FolderListFilter::Deep)),
                     KeyCode::Char(c) => {
                         app.file_item_list_filter.new_regex.push(c);
                     }
@@ -106,8 +110,10 @@ impl FolderFilterFormPopup {
                     KeyCode::Esc => {
                         app.change_mode(AppMode::FolderListFilter(FolderListFilter::Form));
                     }
-                    KeyCode::Tab => app.change_mode(AppMode::FolderListFilter(FolderListFilter::Submit)),
-                    KeyCode::BackTab => app.change_mode(AppMode::FolderListFilter(FolderListFilter::Regex)),
+                    KeyCode::Tab =>
+                        app.change_mode(AppMode::FolderListFilter(FolderListFilter::Submit)),
+                    KeyCode::BackTab =>
+                        app.change_mode(AppMode::FolderListFilter(FolderListFilter::Regex)),
                     KeyCode::Char(c) => {
                         app.file_item_list_filter.new_deep.push(c);
                     }
@@ -122,7 +128,8 @@ impl FolderFilterFormPopup {
                     KeyCode::Esc => {
                         app.change_mode(AppMode::FolderListFilter(FolderListFilter::Form));
                     }
-                    KeyCode::BackTab => app.change_mode(AppMode::FolderListFilter(FolderListFilter::Deep)),
+                    KeyCode::BackTab =>
+                        app.change_mode(AppMode::FolderListFilter(FolderListFilter::Deep)),
                     KeyCode::Enter => {
                         let regex = app.file_item_list_filter.new_regex.to_owned();
                         let deep = app.file_item_list_filter.new_deep.to_owned();
@@ -131,7 +138,10 @@ impl FolderFilterFormPopup {
                         if let Some(item) = app.file_list.get_current_item() {
                             if let FileSystemItem::Folder_(folder) = item {
                                 if app.is_edit_folder_filter_form_popup {
-                                    if let Some(index) = app.file_item_list_filter.folder_filter_list.selected() {
+                                    if
+                                        let Some(index) =
+                                            app.file_item_list_filter.folder_filter_list.selected()
+                                    {
                                         let old_folder = folder.folder_filter_rules[index].clone();
                                         folder.edit_filter_by_folder(folder_filter, old_folder);
                                         app.is_edit_folder_filter_form_popup = false;

@@ -230,6 +230,10 @@ impl FileList {
                     }
                 }
             }
+            KeyCode::Char('h') => {
+                app.prev_mode = AppMode::FileList;
+                app.change_mode(AppMode::HelpPopup);
+            }
             _ => {}
         }
 

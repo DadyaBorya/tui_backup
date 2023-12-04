@@ -723,31 +723,10 @@ impl Folder {
         });
     }
     pub fn find_folder_mut(&mut self, path: &String) -> Option<&mut Folder> {
-        // if &self.path == path {
-        //     return Some(self);
-        // }
-
-        // for content in self.contents.iter_mut() {
-        //     if let FileSystemItem::Folder_(folder) = content {
-        //         if &folder.path == path {
-        //             return Some(folder);
-        //         } else {
-        //             if path.starts_with(&folder.path) {
-        //                 if let Some(found_folder) = folder.find_folder_mut(path) {
-        //                     return Some(found_folder);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        // None
-
         if &self.path == path {
             return Some(self);
         }
 
-        // Parallelize the loop using Rayon
         let result: Option<&mut Folder> = self.contents.par_iter_mut().find_map_any(|content| {
             if let FileSystemItem::Folder_(folder) = content {
                 if &folder.path == path {

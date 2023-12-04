@@ -105,6 +105,10 @@ impl FileFolderPriorityFormPopup {
                     KeyCode::Tab => {
                         app.change_mode(AppMode::FileFolderListPriority(FileFolderListPriority::Regex))
                     }
+                    KeyCode::Char('h') => {
+                        app.prev_mode = AppMode::FileFolderListPriority(FileFolderListPriority::Form);
+                        app.change_mode(AppMode::HelpPopup);
+                    }
                     _ => {}
                 }
             },

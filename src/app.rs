@@ -1,15 +1,28 @@
 use std::io::Stdout;
-use crossterm::{event, execute};
+use crossterm::{ event, execute };
 use crossterm::event::Event::Key;
-use crossterm::event::{DisableMouseCapture, KeyEventKind};
-use tui::backend::{Backend, CrosstermBackend};
-use tui::{Frame, Terminal};
-use tui::layout::{Constraint, Direction, Layout};
+use crossterm::event::{ DisableMouseCapture, KeyEventKind };
+use tui::backend::{ Backend, CrosstermBackend };
+use tui::{ Frame, Terminal };
+use tui::layout::{ Constraint, Direction, Layout };
 use crate::file_list::FileList;
+use crate::help_popup::HelpPopup;
 use crate::tab_c::TabC;
-use crossterm::event::{EnableMouseCapture};
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
-use crate::app_mode::{AppMode, FileFolderListFilter, FileFolderListPriority, FileListPriority, FolderListFilter, FolderListPriority};
+use crossterm::event::EnableMouseCapture;
+use crossterm::terminal::{
+    disable_raw_mode,
+    enable_raw_mode,
+    EnterAlternateScreen,
+    LeaveAlternateScreen,
+};
+use crate::app_mode::{
+    AppMode,
+    FileFolderListFilter,
+    FileFolderListPriority,
+    FileListPriority,
+    FolderListFilter,
+    FolderListPriority,
+};
 use crate::error_popup::ErrorPopup;
 use crate::file_filter_form_popup::FileFilterFormPopup;
 use crate::file_folder_priority_form_popup::FileFolderPriorityFormPopup;
@@ -18,11 +31,10 @@ use crate::file_item_list_priority::FileItemListPriority;
 use crate::file_list_priority_form_popup::FileListPriorityFormPopup;
 use crate::folder_filter_form_popup::FolderFilterFormPopup;
 use crate::folder_priority_form_popup::FolderPriorityFormPopup;
-use crate::help_block::HelpBlock;
-
 
 pub struct App<'a> {
     pub mode: AppMode,
+    pub prev_mode: AppMode,
     pub tabs: TabC<'a>,
     pub file_list: FileList,
     pub file_item_list_filter: FileItemListFilter,
@@ -51,6 +63,7 @@ impl<'a> App<'a> {
             is_edit_file_folder_priority_form_popup: false,
             is_edit_file_priority_form_popup: false,
             is_edit_folder_priority_form_popup: false,
+            prev_mode: AppMode::Tab,
         })
     }
 
@@ -58,10 +71,13 @@ impl<'a> App<'a> {
         self.mode = mode;
     }
 
-    pub fn run_app<B: Backend>(&mut self, terminal: &mut Terminal<B>) -> Result<(), std::io::Error> {
+    pub fn run_app<B: Backend>(
+        &mut self,
+        terminal: &mut Terminal<B>
+    ) -> Result<(), std::io::Error> {
         terminal.draw(|f| self.ui(f))?;
         self.event()?;
-        Ok(()) 
+        Ok(())
     }
 
     pub fn event(&mut self) -> Result<(), std::io::Error> {
@@ -72,31 +88,41 @@ impl<'a> App<'a> {
                         AppMode::Tab => TabC::event(self, key.code)?,
                         AppMode::FileList => FileList::event(self, key.code)?,
                         AppMode::ErrorPopup => ErrorPopup::event(self, key.code)?,
+                        AppMode::FolderListFilter(filter) =>
+                            match filter {
+                                FolderListFilter::List =>
+                                    FileItemListFilter::event(self, key.code)?,
+                                _ => FolderFilterFormPopup::event(self, key.code)?,
+                            }
 
-                        AppMode::FolderListFilter(filter) => match filter {
-                            FolderListFilter::List => FileItemListFilter::event(self, key.code)?,
-                            _ => FolderFilterFormPopup::event(self, key.code)?,
-                        },
+                        AppMode::FileFolderListFilter(filter) =>
+                            match filter {
+                                FileFolderListFilter::List =>
+                                    FileItemListFilter::event(self, key.code)?,
+                                _ => FileFilterFormPopup::event(self, key.code)?,
+                            }
 
-                        AppMode::FileFolderListFilter(filter) => match filter {
-                            FileFolderListFilter::List => FileItemListFilter::event(self, key.code)?,
-                            _ => FileFilterFormPopup::event(self, key.code)?,
-                        }
+                        AppMode::FolderListPriority(priority) =>
+                            match priority {
+                                FolderListPriority::List =>
+                                    FileItemListPriority::event(self, key.code)?,
+                                _ => FolderPriorityFormPopup::event(self, key.code)?,
+                            }
 
-                        AppMode::FolderListPriority(priority) => match priority {
-                            FolderListPriority::List => FileItemListPriority::event(self, key.code)?,
-                            _ => FolderPriorityFormPopup::event(self, key.code)?,
-                        }
+                        AppMode::FileFolderListPriority(priority) =>
+                            match priority {
+                                FileFolderListPriority::List =>
+                                    FileItemListPriority::event(self, key.code)?,
+                                _ => FileFolderPriorityFormPopup::event(self, key.code)?,
+                            }
 
-                        AppMode::FileFolderListPriority(priority) => match priority {
-                            FileFolderListPriority::List => FileItemListPriority::event(self, key.code)?,
-                            _ => FileFolderPriorityFormPopup::event(self, key.code)?
-                        }
-
-                        AppMode::FileListPriority(priority) => match priority {
-                            FileListPriority::List => FileItemListPriority::event(self, key.code)?,
-                            _ => FileListPriorityFormPopup::event(self, key.code)?
-                        }
+                        AppMode::FileListPriority(priority) =>
+                            match priority {
+                                FileListPriority::List =>
+                                    FileItemListPriority::event(self, key.code)?,
+                                _ => FileListPriorityFormPopup::event(self, key.code)?,
+                            }
+                        AppMode::HelpPopup => HelpPopup::event(self, key.code)?,
                     }
                 }
             }
@@ -109,18 +135,14 @@ impl<'a> App<'a> {
         let size = f.size();
         let chunks = Layout::default()
             .direction(Direction::Vertical)
-            .constraints(
-                [
-                    Constraint::Length(3), Constraint::Min(0), Constraint::Length(3)
-                ].as_ref()
-            ).split(size);
+            .constraints([Constraint::Length(3), Constraint::Min(0)].as_ref())
+            .split(size);
 
         TabC::ui(self, f, &chunks);
-
         match self.tabs.index {
             0 => FileList::ui(self, f, &chunks),
             _ => {}
-        };
+        }
 
         match self.mode {
             AppMode::FolderListFilter(_) => FolderFilterFormPopup::ui(f, self),
@@ -128,29 +150,24 @@ impl<'a> App<'a> {
             AppMode::FolderListPriority(_) => FolderPriorityFormPopup::ui(f, self),
             AppMode::FileFolderListPriority(_) => FileFolderPriorityFormPopup::ui(f, self),
             AppMode::FileListPriority(_) => FileListPriorityFormPopup::ui(f, self),
+            AppMode::HelpPopup => HelpPopup::ui(f, self),
             _ => {}
         }
-
         ErrorPopup::error_popup(f, self);
-
-        HelpBlock::ui(f, self, &chunks);
     }
 
     pub fn execute_alternative_screen(&self) -> Result<(), std::io::Error> {
         enable_raw_mode()?;
-        execute!(
-        std::io::stdout(),
-        EnterAlternateScreen,
-        EnableMouseCapture)?;
+        execute!(std::io::stdout(), EnterAlternateScreen, EnableMouseCapture)?;
         Ok(())
     }
 
-    pub fn disable_alternative_screen(&self, terminal: &mut CrosstermBackend<Stdout>) -> Result<(), std::io::Error> {
+    pub fn disable_alternative_screen(
+        &self,
+        terminal: &mut CrosstermBackend<Stdout>
+    ) -> Result<(), std::io::Error> {
         disable_raw_mode()?;
         execute!(terminal, LeaveAlternateScreen, DisableMouseCapture)?;
         Ok(())
     }
 }
-
-
-

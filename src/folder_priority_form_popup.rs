@@ -1,11 +1,11 @@
 use crossterm::event::KeyCode;
 use tui::backend::Backend;
 use tui::Frame;
-use tui::layout::{Alignment, Constraint, Direction, Layout};
-use tui::style::{Color, Style};
-use tui::widgets::{Block, Borders, BorderType, Clear};
+use tui::layout::{ Alignment, Constraint, Direction, Layout };
+use tui::style::{ Color, Style };
+use tui::widgets::{ Block, Borders, BorderType, Clear };
 use crate::app::App;
-use crate::app_mode::{AppMode, FolderListPriority};
+use crate::app_mode::{ AppMode, FolderListPriority };
 use crate::file_item_list_priority::FolderPriority;
 use crate::file_system::FileSystemItem;
 use crate::popup::Popup;
@@ -36,17 +36,22 @@ impl FolderPriorityFormPopup {
                 .direction(Direction::Vertical)
                 .constraints(
                     [
-                        Constraint::Length(3), Constraint::Length(3), Constraint::Length(3), Constraint::Length(3)
+                        Constraint::Length(3),
+                        Constraint::Length(3),
+                        Constraint::Length(3),
+                        Constraint::Length(3),
                     ].as_ref()
-                ).split(area);
+                )
+                .split(area);
 
             let regex_input = WidgetGen::form_input(
                 "Regex",
                 app.file_item_list_priority.new_regex.as_str(),
                 match app.mode {
-                    AppMode::FolderListPriority(FolderListPriority::Regex) => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                },
+                    AppMode::FolderListPriority(FolderListPriority::Regex) =>
+                        Style::default().fg(Color::Yellow),
+                    _ => Style::default(),
+                }
             );
 
             f.render_widget(regex_input, chunks[0]);
@@ -55,9 +60,10 @@ impl FolderPriorityFormPopup {
                 "Deep",
                 app.file_item_list_priority.new_deep.as_str(),
                 match app.mode {
-                    AppMode::FolderListPriority(FolderListPriority::Deep) => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                },
+                    AppMode::FolderListPriority(FolderListPriority::Deep) =>
+                        Style::default().fg(Color::Yellow),
+                    _ => Style::default(),
+                }
             );
 
             f.render_widget(deep_input, chunks[1]);
@@ -66,20 +72,19 @@ impl FolderPriorityFormPopup {
                 "Priority",
                 app.file_item_list_priority.new_priority.as_str(),
                 match app.mode {
-                    AppMode::FolderListPriority(FolderListPriority::Priority) => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                },
+                    AppMode::FolderListPriority(FolderListPriority::Priority) =>
+                        Style::default().fg(Color::Yellow),
+                    _ => Style::default(),
+                }
             );
 
             f.render_widget(priority_input, chunks[2]);
 
-            let submit_btn = WidgetGen::form_button(
-                "Submit",
-                match app.mode {
-                    AppMode::FolderListPriority(FolderListPriority::Submit) => Style::default().fg(Color::Yellow),
-                    _ => Style::default()
-                },
-            );
+            let submit_btn = WidgetGen::form_button("Submit", match app.mode {
+                AppMode::FolderListPriority(FolderListPriority::Submit) =>
+                    Style::default().fg(Color::Yellow),
+                _ => Style::default(),
+            });
 
             f.render_widget(submit_btn, chunks[3]);
         }
@@ -91,10 +96,14 @@ impl FolderPriorityFormPopup {
                 match key_code {
                     KeyCode::Esc => {
                         app.file_item_list_priority.clean_inputs();
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::List))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::List));
                     }
                     KeyCode::Tab => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Regex))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Regex));
+                    }
+                    KeyCode::Char('h') => {
+                        app.prev_mode = AppMode::FolderListPriority(FolderListPriority::Form);
+                        app.change_mode(AppMode::HelpPopup);
                     }
                     _ => {}
                 }
@@ -102,10 +111,10 @@ impl FolderPriorityFormPopup {
             AppMode::FolderListPriority(FolderListPriority::Regex) => {
                 match key_code {
                     KeyCode::Esc => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form));
                     }
                     KeyCode::Tab => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Deep))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Deep));
                     }
                     KeyCode::Char(c) => {
                         app.file_item_list_priority.new_regex.push(c);
@@ -119,13 +128,13 @@ impl FolderPriorityFormPopup {
             AppMode::FolderListPriority(FolderListPriority::Deep) => {
                 match key_code {
                     KeyCode::Esc => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form));
                     }
                     KeyCode::Tab => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Priority))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Priority));
                     }
                     KeyCode::BackTab => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Regex))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Regex));
                     }
                     KeyCode::Char(c) => {
                         app.file_item_list_priority.new_deep.push(c);
@@ -139,13 +148,13 @@ impl FolderPriorityFormPopup {
             AppMode::FolderListPriority(FolderListPriority::Priority) => {
                 match key_code {
                     KeyCode::Esc => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form));
                     }
                     KeyCode::Tab => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Submit))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Submit));
                     }
                     KeyCode::BackTab => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Deep))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Deep));
                     }
                     KeyCode::Char(c) => {
                         app.file_item_list_priority.new_priority.push(c);
@@ -159,10 +168,10 @@ impl FolderPriorityFormPopup {
             AppMode::FolderListPriority(FolderListPriority::Submit) => {
                 match key_code {
                     KeyCode::Esc => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Form));
                     }
                     KeyCode::BackTab => {
-                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Priority))
+                        app.change_mode(AppMode::FolderListPriority(FolderListPriority::Priority));
                     }
                     KeyCode::Enter => {
                         let regex = app.file_item_list_priority.new_regex.to_owned();
@@ -174,17 +183,26 @@ impl FolderPriorityFormPopup {
                         if let Some(item) = app.file_list.get_current_item() {
                             if let FileSystemItem::Folder_(folder) = item {
                                 if app.is_edit_folder_priority_form_popup {
-                                    if let Some(index) = app.file_item_list_priority.folder_priority_list.selected() {
-                                        let old_priority = folder.folder_priority_rules[index].clone();
-                                        folder.edit_priority_by_folder(folder_priority, old_priority);
+                                    if
+                                        let Some(index) =
+                                            app.file_item_list_priority.folder_priority_list.selected()
+                                    {
+                                        let old_priority =
+                                            folder.folder_priority_rules[index].clone();
+                                        folder.edit_priority_by_folder(
+                                            folder_priority,
+                                            old_priority
+                                        );
                                         app.is_edit_folder_priority_form_popup = false;
                                     }
                                 } else {
-                                    folder.set_up_priority_by_folder(folder_priority)
+                                    folder.set_up_priority_by_folder(folder_priority);
                                 }
 
                                 app.file_item_list_priority.clean_inputs();
-                                app.change_mode(AppMode::FolderListPriority(FolderListPriority::List));
+                                app.change_mode(
+                                    AppMode::FolderListPriority(FolderListPriority::List)
+                                );
                             }
                         }
                     }

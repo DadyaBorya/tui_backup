@@ -4,7 +4,7 @@ use tui::Frame;
 use tui::layout::{Alignment, Constraint, Direction, Layout};
 use tui::style::{Color, Style};
 use tui::widgets::{Block, Borders, BorderType, Clear};
-use crate::app::{App};
+use crate::app::App;
 use crate::app_mode::{AppMode, FileFolderListFilter};
 use crate::file_item_list_filter::FileFolderFilter;
 use crate::file_system::FileSystemItem;
@@ -94,6 +94,10 @@ impl FileFilterFormPopup {
                         app.change_mode(AppMode::FileFolderListFilter(FileFolderListFilter::List));
                     }
                     KeyCode::Tab => app.change_mode(AppMode::FileFolderListFilter(FileFolderListFilter::Regex)),
+                    KeyCode::Char('h') => {
+                        app.prev_mode = AppMode::FileFolderListFilter(FileFolderListFilter::Form);
+                        app.change_mode(AppMode::HelpPopup);
+                    }
                     _ => {}
                 }
             }

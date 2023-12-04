@@ -1,9 +1,9 @@
 use crossterm::event::KeyCode;
 use tui::backend::Backend;
 use tui::Frame;
-use tui::layout::{Alignment, Constraint, Direction, Layout};
-use tui::style::{Color, Style};
-use tui::widgets::{Block, Borders, BorderType, Clear, Paragraph};
+use tui::layout::{ Alignment, Constraint, Direction, Layout };
+use tui::style::{ Color, Style };
+use tui::widgets::{ Block, Borders, BorderType, Clear, Paragraph };
 use crate::app::App;
 use crate::app_mode::AppMode;
 use crate::popup::Popup;
@@ -20,18 +20,15 @@ impl ErrorPopup {
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded);
 
-            let area = Popup::centered_rect(60, 25, f.size());
+            let area = Popup::centered_rect(60, 20, f.size());
             f.render_widget(Clear, area);
             f.render_widget(block, area);
 
             let chunks = Layout::default()
                 .margin(2)
                 .direction(Direction::Vertical)
-                .constraints(
-                    [
-                        Constraint::Length(2)
-                    ].as_ref()
-                ).split(area);
+                .constraints([Constraint::Length(2)].as_ref())
+                .split(area);
 
             let paragraph_text = match &app.error {
                 None => { "unknown error" }
@@ -40,9 +37,7 @@ impl ErrorPopup {
 
             let style = Style::default().fg(Color::Red);
 
-            let text = Paragraph::new(paragraph_text)
-                .style(style)
-                .alignment(Alignment::Center);
+            let text = Paragraph::new(paragraph_text).style(style).alignment(Alignment::Center);
 
             f.render_widget(text, chunks[0]);
         }

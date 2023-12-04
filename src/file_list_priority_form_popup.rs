@@ -81,6 +81,10 @@ impl FileListPriorityFormPopup {
                         app.change_mode(AppMode::FileListPriority(FileListPriority::List));
                     }
                     KeyCode::Tab => app.change_mode(AppMode::FileListPriority(FileListPriority::Content)),
+                    KeyCode::Char('h') => {
+                        app.prev_mode = AppMode::FileListPriority(FileListPriority::Form);
+                        app.change_mode(AppMode::HelpPopup);
+                    }
                     _ => {}
                 }
             }
