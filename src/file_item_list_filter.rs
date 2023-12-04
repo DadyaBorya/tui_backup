@@ -1,4 +1,5 @@
 use crossterm::event::KeyCode;
+use serde::{Serialize, Deserialize};
 use tui::backend::Backend;
 use tui::Frame;
 use tui::layout::{ Rect, Layout, Direction, Constraint, Alignment };
@@ -8,7 +9,7 @@ use crate::app::App;
 use crate::app_mode::{ AppMode, FileFolderListFilter, FolderListFilter, FolderListPriority };
 use crate::file_system::FileSystemItem;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileFolderFilter {
     pub regex: String,
     pub content: String,
@@ -25,7 +26,7 @@ impl FileFolderFilter {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FolderFilter {
     pub regex: String,
     pub deep: String,

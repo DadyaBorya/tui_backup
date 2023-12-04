@@ -1,7 +1,7 @@
 use std::error::Error;
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
-use crate::app::{ App };
+use crate::app::App;
 
 mod tab_c;
 mod app;
@@ -20,6 +20,8 @@ mod widget_gen;
 mod file_folder_priority_form_popup;
 mod file_list_priority_form_popup;
 mod help_popup;
+mod create_template_popup;
+mod template;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::new()?;

@@ -4,6 +4,7 @@ use std::collections::HashSet;
 #[cfg(target_os = "linux")]
 use std::os::unix::fs::PermissionsExt;
 use regex::Regex;
+use serde::{Serialize, Deserialize};
 use tui::style::Color;
 use crate::file_item_list_filter::{ FileFolderFilter, FolderFilter };
 use crate::file_item_list_priority::{ FileFolderPriority, FilePriority, FolderPriority };
@@ -119,13 +120,13 @@ impl FileSystem {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FileSystemItem {
     File_(File),
     Folder_(Folder),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Folder {
     pub name: String,
     pub path: String,
@@ -743,27 +744,7 @@ impl Folder {
 
         result
     }
-    // pub fn find_file_mut(&mut self, path: &String) -> Option<&mut File> {
-    //     let folder_path = Folder::get_folder_path_from_path(path);
-    //
-    //     if let Some(path) = folder_path {
-    //         if let Some(folder) = self.find_folder_mut(&path.to_string()) {
-    //             if let Some(file) = folder.contents.iter_mut().find(|item| {
-    //                 if let FileSystemItem::File_(file) = item {
-    //                     file.name == path
-    //                 } else {
-    //                     false
-    //                 }
-    //             }) {
-    //                 if let FileSystemItem::File_(file) = file {
-    //                     return Some(file);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //
-    //     None
-    // }
+
     pub fn find_folder_mut_in_content(&mut self, index: usize) -> Option<&mut Folder> {
         if index >= self.contents.len() {
             return None;
@@ -777,23 +758,6 @@ impl Folder {
 
         None
     }
-    // pub fn find_file_mut_in_content(&mut self, index: usize) -> Option<&mut File> {
-    //     if index >= self.contents.len() {
-    //         return None;
-    //     }
-    //
-    //     let item = &mut self.contents[index];
-    //
-    //     if let FileSystemItem::File_(file) = item {
-    //         return Some(file);
-    //     }
-    //
-    //     None
-    // }
-    // pub fn get_folder_path_from_path(file_path: &String) -> Option<&str> {
-    //     let path = Path::new(file_path);
-    //     path.parent().and_then(|parent| parent.to_str())
-    // }
     pub fn add_existing_items(&mut self, items: Vec<FileSystemItem>) {
         items.iter().for_each(|item| self.add_existing_item(item.clone()))
     }
@@ -845,26 +809,6 @@ impl Folder {
         for (index, current_index) in remove_indexes.iter().enumerate() {
             self.contents.remove(current_index - index);
         }
-
-        // let mut contents = Vec::new();
-
-        // for content_item in &self.contents {
-        //     if
-        //         items.iter().any(|item| {
-        //             match (content_item, item) {
-        //                 (FileSystemItem::File_(file1), FileSystemItem::File_(file2)) =>
-        //                     file1.path == file2.path,
-        //                 (FileSystemItem::Folder_(folder1), FileSystemItem::Folder_(folder2)) =>
-        //                     folder1.path == folder2.path,
-        //                 _ => false,
-        //             }
-        //         })
-        //     {
-        //         contents.push(content_item.clone());
-        //     }
-        // }
-
-        // self.contents = contents;
     }
     pub fn select_deep_all(&mut self, bool: bool) {
         if let Err(_) = self.add_children_to_folder() {
@@ -881,9 +825,12 @@ impl Folder {
             }
         });
     }
+    pub fn get_json(&self) -> String {
+        serde_json::to_string(&self).unwrap()
+    }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct File {
     pub name: String,
     pub path: String,

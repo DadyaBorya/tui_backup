@@ -9,6 +9,7 @@ pub enum AppMode {
     FolderListPriority(FolderListPriority),
     FileFolderListPriority(FileFolderListPriority),
     FileListPriority(FileListPriority),
+    CreateTemplate(CreateTemplate),
 }
 
 #[derive(PartialEq, Clone)]
@@ -57,5 +58,12 @@ pub enum FileListPriority {
     Form,
     Content,
     Priority,
+    Submit,
+}
+
+#[derive(PartialEq, Clone)]
+pub enum CreateTemplate {
+    Form,
+    Name,
     Submit,
 }

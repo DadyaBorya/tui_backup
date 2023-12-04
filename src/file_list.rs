@@ -14,6 +14,7 @@ use crate::app_mode::{
     FileListPriority,
     FolderListFilter,
     FolderListPriority,
+    CreateTemplate,
 };
 use crate::file_item_list_filter::FileItemListFilter;
 use crate::file_item_list_priority::FileItemListPriority;
@@ -229,6 +230,9 @@ impl FileList {
                         );
                     }
                 }
+            }
+            KeyCode::Char('c') => {
+                app.change_mode(AppMode::CreateTemplate(CreateTemplate::Form));
             }
             KeyCode::Char('h') => {
                 app.prev_mode = AppMode::FileList;

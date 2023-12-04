@@ -1,4 +1,5 @@
 use crossterm::event::KeyCode;
+use serde::{Serialize, Deserialize};
 use tui::backend::Backend;
 use tui::Frame;
 use tui::layout::{ Alignment, Constraint, Direction, Layout, Rect };
@@ -14,7 +15,7 @@ use crate::app_mode::{
 };
 use crate::file_system::FileSystemItem;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FolderPriority {
     pub regex: String,
     pub deep: String,
@@ -31,7 +32,7 @@ impl FolderPriority {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileFolderPriority {
     pub regex: String,
     pub deep: String,
@@ -50,7 +51,7 @@ impl FileFolderPriority {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FilePriority {
     pub content: String,
     pub priority: String,

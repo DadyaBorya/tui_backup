@@ -5,9 +5,11 @@ use crossterm::event::{ DisableMouseCapture, KeyEventKind };
 use tui::backend::{ Backend, CrosstermBackend };
 use tui::{ Frame, Terminal };
 use tui::layout::{ Constraint, Direction, Layout };
+use crate::create_template_popup::CreateTemplatePopup;
 use crate::file_list::FileList;
 use crate::help_popup::HelpPopup;
 use crate::tab_c::TabC;
+use crate::template::Template;
 use crossterm::event::EnableMouseCapture;
 use crossterm::terminal::{
     disable_raw_mode,
@@ -39,6 +41,7 @@ pub struct App<'a> {
     pub file_list: FileList,
     pub file_item_list_filter: FileItemListFilter,
     pub file_item_list_priority: FileItemListPriority,
+    pub template: Template,
     pub is_edit_folder_filter_form_popup: bool,
     pub is_edit_file_filter_form_popup: bool,
     pub is_edit_folder_priority_form_popup: bool,
@@ -64,6 +67,7 @@ impl<'a> App<'a> {
             is_edit_file_priority_form_popup: false,
             is_edit_folder_priority_form_popup: false,
             prev_mode: AppMode::Tab,
+            template: Template::new("".to_string()),
         })
     }
 
@@ -123,6 +127,7 @@ impl<'a> App<'a> {
                                 _ => FileListPriorityFormPopup::event(self, key.code)?,
                             }
                         AppMode::HelpPopup => HelpPopup::event(self, key.code)?,
+                        AppMode::CreateTemplate(_) => CreateTemplatePopup::event(self, key.code)?,
                     }
                 }
             }
@@ -151,6 +156,7 @@ impl<'a> App<'a> {
             AppMode::FileFolderListPriority(_) => FileFolderPriorityFormPopup::ui(f, self),
             AppMode::FileListPriority(_) => FileListPriorityFormPopup::ui(f, self),
             AppMode::HelpPopup => HelpPopup::ui(f, self),
+            AppMode::CreateTemplate(_) => CreateTemplatePopup::ui(f, self),
             _ => {}
         }
         ErrorPopup::error_popup(f, self);
