@@ -4,7 +4,7 @@ use std::collections::HashSet;
 #[cfg(target_os = "linux")]
 use std::os::unix::fs::PermissionsExt;
 use regex::Regex;
-use serde::{Serialize, Deserialize};
+use serde::{ Serialize, Deserialize };
 use tui::style::Color;
 use crate::file_item_list_filter::{ FileFolderFilter, FolderFilter };
 use crate::file_item_list_priority::{ FileFolderPriority, FilePriority, FolderPriority };
@@ -826,7 +826,7 @@ impl Folder {
         });
     }
     pub fn get_json(&self) -> String {
-        serde_json::to_string(&self).unwrap()
+        serde_json::to_string_pretty(&self).unwrap()
     }
 }
 
