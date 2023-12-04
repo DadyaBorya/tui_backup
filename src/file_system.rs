@@ -131,11 +131,16 @@ pub struct Folder {
     pub name: String,
     pub path: String,
     pub selected: bool,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub contents: Vec<FileSystemItem>,
     pub extension: String,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub file_filter_rules: Vec<FileFolderFilter>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub folder_filter_rules: Vec<FolderFilter>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub file_priority_rules: Vec<FileFolderPriority>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub folder_priority_rules: Vec<FolderPriority>,
 }
 
@@ -836,6 +841,7 @@ pub struct File {
     pub path: String,
     pub selected: bool,
     pub extension: String,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub file_priority_rules: Vec<FilePriority>,
 }
 
