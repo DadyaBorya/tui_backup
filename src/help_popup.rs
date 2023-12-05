@@ -43,7 +43,8 @@ impl HelpPopup {
                     ("a", "Select all"),
                     ("s", "Select all into"),
                     ("f", "Filter"),
-                    ("p", "Priority")
+                    ("p", "Priority"),
+                    ("c", "Save template")
                 ]
             }
             AppMode::FolderListFilter(filter) => {

@@ -9,7 +9,12 @@ use tui::{
     style::{ Style, Modifier, Color },
 };
 
-use crate::{ file_service, file_system::{ FileSystemItem, Folder }, app::App, app_mode::AppMode };
+use crate::{
+    file_service,
+    file_system::{ FileSystemItem, Folder },
+    app::App,
+    app_mode::{ AppMode, CreateTemplate },
+};
 
 #[derive(Clone)]
 pub struct TemplateList {
@@ -123,6 +128,29 @@ impl TemplateList {
         self.set_index_table(Some(index - 1));
     }
 
+    pub fn edit_current_template(app: &mut App) -> Result<(), std::io::Error> {
+        if let Some(index) = app.template_list.list_state.selected() {
+            if index < app.template_list.templates.len() {
+                let template_name = app.template_list.templates[index].clone();
+                let template_path = format!("templates/{}.json", &template_name);
+
+                let template_json = file_service::get_file_content(&template_path)?;
+                let template: Folder = serde_json::from_str(&template_json)?;
+
+                app.file_list.root.reset(template);
+                app.is_edit_template_list = true;
+                app.create_template.form_name = template_name;
+                app.tabs.index = 0;
+                app.file_list.init_index_table();
+                app.template_list.list_state.select(None);
+                app.file_list.root.set_rows_of_current_dir();
+                app.change_mode(AppMode::FileList);
+            }
+        }
+
+        Ok(())
+    }
+
     pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
         let selected_style = Style::default().add_modifier(Modifier::REVERSED).fg(Color::Yellow);
 
@@ -165,6 +193,9 @@ impl TemplateList {
             }
             KeyCode::Char('d') => {
                 app.template_list.remove_current_template();
+            }
+            KeyCode::Char('e') => {
+                TemplateList::edit_current_template(app)?;
             }
             _ => {}
         }

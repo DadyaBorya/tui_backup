@@ -43,12 +43,6 @@ pub fn get_file_content(path: &String) -> Result<String, std::io::Error> {
     fs::read_to_string(path)
 }
 
-pub fn log(data: &str) {
-    let mut file = OpenOptions::new().append(true).open("log.txt").unwrap();
-
-    file.write_all(data.as_bytes()).unwrap();
-}
-
 pub fn save_content(path: &str, content: String) -> Result<(), std::io::Error> {
     let mut file = OpenOptions::new()
         .write(true)

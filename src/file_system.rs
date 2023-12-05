@@ -43,6 +43,14 @@ impl FileSystem {
 
         Ok(file_system)
     }
+
+    pub fn reset(&mut self, root_dir: Folder) {
+        self.root_dir = root_dir;
+        self.current_path = "/".to_string();
+        self.history_index = vec![];
+        self.set_rows_of_current_dir();
+    }
+
     pub fn set_rows_of_current_dir(&mut self) {
         let current_dir = self.root_dir.find_folder_mut(&self.current_path.clone());
 

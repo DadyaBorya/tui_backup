@@ -49,6 +49,7 @@ pub struct App<'a> {
     pub is_edit_folder_priority_form_popup: bool,
     pub is_edit_file_folder_priority_form_popup: bool,
     pub is_edit_file_priority_form_popup: bool,
+    pub is_edit_template_list: bool,
     pub error: Option<String>,
     pub exit: bool,
 }
@@ -69,6 +70,7 @@ impl<'a> App<'a> {
             is_edit_file_folder_priority_form_popup: false,
             is_edit_file_priority_form_popup: false,
             is_edit_folder_priority_form_popup: false,
+            is_edit_template_list: false,
             prev_mode: AppMode::Tab,
             create_template: Template::new("".to_string()),
         })
