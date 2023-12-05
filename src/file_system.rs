@@ -91,27 +91,54 @@ impl FileSystem {
         if let Some(dir) = self.root_dir.find_folder_mut(current_path) {
             for (i, item) in dir.contents.iter_mut().enumerate() {
                 if i == index {
-                    FileSystem::select_item(item);
+                    match item {
+                        FileSystemItem::File_(file) => {
+                            file.selected = !file.selected;
+                        }
+                        FileSystemItem::Folder_(folder) => {
+                            if let Ok(_) = folder.add_children_to_folder() {
+                                let bool = !folder.selected;
+
+                                folder.selected = bool;
+
+                                for item in folder.contents.iter_mut() {
+                                    FileSystem::select_item_bool(item, bool);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-    pub fn select_item(item: &mut FileSystemItem) {
+
+    pub fn select_item_bool(item: &mut FileSystemItem, bool: bool) {
         match item {
             FileSystemItem::File_(file) => {
-                file.selected = !file.selected;
+                file.selected = bool;
             }
             FileSystemItem::Folder_(folder) => {
-                folder.selected = !folder.selected;
+                folder.selected = bool;
             }
         }
     }
+
     pub fn select_all(&mut self) {
         let current_path = &self.current_path.clone();
 
         if let Some(folder) = self.root_dir.find_folder_mut(current_path) {
             for item in folder.contents.iter_mut() {
-                FileSystem::select_item(item);
+                if let FileSystemItem::Folder_(folder) = item {
+                    if let Ok(_) = folder.add_children_to_folder() {
+                        let bool = !folder.selected;
+
+                        folder.selected = bool;
+
+                        for item in folder.contents.iter_mut() {
+                            FileSystem::select_item_bool(item, bool);
+                        }
+                    }
+                }
             }
         }
     }
