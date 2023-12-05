@@ -1,8 +1,6 @@
 use crate::file_service;
 use std::cmp::Ordering;
 use std::collections::HashSet;
-#[cfg(target_os = "linux")]
-use std::os::unix::fs::PermissionsExt;
 use regex::Regex;
 use serde::{ Serialize, Deserialize };
 use tui::style::Color;
