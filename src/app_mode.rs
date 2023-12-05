@@ -4,6 +4,7 @@ pub enum AppMode {
     FileList,
     ErrorPopup,
     HelpPopup,
+    TemplateList,
     FolderListFilter(FolderListFilter),
     FileFolderListFilter(FileFolderListFilter),
     FolderListPriority(FolderListPriority),

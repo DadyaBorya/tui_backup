@@ -13,6 +13,7 @@ use crate::{
     widget_gen::WidgetGen,
     app_mode::{ CreateTemplate, AppMode },
     file_service,
+    file_list::FileList,
 };
 
 #[derive(Clone)]
@@ -36,12 +37,14 @@ impl CreateTemplatePopup {
             .constraints([Constraint::Length(3), Constraint::Length(3)].as_ref())
             .split(area);
 
-        let name_input = WidgetGen::form_input("Name", app.template.form_name.as_str(), match
-            app.mode
-        {
-            AppMode::CreateTemplate(CreateTemplate::Name) => Style::default().fg(Color::Yellow),
-            _ => Style::default(),
-        });
+        let name_input = WidgetGen::form_input(
+            "Name",
+            app.create_template.form_name.as_str(),
+            match app.mode {
+                AppMode::CreateTemplate(CreateTemplate::Name) => Style::default().fg(Color::Yellow),
+                _ => Style::default(),
+            }
+        );
 
         f.render_widget(name_input, chunks[0]);
 
@@ -58,7 +61,7 @@ impl CreateTemplatePopup {
             AppMode::CreateTemplate(CreateTemplate::Form) => {
                 match key_code {
                     KeyCode::Esc => {
-                        app.template.clear_inputs();
+                        app.create_template.clear_inputs();
                         app.change_mode(AppMode::FileList);
                     }
                     KeyCode::Tab => {
@@ -73,10 +76,10 @@ impl CreateTemplatePopup {
                         app.change_mode(AppMode::CreateTemplate(CreateTemplate::Form));
                     }
                     KeyCode::Char(c) => {
-                        app.template.form_name.push(c);
+                        app.create_template.form_name.push(c);
                     }
                     KeyCode::Backspace => {
-                        app.template.form_name.pop();
+                        app.create_template.form_name.pop();
                     }
                     KeyCode::Tab => {
                         app.change_mode(AppMode::CreateTemplate(CreateTemplate::Submit));
@@ -93,12 +96,16 @@ impl CreateTemplatePopup {
                         app.change_mode(AppMode::CreateTemplate(CreateTemplate::Name));
                     }
                     KeyCode::Enter => {
-                        if !app.template.form_name.is_empty() {
-                            let path = format!("{}.json", app.template.form_name.as_str());
+                        if !app.create_template.form_name.is_empty() {
+                            let path = format!("{}.json", app.create_template.form_name.as_str());
 
                             file_service::save_template(&app.file_list.root.root_dir, &path)?;
-                            app.template.clear_inputs();
-                            app.change_mode(AppMode::FileList);
+                            app.create_template.clear_inputs();
+                            app.file_list = FileList::new()?;
+                            app.tabs.index = 1;
+                            app.template_list.renew_templates();
+                            app.template_list.init_index_table();
+                            app.change_mode(AppMode::TemplateList);
                         }
                     }
                     _ => {}

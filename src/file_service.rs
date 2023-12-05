@@ -71,7 +71,7 @@ pub fn save_template(folder: &Folder, path: &str) -> Result<(), std::io::Error> 
     Ok(())
 }
 
-pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, std::io::Error> {
+pub fn get_system_items_from_path(path: &str) -> Result<Vec<FileSystemItem>, std::io::Error> {
     let entries = fs::read_dir(path)?;
 
     let mut system_items = Vec::new();
@@ -120,6 +120,11 @@ pub fn get_system_items_from_path(path: String) -> Result<Vec<FileSystemItem>, s
     }
 
     Ok(system_items)
+}
+
+pub fn remove_file(path: &str) -> Result<(), std::io::Error> {
+    fs::remove_file(path)?;
+    Ok(())
 }
 
 pub fn normalize_path(path: &mut String) -> String {

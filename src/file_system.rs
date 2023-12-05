@@ -131,16 +131,11 @@ pub struct Folder {
     pub name: String,
     pub path: String,
     pub selected: bool,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub contents: Vec<FileSystemItem>,
     pub extension: String,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub file_filter_rules: Vec<FileFolderFilter>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub folder_filter_rules: Vec<FolderFilter>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub file_priority_rules: Vec<FileFolderPriority>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub folder_priority_rules: Vec<FolderPriority>,
 }
 
@@ -700,7 +695,7 @@ impl Folder {
     }
 
     pub fn add_children_to_folder(&mut self) -> Result<(), std::io::Error> {
-        let content = file_service::get_system_items_from_path(self.path.clone())?;
+        let content = file_service::get_system_items_from_path(&self.path)?;
 
         self.add_existing_items(content.clone());
 
@@ -841,7 +836,6 @@ pub struct File {
     pub path: String,
     pub selected: bool,
     pub extension: String,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub file_priority_rules: Vec<FilePriority>,
 }
 

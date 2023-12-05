@@ -16,7 +16,7 @@ pub struct TabC<'a> {
 impl<'a> TabC<'a> {
     pub fn new() -> Self {
         TabC {
-            titles: vec!["Tree", "Schemes"],
+            titles: vec!["File Explorer", "Templates"],
             index: 0,
         }
     }
@@ -37,6 +37,11 @@ impl<'a> TabC<'a> {
                     0 => {
                         app.file_list.init_index_table();
                         app.change_mode(AppMode::FileList);
+                    }
+                    1 => {
+                        app.template_list.renew_templates();
+                        app.template_list.init_index_table();
+                        app.change_mode(AppMode::TemplateList);
                     }
                     _ => {}
                 }

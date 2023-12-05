@@ -22,6 +22,7 @@ mod file_list_priority_form_popup;
 mod help_popup;
 mod create_template_popup;
 mod template;
+mod template_list;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::new()?;

@@ -10,6 +10,7 @@ use crate::file_list::FileList;
 use crate::help_popup::HelpPopup;
 use crate::tab_c::TabC;
 use crate::template::Template;
+use crate::template_list::TemplateList;
 use crossterm::event::EnableMouseCapture;
 use crossterm::terminal::{
     disable_raw_mode,
@@ -41,7 +42,8 @@ pub struct App<'a> {
     pub file_list: FileList,
     pub file_item_list_filter: FileItemListFilter,
     pub file_item_list_priority: FileItemListPriority,
-    pub template: Template,
+    pub template_list: TemplateList,
+    pub create_template: Template,
     pub is_edit_folder_filter_form_popup: bool,
     pub is_edit_file_filter_form_popup: bool,
     pub is_edit_folder_priority_form_popup: bool,
@@ -59,6 +61,7 @@ impl<'a> App<'a> {
             file_list: FileList::new()?,
             file_item_list_filter: FileItemListFilter::new(),
             file_item_list_priority: FileItemListPriority::new(),
+            template_list: TemplateList::new(),
             exit: false,
             error: None,
             is_edit_folder_filter_form_popup: false,
@@ -67,7 +70,7 @@ impl<'a> App<'a> {
             is_edit_file_priority_form_popup: false,
             is_edit_folder_priority_form_popup: false,
             prev_mode: AppMode::Tab,
-            template: Template::new("".to_string()),
+            create_template: Template::new("".to_string()),
         })
     }
 
@@ -128,6 +131,7 @@ impl<'a> App<'a> {
                             }
                         AppMode::HelpPopup => HelpPopup::event(self, key.code)?,
                         AppMode::CreateTemplate(_) => CreateTemplatePopup::event(self, key.code)?,
+                        AppMode::TemplateList => TemplateList::event(self, key.code)?,
                     }
                 }
             }
@@ -146,6 +150,9 @@ impl<'a> App<'a> {
         TabC::ui(self, f, &chunks);
         match self.tabs.index {
             0 => FileList::ui(self, f, &chunks),
+            1 => {
+                TemplateList::ui(self, f, &chunks);
+            }
             _ => {}
         }
 

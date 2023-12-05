@@ -296,7 +296,7 @@ impl FileList {
                     .title(app.file_list.root.current_path.as_str())
             )
             .highlight_style(selected_style)
-            .highlight_symbol(">> ")
+            .highlight_symbol("->")
             .widths(&[Constraint::Length(3), Constraint::Length(40), Constraint::Min(10)]);
         f.render_stateful_widget(t, list_chunks[0], &mut app.file_list.table);
 
