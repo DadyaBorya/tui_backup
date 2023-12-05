@@ -13,7 +13,7 @@ use crate::{
     file_service,
     file_system::{ FileSystemItem, Folder },
     app::App,
-    app_mode::{ AppMode, CreateTemplate },
+    app_mode::AppMode,
 };
 
 #[derive(Clone)]
