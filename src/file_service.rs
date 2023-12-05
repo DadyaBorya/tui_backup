@@ -36,7 +36,7 @@ pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
 
 #[cfg(target_os = "linux")]
 pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
-    return get_system_items_from_path("/".to_string());
+    return get_system_items_from_path("/");
 }
 
 pub fn get_file_content(path: &String) -> Result<String, std::io::Error> {
