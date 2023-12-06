@@ -9,12 +9,7 @@ use tui::{
     style::{ Style, Modifier, Color },
 };
 
-use crate::{
-    file_service,
-    file_system::{ FileSystemItem, Folder },
-    app::App,
-    app_mode::AppMode,
-};
+use crate::{ file_service, file_system::{ FileSystemItem, Folder }, app::App, app_mode::AppMode };
 
 #[derive(Clone)]
 pub struct TemplateList {
@@ -196,6 +191,10 @@ impl TemplateList {
             }
             KeyCode::Char('e') => {
                 TemplateList::edit_current_template(app)?;
+            }
+            KeyCode::Char('h') => {
+                app.prev_mode = AppMode::TemplateList;
+                app.change_mode(AppMode::HelpPopup);
             }
             _ => {}
         }

@@ -145,6 +145,15 @@ impl HelpPopup {
                     _ => { vec![("ESC", "Back"), ("Tab", "Next"), ("BackTab", "Previous")] }
                 }
             }
+            AppMode::TemplateList => {
+                vec![
+                    ("ESC", "Back"),
+                    ("↑", "Move up"),
+                    ("↓", "Move down"),
+                    ("d", "Delete"),
+                    ("e", "Edit")
+                ]
+            }
             _ => vec![],
         }
     }
@@ -164,7 +173,7 @@ impl HelpPopup {
         f.render_widget(block, area);
 
         let chunks = Layout::default()
-            .margin(2)
+            .margin(1)
             .constraints([Constraint::Min(0)].as_ref())
             .split(area);
 
