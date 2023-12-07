@@ -151,7 +151,8 @@ impl HelpPopup {
                     ("↑", "Move up"),
                     ("↓", "Move down"),
                     ("d", "Delete"),
-                    ("e", "Edit")
+                    ("e", "Edit"),
+                    ("c", "Create a new scheduler")
                 ]
             }
             _ => vec![],

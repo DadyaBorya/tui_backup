@@ -1,8 +1,15 @@
 use std::error::Error;
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
-use crate::app::App;
 
+mod file_list_component;
+mod helper_component;
+mod tab_component;
+mod application;
+mod generator;
+mod utils;
+
+// THIS IS THE SHIT CODE
 mod tab_c;
 mod app;
 mod file_system;
@@ -27,9 +34,10 @@ mod scheduler;
 mod create_scheduler;
 mod create_scheduler_popup;
 mod scheduler_list;
+// END THE SHIT CODE
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let mut app = App::new()?;
+    let mut app = application::app::App::init()?;
     app.execute_alternative_screen()?;
     let backend = CrosstermBackend::new(std::io::stdout());
     let mut terminal = Terminal::new(backend)?;
@@ -43,7 +51,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             break;
         }
 
-        if app.exit {
+        if app.state.exit {
             app.disable_alternative_screen(terminal.backend_mut())?;
             println!("Bye, bye!");
             break;
