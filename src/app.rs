@@ -5,11 +5,14 @@ use crossterm::event::{ DisableMouseCapture, KeyEventKind };
 use tui::backend::{ Backend, CrosstermBackend };
 use tui::{ Frame, Terminal };
 use tui::layout::{ Constraint, Direction, Layout };
+use crate::create_scheduler::CreateScheduler;
+use crate::create_scheduler_popup::CreateSchedulerPopup;
 use crate::create_template_popup::CreateTemplatePopup;
 use crate::file_list::FileList;
 use crate::help_popup::HelpPopup;
+use crate::scheduler_list::SchedulerList;
 use crate::tab_c::TabC;
-use crate::template::Template;
+use crate::create_template::CreateTemplate;
 use crate::template_list::TemplateList;
 use crossterm::event::EnableMouseCapture;
 use crossterm::terminal::{
@@ -40,10 +43,12 @@ pub struct App<'a> {
     pub prev_mode: AppMode,
     pub tabs: TabC<'a>,
     pub file_list: FileList,
+    pub scheduler_list: SchedulerList,
     pub file_item_list_filter: FileItemListFilter,
     pub file_item_list_priority: FileItemListPriority,
     pub template_list: TemplateList,
-    pub create_template: Template,
+    pub create_template: CreateTemplate,
+    pub create_scheduler: CreateScheduler,
     pub is_edit_folder_filter_form_popup: bool,
     pub is_edit_file_filter_form_popup: bool,
     pub is_edit_folder_priority_form_popup: bool,
@@ -72,7 +77,15 @@ impl<'a> App<'a> {
             is_edit_folder_priority_form_popup: false,
             is_edit_template_list: false,
             prev_mode: AppMode::Tab,
-            create_template: Template::new("".to_string()),
+            scheduler_list: SchedulerList::new(),
+            create_template: CreateTemplate::new(String::new()),
+            create_scheduler: CreateScheduler::new(
+                String::new(),
+                String::new(),
+                String::new(),
+                String::new(),
+                String::new()
+            ),
         })
     }
 
@@ -134,6 +147,8 @@ impl<'a> App<'a> {
                         AppMode::HelpPopup => HelpPopup::event(self, key.code)?,
                         AppMode::CreateTemplate(_) => CreateTemplatePopup::event(self, key.code)?,
                         AppMode::TemplateList => TemplateList::event(self, key.code)?,
+                        AppMode::CreateScheduler(_) => CreateSchedulerPopup::event(self, key.code)?,
+                        AppMode::SchedulerList => SchedulerList::event(self, key.code)?,
                     }
                 }
             }
@@ -152,9 +167,8 @@ impl<'a> App<'a> {
         TabC::ui(self, f, &chunks);
         match self.tabs.index {
             0 => FileList::ui(self, f, &chunks),
-            1 => {
-                TemplateList::ui(self, f, &chunks);
-            }
+            1 => TemplateList::ui(self, f, &chunks),
+            2 => SchedulerList::ui(self, f, &chunks),
             _ => {}
         }
 
@@ -166,6 +180,7 @@ impl<'a> App<'a> {
             AppMode::FileListPriority(_) => FileListPriorityFormPopup::ui(f, self),
             AppMode::HelpPopup => HelpPopup::ui(f, self),
             AppMode::CreateTemplate(_) => CreateTemplatePopup::ui(f, self),
+            AppMode::CreateScheduler(_) => CreateSchedulerPopup::ui(f, self),
             _ => {}
         }
         ErrorPopup::error_popup(f, self);

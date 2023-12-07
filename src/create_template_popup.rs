@@ -61,7 +61,9 @@ impl CreateTemplatePopup {
             AppMode::CreateTemplate(CreateTemplate::Form) => {
                 match key_code {
                     KeyCode::Esc => {
-                        app.create_template.clear_inputs();
+                        if !app.is_edit_template_list {
+                            app.create_template.clear_inputs();
+                        }
                         app.change_mode(AppMode::FileList);
                     }
                     KeyCode::Tab => {
@@ -97,7 +99,7 @@ impl CreateTemplatePopup {
                     }
                     KeyCode::Enter => {
                         if !app.create_template.form_name.is_empty() {
-                            let path = format!("{}.json", app.create_template.form_name.as_str());
+                            let path = format!("templates/{}.json", app.create_template.form_name.as_str());
 
                             file_service::save_template(&app.file_list.root.root_dir, &path)?;
                             app.create_template.clear_inputs();

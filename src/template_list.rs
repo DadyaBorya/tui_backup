@@ -9,7 +9,13 @@ use tui::{
     style::{ Style, Modifier, Color },
 };
 
-use crate::{ file_service, file_system::{ FileSystemItem, Folder }, app::App, app_mode::AppMode };
+use crate::{
+    file_service,
+    file_system::{ FileSystemItem, Folder },
+    app::App,
+    app_mode::{ AppMode, CreateScheduler },
+    file_list::FileList,
+};
 
 #[derive(Clone)]
 pub struct TemplateList {
@@ -192,9 +198,25 @@ impl TemplateList {
             KeyCode::Char('e') => {
                 TemplateList::edit_current_template(app)?;
             }
+            KeyCode::Char('n') => {
+                app.create_template.clear_inputs();
+                app.file_list = FileList::new()?;
+                app.file_list.root.reset(app.file_list.root.root_dir.clone());
+                app.is_edit_template_list = true;
+                app.tabs.index = 0;
+                app.file_list.init_index_table();
+                app.template_list.list_state.select(None);
+                app.file_list.root.set_rows_of_current_dir();
+                app.change_mode(AppMode::FileList);
+            }
             KeyCode::Char('h') => {
                 app.prev_mode = AppMode::TemplateList;
                 app.change_mode(AppMode::HelpPopup);
+            }
+            KeyCode::Char('c') => {
+                if let Some(_) = app.template_list.list_state.selected() {
+                    app.change_mode(AppMode::CreateScheduler(CreateScheduler::Form));
+                }
             }
             _ => {}
         }

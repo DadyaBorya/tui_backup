@@ -16,7 +16,7 @@ pub struct TabC<'a> {
 impl<'a> TabC<'a> {
     pub fn new() -> Self {
         TabC {
-            titles: vec!["File Explorer", "Templates"],
+            titles: vec!["File Explorer", "Templates", "Schedulers"],
             index: 0,
         }
     }
@@ -42,6 +42,12 @@ impl<'a> TabC<'a> {
                         app.template_list.renew_templates();
                         app.template_list.init_index_table();
                         app.change_mode(AppMode::TemplateList);
+                    }
+                    2 => {
+                        app.scheduler_list.renew_schedules();
+                        app.scheduler_list.set_rows();
+                        app.scheduler_list.init_index_table();
+                        app.change_mode(AppMode::SchedulerList);
                     }
                     _ => {}
                 }

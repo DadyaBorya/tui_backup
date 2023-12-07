@@ -5,12 +5,14 @@ pub enum AppMode {
     ErrorPopup,
     HelpPopup,
     TemplateList,
+    SchedulerList,
     FolderListFilter(FolderListFilter),
     FileFolderListFilter(FileFolderListFilter),
     FolderListPriority(FolderListPriority),
     FileFolderListPriority(FileFolderListPriority),
     FileListPriority(FileListPriority),
     CreateTemplate(CreateTemplate),
+    CreateScheduler(CreateScheduler),
 }
 
 #[derive(PartialEq, Clone)]
@@ -66,5 +68,16 @@ pub enum FileListPriority {
 pub enum CreateTemplate {
     Form,
     Name,
+    Submit,
+}
+
+#[derive(PartialEq, Clone)]
+pub enum CreateScheduler {
+    Form,
+    Name,
+    Clouds,
+    Protocols,
+    Cron,
+    SpeedLimit,
     Submit,
 }

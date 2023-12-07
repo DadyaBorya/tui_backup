@@ -4,6 +4,7 @@ use std::io::Write;
 use std::path::{ Path, PathBuf };
 
 use crate::file_system::{ File, FileSystemItem, Folder };
+use crate::scheduler::Scheduler;
 
 #[cfg(target_os = "windows")]
 pub fn get_root_system_items() -> Result<Vec<FileSystemItem>, std::io::Error> {
@@ -44,11 +45,7 @@ pub fn get_file_content(path: &String) -> Result<String, std::io::Error> {
 }
 
 pub fn save_content(path: &str, content: String) -> Result<(), std::io::Error> {
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create(true)
-        .truncate(true)
-        .open(format!("templates/{}", path))?;
+    let mut file = OpenOptions::new().write(true).create(true).truncate(true).open(path)?;
 
     file.write_all(content.as_bytes())?;
     Ok(())
@@ -60,6 +57,17 @@ pub fn save_template(folder: &Folder, path: &str) -> Result<(), std::io::Error> 
     }
 
     let json = folder.get_json();
+    save_content(path, json)?;
+
+    Ok(())
+}
+
+pub fn save_scheduler(scheduler: &Scheduler, path: &str) -> Result<(), std::io::Error> {
+    if !Path::new("schedulers").is_dir() {
+        fs::create_dir("schedulers")?;
+    }
+
+    let json = scheduler.get_json();
     save_content(path, json)?;
 
     Ok(())

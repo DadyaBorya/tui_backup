@@ -4,7 +4,7 @@ use tui::Frame;
 use tui::layout::{ Alignment, Constraint, Layout };
 use tui::style::{ Color, Style };
 use tui::widgets::{ Block, Borders, BorderType, Clear };
-use crate::app::{ App };
+use crate::app::App;
 use crate::app_mode::{ AppMode, FolderListFilter };
 use crate::file_item_list_filter::FolderFilter;
 use crate::file_system::FileSystemItem;
