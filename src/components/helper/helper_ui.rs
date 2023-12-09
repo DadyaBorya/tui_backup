@@ -10,10 +10,7 @@ use crate::application::{ app::App, app_mode::AppMode };
 pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
     let helper_text = get_helper_text(&app);
 
-    let block = Block::default()
-        .title("Help")
-        .borders(Borders::ALL)
-        .border_type(BorderType::Rounded);
+    let block = Block::default().borders(Borders::ALL).border_type(BorderType::Rounded);
 
     let paragraph = Paragraph::new(helper_text).block(block).alignment(Alignment::Center);
 

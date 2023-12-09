@@ -13,6 +13,9 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         KeyCode::Up => file_list.move_up(),
         KeyCode::Right => file_list.open()?,
         KeyCode::Left => file_list.close(),
+        KeyCode::Char(' ') => file_list.select()?,
+        KeyCode::Char('s') => file_list.select_deep()?,
+        KeyCode::Char('a') => file_list.select_all(),
         _ => {}
     }
     Ok(())

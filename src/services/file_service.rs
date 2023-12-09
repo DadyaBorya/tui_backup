@@ -29,24 +29,15 @@ pub fn root() -> Result<Vec<DirEntry>, std::io::Error> {
 pub fn entries(path: &Path) -> Result<Vec<DirEntry>, std::io::Error> {
     let entries = fs::read_dir(path)?;
     let mut dir_entries = vec![];
-    let mut file_entries = vec![];
-    
+
     for entry in entries {
         let entry = entry?;
         let path = entry.path();
         let mut dir_entry = DirEntry::default();
         dir_entry.path = path;
 
-        match dir_entry.is_dir() {
-            true => dir_entries.push(dir_entry),
-            false => file_entries.push(dir_entry),
-        };
+        dir_entries.push(dir_entry);
     }
-
-    dir_entries.sort_by(|a, b| a.path.cmp(&b.path));
-    file_entries.sort_by(|a, b| a.path.cmp(&b.path));
-
-    dir_entries.append(&mut file_entries);
 
     Ok(dir_entries)
 }

@@ -4,7 +4,7 @@ use crate::utils::table_util;
 
 use super::file_list_state::FileListState;
 
-const HELP: &'static str = "| ↑ Up | ↓ Down | ← Out | → Inside |";
+const HELP: &'static str = "| ↑ Up | ↓ Down | ← Out | → Inside | SPACE~Select | s~Select Deep | a~Select All";
 
 pub struct FileListComponent {
     pub state: FileListState,
@@ -62,6 +62,29 @@ impl FileListComponent {
 
         self.state.set_rows();
         self.state.table_state.select(self.state.history.pop());
+    }
+
+    pub fn select(&mut self) -> Result<(), std::io::Error> {
+        match self.state.select() {
+            Ok(_) => self.state.set_rows(),
+            _ => {}
+        }
+
+        Ok(())
+    }
+
+    pub fn select_deep(&mut self) -> Result<(), std::io::Error> {
+        match self.state.select_deep() {
+            Ok(_) => self.state.set_rows(),
+            _ => {}
+        }
+
+        Ok(())
+    }
+
+    pub fn select_all(&mut self) {
+        self.state.select_all();
+        self.state.set_rows();
     }
 
     pub fn get_helper_text(&self) -> &'static str {

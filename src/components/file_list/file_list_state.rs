@@ -52,7 +52,34 @@ impl FileListState {
 
         None
     }
-
+    pub fn select(&mut self) -> Result<(), std::io::Error> {
+        if let Some(entry) = self.get_selected_entry() {
+            match entry.is_dir() {
+                true => entry.select_dir_entries(!entry.selected)?,
+                false => entry.set_select(!entry.selected),
+            };
+        }
+        Ok(())
+    }
+    pub fn select_deep(&mut self) -> Result<(), std::io::Error> {
+        if let Some(entry) = self.get_selected_entry() {
+            match entry.is_dir() {
+                true => entry.select_deep_entries(!entry.selected),
+                false => entry.set_select(!entry.selected),
+            };
+        }
+        Ok(())
+    }
+    pub fn select_all(&mut self) {
+        if
+            let Some(dir) = file_system_service::find_in_dir(
+                &mut self.root,
+                self.current_path.as_path()
+            )
+        {
+            dir.select_all();
+        }
+    }
     pub fn rows(&mut self) -> Vec<(Vec<String>, Color)> {
         if
             let Some(dir) = file_system_service::find_in_dir(
