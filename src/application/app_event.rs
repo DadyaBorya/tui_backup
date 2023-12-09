@@ -1,5 +1,7 @@
 use crossterm::event::{ self, KeyEventKind };
 use crossterm::event::Event::Key;
+use crate::components::dir_filter::dir_filter_event;
+use crate::components::file_filter::file_filter_event;
 use crate::components::file_list::file_list_event;
 use crate::components::message_popup::message_popup_event;
 use crate::components::tab::tab_event;
@@ -16,6 +18,11 @@ pub fn event(app: &mut App) -> Result<(), std::io::Error> {
                     AppMode::Tab => tab_event::event(app, key.code)?,
                     AppMode::FileList => file_list_event::event(app, key.code)?,
                     AppMode::MessagePopup => message_popup_event::event(app, key.code),
+                    AppMode::FileFilter => file_filter_event::event(app, key.code)?,
+                    AppMode::DirFilter => dir_filter_event::event(app, key.code)?,
+                    AppMode::FilePriority => todo!(),
+                    AppMode::DirPriority => todo!(),
+                    AppMode::DirFilePriority => todo!(),
                 }
             }
         }

@@ -15,6 +15,14 @@ impl FileListComponent {
         Ok(FileListComponent { state: FileListState::init()? })
     }
 
+    pub fn is_open_filter(&mut self) -> bool {
+        if let Some(entry) = self.state.get_selected_entry() {
+            return entry.is_dir();
+        }
+
+        false
+    }
+
     pub fn move_up(&mut self) {
         table_util::move_up(&mut self.state.table_state, self.state.table_rows.len());
     }

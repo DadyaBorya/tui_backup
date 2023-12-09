@@ -8,7 +8,7 @@ use crate::{
     components::{
         file_list::file_list_component::FileListComponent,
         tab::tab_component::TabComponent,
-        message_popup::message_popup_components::MessagePopupComponent,
+        message_popup::message_popup_components::MessagePopupComponent, file_filter::file_filter_component::FileFilterComponent, dir_filter::dir_filter_component::DirFilterComponent,
     },
 };
 
@@ -35,6 +35,9 @@ pub struct AppComponents {
     pub tabs: TabComponent,
     pub file_list: FileListComponent,
     pub message_popup: MessagePopupComponent,
+    pub file_filter: FileFilterComponent, 
+    pub dir_filter: DirFilterComponent,
+
     pub scheduler_list: SchedulerList,
     pub file_item_list_filter: FileItemListFilter,
     pub file_item_list_priority: FileItemListPriority,
@@ -60,6 +63,9 @@ impl AppComponents {
             tabs: TabComponent::init(),
             file_list: FileListComponent::init()?,
             message_popup: MessagePopupComponent::init(),
+            file_filter: FileFilterComponent::init(),
+            dir_filter: DirFilterComponent::init(),
+            
             file_item_list_filter: FileItemListFilter::new(),
             file_item_list_priority: FileItemListPriority::new(),
             template_list: TemplateList::new(),

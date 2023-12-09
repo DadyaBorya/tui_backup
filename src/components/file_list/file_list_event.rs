@@ -16,6 +16,11 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         KeyCode::Char(' ') => file_list.select()?,
         KeyCode::Char('s') => file_list.select_deep()?,
         KeyCode::Char('a') => file_list.select_all(),
+        KeyCode::Char('f') => {
+            if file_list.is_open_filter() {
+                app.change_mode(AppMode::FileFilter, AppMode::FileList);
+            }
+        }
         _ => {}
     }
     Ok(())

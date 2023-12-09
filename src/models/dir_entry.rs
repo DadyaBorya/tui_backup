@@ -1,9 +1,11 @@
 use std::path::PathBuf;
-use rayon::prelude::*;
+use rayon::{ prelude::*, vec };
 
 use tui::style::Color;
 
 use crate::services::file_service;
+
+use super::{ entry_file_filter::EntryFileFilter, entry_dir_filter::EntryDirFilter };
 
 const DIR_COLOR: Color = Color::Green;
 const FILE_COLOR: Color = Color::Blue;
@@ -13,6 +15,8 @@ pub struct DirEntry {
     pub path: PathBuf,
     pub children: Option<Vec<DirEntry>>,
     pub selected: bool,
+    pub entry_file_filter: Option<Vec<EntryFileFilter>>,
+    pub entry_dir_filter: Option<Vec<EntryDirFilter>>,
 }
 
 impl DirEntry {
@@ -69,16 +73,6 @@ impl DirEntry {
         Ok(())
     }
 
-    pub fn get_selected(&mut self) -> Vec<DirEntry> {
-        let mut selected = vec![];
-
-        if let Some(children) = self.children.as_mut() {
-            selected = children.clone();
-            selected.retain(|entry| entry.selected);
-        }
-        selected
-    }
-
     pub fn sort_children(&mut self) {
         if let Some(children) = self.children.take() {
             let mut files: Vec<DirEntry> = Vec::new();
@@ -102,15 +96,19 @@ impl DirEntry {
     }
 
     pub fn compare_old_and_new_children(&mut self, new_children: Vec<DirEntry>) {
-        let mut selected = self.get_selected();
+        let mut children = vec![];
+
+        if let Some(old_children) = self.children.clone() {
+            children = old_children;
+        }
 
         for entry in new_children {
-            if !selected.iter().any(|selected_entry| selected_entry.path == entry.path) {
-                selected.push(entry);
+            if !children.iter().any(|selected_entry| selected_entry.path == entry.path) {
+                children.push(entry);
             }
         }
 
-        self.children = Some(selected);
+        self.children = Some(children);
     }
 
     pub fn set_select(&mut self, bool: bool) {

@@ -24,5 +24,10 @@ fn get_helper_text(app: &App) -> &'static str {
         AppMode::Tab => app.components.tabs.get_helper_text(),
         AppMode::FileList => app.components.file_list.get_helper_text(),
         AppMode::MessagePopup => app.components.message_popup.get_helper_text(),
+        AppMode::FileFilter => app.components.file_filter.get_helper_text(),
+        AppMode::DirFilter => app.components.dir_filter.get_helper_text(),
+        AppMode::FilePriority => todo!(),
+        AppMode::DirPriority => todo!(),
+        AppMode::DirFilePriority => todo!(),
     }
 }

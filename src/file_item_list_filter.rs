@@ -1,5 +1,5 @@
 use crossterm::event::KeyCode;
-use serde::{Serialize, Deserialize};
+use serde::{ Serialize, Deserialize };
 use tui::backend::Backend;
 use tui::Frame;
 use tui::layout::{ Rect, Layout, Direction, Constraint, Alignment };

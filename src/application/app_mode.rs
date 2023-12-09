@@ -3,6 +3,11 @@ pub enum AppMode {
     Tab,
     FileList,
     MessagePopup,
+    FileFilter,
+    DirFilter,
+    FilePriority,
+    DirPriority,
+    DirFilePriority
     // ErrorPopup,
     // HelpPopup,
     // TemplateList,
