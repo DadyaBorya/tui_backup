@@ -1,12 +1,15 @@
 use crate::{
-    file_list::FileList,
     scheduler_list::SchedulerList,
     file_item_list_filter::FileItemListFilter,
     file_item_list_priority::FileItemListPriority,
     template_list::TemplateList,
     create_template::CreateTemplate,
     create_scheduler::CreateScheduler,
-    tab_component::tab_component::TabComponent,
+    components::{
+        file_list::file_list_component::FileListComponent,
+        tab::tab_component::TabComponent,
+        message_popup::message_popup_components::MessagePopupComponent,
+    },
 };
 
 use super::app_mode::AppMode;
@@ -15,7 +18,6 @@ pub struct AppState {
     pub mode: AppMode,
     pub prev_mode: AppMode,
     pub flags: AppFlags,
-    pub components: AppComponents,
     pub exit: bool,
 }
 
@@ -31,7 +33,8 @@ pub struct AppFlags {
 
 pub struct AppComponents {
     pub tabs: TabComponent,
-    pub file_list: FileList,
+    pub file_list: FileListComponent,
+    pub message_popup: MessagePopupComponent,
     pub scheduler_list: SchedulerList,
     pub file_item_list_filter: FileItemListFilter,
     pub file_item_list_priority: FileItemListPriority,
@@ -46,7 +49,6 @@ impl AppState {
             mode: AppMode::Tab,
             prev_mode: AppMode::Tab,
             flags: AppFlags::default(),
-            components: AppComponents::init()?,
             exit: false,
         })
     }
@@ -56,7 +58,8 @@ impl AppComponents {
     pub fn init() -> Result<Self, std::io::Error> {
         Ok(AppComponents {
             tabs: TabComponent::init(),
-            file_list: FileList::new()?,
+            file_list: FileListComponent::init()?,
+            message_popup: MessagePopupComponent::init(),
             file_item_list_filter: FileItemListFilter::new(),
             file_item_list_priority: FileItemListPriority::new(),
             template_list: TemplateList::new(),

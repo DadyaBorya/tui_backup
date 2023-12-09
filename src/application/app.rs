@@ -5,17 +5,25 @@ use crossterm::{
     execute,
     event::{ EnableMouseCapture, DisableMouseCapture },
 };
-use tui::{ backend::{ CrosstermBackend, Backend }, Terminal };
+use tui::{ backend::{ CrosstermBackend, Backend }, Terminal, style::Color };
 
-use super::{ app_state::AppState, app_ui, app_event };
+use super::{ app_state::{ AppState, AppComponents }, app_ui, app_event, app_mode::AppMode };
+
+pub static ACTIVE_BORDER_COLOR: Color = Color::Yellow;
 
 pub struct App {
     pub state: AppState,
+    pub components: AppComponents,
 }
 
 impl App {
     pub fn init() -> Result<Self, std::io::Error> {
-        Ok(App { state: AppState::init()? })
+        Ok(App { state: AppState::init()?, components: AppComponents::init()? })
+    }
+
+    pub fn change_mode(&mut self, mode: AppMode, prev_mode: AppMode) {
+        self.state.prev_mode = prev_mode;
+        self.state.mode = mode;
     }
 
     pub fn run_app<B: Backend>(
@@ -23,7 +31,11 @@ impl App {
         terminal: &mut Terminal<B>
     ) -> Result<(), std::io::Error> {
         terminal.draw(|f| app_ui::ui(self, f))?;
-        app_event::event(self)?;
+
+        if let Err(err) = app_event::event(self) {
+            self.components.message_popup.state.edit("Error".to_string(), err.to_string());
+            self.change_mode(AppMode::MessagePopup, self.state.mode.clone());
+        }
         Ok(())
     }
 

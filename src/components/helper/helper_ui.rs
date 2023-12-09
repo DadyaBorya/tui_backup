@@ -24,7 +24,8 @@ fn get_helper_text(app: &App) -> &'static str {
     let mode = &app.state.mode;
 
     match mode {
-        AppMode::Tab => app.state.components.tabs.get_helper_text(),
-        _ => "",
+        AppMode::Tab => app.components.tabs.get_helper_text(),
+        AppMode::FileList => app.components.file_list.get_helper_text(),
+        AppMode::MessagePopup => app.components.message_popup.get_helper_text(),
     }
 }

@@ -7,16 +7,17 @@ use tui::{
     widgets::{ Tabs, Block, Borders, BorderType },
 };
 
-use crate::application::app::App;
+use crate::application::{ app::{ App, ACTIVE_BORDER_COLOR }, app_mode::AppMode };
 
 const HEADER_FG: Color = Color::White;
 const SELECTED_HEADER_FG: Color = Color::Yellow;
 const CODE_NAME: &'static str = "Have The Guts";
 
 pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
-    let tabs = &mut app.state.components.tabs;
+    let tabs = &mut app.components.tabs;
     let headers = create_headers(&tabs.state.headers, tabs.state.index);
-    let tabs = create_tabs(headers);
+    let tabs = create_tabs(headers, app.state.mode == AppMode::Tab);
+
     f.render_widget(tabs, chunks[0]);
 }
 
@@ -37,8 +38,17 @@ fn create_headers(headers: &Vec<String>, current_index: usize) -> Vec<Spans<'_>>
         .collect::<Vec<Spans<'_>>>()
 }
 
-fn create_tabs(headers: Vec<Spans<'_>>) -> Tabs<'_> {
+fn create_tabs(headers: Vec<Spans<'_>>, is_active: bool) -> Tabs<'_> {
+    let style = match is_active {
+        true => Style::default().fg(ACTIVE_BORDER_COLOR),
+        false => Style::default(),
+    };
+
     Tabs::new(headers).block(
-        Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title(CODE_NAME)
+        Block::default()
+            .borders(Borders::ALL)
+            .border_style(style)
+            .border_type(BorderType::Rounded)
+            .title(CODE_NAME)
     )
 }

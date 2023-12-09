@@ -72,7 +72,6 @@ impl FileList {
         if let Some(current_folder) = self.root.get_current_folder() {
             if let Some(folder) = current_folder.find_folder_mut_in_content(index) {
                 folder.add_children_to_folder()?;
-
                 let current_path = folder.path.to_owned();
 
                 if folder.contents.len() > 0 {

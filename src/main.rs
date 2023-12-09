@@ -1,10 +1,11 @@
 use std::error::Error;
+use application::app::App;
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
 
-mod file_list_component;
-mod helper_component;
-mod tab_component;
+mod components;
+mod services;
+mod models;
 mod application;
 mod generator;
 mod utils;
@@ -37,7 +38,7 @@ mod scheduler_list;
 // END THE SHIT CODE
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let mut app = application::app::App::init()?;
+    let mut app = App::init()?;
     app.execute_alternative_screen()?;
     let backend = CrosstermBackend::new(std::io::stdout());
     let mut terminal = Terminal::new(backend)?;
