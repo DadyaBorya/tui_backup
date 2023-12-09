@@ -29,11 +29,15 @@ impl DirEntry {
     }
 
     pub fn extension(&self) -> String {
+        if self.is_dir() {
+            return "dir".to_string();
+        }
+
         let extension = self.path.extension().and_then(|ext| ext.to_str());
 
         match extension {
             Some(ext) => ext.to_string(),
-            None => "dir".to_string(),
+            None => "file".to_string(),
         }
     }
 

@@ -30,7 +30,7 @@ pub fn entries(path: &Path) -> Result<Vec<DirEntry>, std::io::Error> {
     let entries = fs::read_dir(path)?;
     let mut dir_entries = vec![];
     let mut file_entries = vec![];
-
+    
     for entry in entries {
         let entry = entry?;
         let path = entry.path();

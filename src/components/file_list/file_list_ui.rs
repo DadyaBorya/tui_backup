@@ -24,13 +24,11 @@ fn get_main_chunks(is_selected: bool, chunks: &Vec<Rect>) -> Vec<Rect> {
     match !is_selected {
         true =>
             Layout::default()
-                .margin(1)
                 .direction(Direction::Horizontal)
                 .constraints([Constraint::Percentage(100)].as_ref())
                 .split(chunks[1]),
         false =>
             Layout::default()
-                .margin(1)
                 .direction(Direction::Horizontal)
                 .constraints([Constraint::Percentage(65), Constraint::Percentage(35)].as_ref())
                 .split(chunks[1]),

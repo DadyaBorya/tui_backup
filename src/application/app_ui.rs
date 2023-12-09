@@ -3,7 +3,8 @@ use tui::{ backend::Backend, Frame, layout::{ Layout, Direction, Constraint, Rec
 use crate::components::{
     helper::helper_ui,
     file_list::file_list_ui,
-    tab::tab_ui, message_popup::message_popup_ui,
+    tab::tab_ui,
+    message_popup::message_popup_ui,
 };
 
 use super::{ app::App, app_mode::AppMode };

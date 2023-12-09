@@ -39,7 +39,6 @@ pub fn table<'a>(
         Row::new(cells)
             .style(Style::default().fg(item.1))
             .height(height as u16)
-            .bottom_margin(1)
     });
 
     let selected_style = Style::default().add_modifier(Modifier::REVERSED).fg(SELECTED_COLOR);
