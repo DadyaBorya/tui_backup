@@ -17,8 +17,19 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         KeyCode::Char('s') => file_list.select_deep()?,
         KeyCode::Char('a') => file_list.select_all(),
         KeyCode::Char('f') => {
-            if file_list.is_open_filter() {
+            if file_list.state.is_selected_dir() {
+                file_list.state.is_priority_mode = false;
                 app.change_mode(AppMode::FileFilter, AppMode::FileList);
+            }
+        }
+        KeyCode::Char('p') => {
+            if file_list.state.is_selected() {
+                file_list.state.is_priority_mode = true;
+
+                match file_list.state.is_selected_dir() {
+                    true => app.change_mode(AppMode::DirFilePriority, AppMode::FileList),
+                    false => app.change_mode(AppMode::FilePriority, AppMode::FileList),
+                }
             }
         }
         _ => {}

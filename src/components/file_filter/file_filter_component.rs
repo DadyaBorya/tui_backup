@@ -1,6 +1,6 @@
 use super::file_filter_state::FileFilterState;
 
-const HELP: &'static str = "| ↑ Up | ↓ Down | TAB~Next |";
+const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | ]~Next |";
 
 pub struct FileFilterComponent {
     pub state: FileFilterState,

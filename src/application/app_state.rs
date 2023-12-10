@@ -1,15 +1,12 @@
-use crate::{
-    scheduler_list::SchedulerList,
-    file_item_list_filter::FileItemListFilter,
-    file_item_list_priority::FileItemListPriority,
-    template_list::TemplateList,
-    create_template::CreateTemplate,
-    create_scheduler::CreateScheduler,
-    components::{
-        file_list::file_list_component::FileListComponent,
-        tab::tab_component::TabComponent,
-        message_popup::message_popup_components::MessagePopupComponent, file_filter::file_filter_component::FileFilterComponent, dir_filter::dir_filter_component::DirFilterComponent,
-    },
+use crate::components::{
+    file_list::file_list_component::FileListComponent,
+    tab::tab_component::TabComponent,
+    message_popup::message_popup_components::MessagePopupComponent,
+    file_filter::file_filter_component::FileFilterComponent,
+    dir_filter::dir_filter_component::DirFilterComponent,
+    dir_file_priority::dir_file_priority_component::DirFilePriorityComponent,
+    dir_priority::dir_priority_component::DirPriorityComponent,
+    file_priority::file_priority_component::FilePriorityComponent,
 };
 
 use super::app_mode::AppMode;
@@ -35,15 +32,11 @@ pub struct AppComponents {
     pub tabs: TabComponent,
     pub file_list: FileListComponent,
     pub message_popup: MessagePopupComponent,
-    pub file_filter: FileFilterComponent, 
+    pub file_filter: FileFilterComponent,
     pub dir_filter: DirFilterComponent,
-
-    pub scheduler_list: SchedulerList,
-    pub file_item_list_filter: FileItemListFilter,
-    pub file_item_list_priority: FileItemListPriority,
-    pub template_list: TemplateList,
-    pub create_template: CreateTemplate,
-    pub create_scheduler: CreateScheduler,
+    pub dir_file_priority: DirFilePriorityComponent,
+    pub dir_priority: DirPriorityComponent,
+    pub file_priority: FilePriorityComponent,
 }
 
 impl AppState {
@@ -65,19 +58,9 @@ impl AppComponents {
             message_popup: MessagePopupComponent::init(),
             file_filter: FileFilterComponent::init(),
             dir_filter: DirFilterComponent::init(),
-            
-            file_item_list_filter: FileItemListFilter::new(),
-            file_item_list_priority: FileItemListPriority::new(),
-            template_list: TemplateList::new(),
-            scheduler_list: SchedulerList::new(),
-            create_template: CreateTemplate::new(String::new()),
-            create_scheduler: CreateScheduler::new(
-                String::new(),
-                String::new(),
-                String::new(),
-                String::new(),
-                String::new()
-            ),
+            dir_file_priority: DirFilePriorityComponent::init(),
+            dir_priority: DirPriorityComponent::init(),
+            file_priority: FilePriorityComponent::init(),
         })
     }
 }

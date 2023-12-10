@@ -9,7 +9,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
             dir_filter.state.list_state.select(None);
             app.change_mode(AppMode::FileList, AppMode::DirFilter);
         }
-        KeyCode::BackTab => {
+        KeyCode::Char('[') => {
             dir_filter.state.list_state.select(None);
             app.change_mode(AppMode::FileFilter, AppMode::DirFilter);
         }

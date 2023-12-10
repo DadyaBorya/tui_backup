@@ -1,8 +1,11 @@
 use crossterm::event::{ self, KeyEventKind };
 use crossterm::event::Event::Key;
+use crate::components::dir_file_priority::dir_file_priority_event;
 use crate::components::dir_filter::dir_filter_event;
+use crate::components::dir_priority::dir_priority_event;
 use crate::components::file_filter::file_filter_event;
 use crate::components::file_list::file_list_event;
+use crate::components::file_priority::file_priority_event;
 use crate::components::message_popup::message_popup_event;
 use crate::components::tab::tab_event;
 
@@ -20,9 +23,9 @@ pub fn event(app: &mut App) -> Result<(), std::io::Error> {
                     AppMode::MessagePopup => message_popup_event::event(app, key.code),
                     AppMode::FileFilter => file_filter_event::event(app, key.code)?,
                     AppMode::DirFilter => dir_filter_event::event(app, key.code)?,
-                    AppMode::FilePriority => todo!(),
-                    AppMode::DirPriority => todo!(),
-                    AppMode::DirFilePriority => todo!(),
+                    AppMode::FilePriority => file_priority_event::event(app, key.code)?,
+                    AppMode::DirPriority => dir_priority_event::event(app, key.code)?,
+                    AppMode::DirFilePriority => dir_file_priority_event::event(app, key.code)?,
                 }
             }
         }

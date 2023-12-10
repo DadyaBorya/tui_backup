@@ -4,3 +4,6 @@ pub mod tab;
 pub mod message_popup;
 pub mod file_filter;
 pub mod dir_filter;
+pub mod dir_file_priority;
+pub mod dir_priority;
+pub mod file_priority;

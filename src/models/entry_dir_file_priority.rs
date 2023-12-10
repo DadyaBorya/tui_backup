@@ -1,12 +1,12 @@
 #[derive(Default, Clone)]
-pub struct EntryFilePriority {
+pub struct EntryDirFilePriority {
     pub regex: String,
     pub content: String,
     pub priority: usize,
     pub deep: usize
 }
 
-impl EntryFilePriority {
+impl EntryDirFilePriority {
     pub fn row(&self) -> String {
         format!(
             "regex: {regex} priority: {priority} deep: {deep}\n{content}",

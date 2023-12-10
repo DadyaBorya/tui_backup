@@ -4,7 +4,8 @@ use crate::utils::table_util;
 
 use super::file_list_state::FileListState;
 
-const HELP: &'static str = "| ↑ Up | ↓ Down | ← Out | → Inside | SPACE~Select | s~Select Deep | a~Select All";
+const HELP: &'static str =
+    "| ESC~Back | ↑ ↓ ← → Move | SPACE~Select | s~Select Deep | a~Select All | f~filter | p~priority |";
 
 pub struct FileListComponent {
     pub state: FileListState,
@@ -13,14 +14,6 @@ pub struct FileListComponent {
 impl FileListComponent {
     pub fn init() -> Result<Self, std::io::Error> {
         Ok(FileListComponent { state: FileListState::init()? })
-    }
-
-    pub fn is_open_filter(&mut self) -> bool {
-        if let Some(entry) = self.state.get_selected_entry() {
-            return entry.is_dir();
-        }
-
-        false
     }
 
     pub fn move_up(&mut self) {

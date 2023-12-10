@@ -1,11 +1,16 @@
 use std::path::PathBuf;
-use rayon::{ prelude::*, vec };
+use rayon::prelude::*;
 
 use tui::style::Color;
 
 use crate::services::file_service;
 
-use super::{ entry_file_filter::EntryFileFilter, entry_dir_filter::EntryDirFilter };
+use super::{
+    entry_file_filter::EntryFileFilter,
+    entry_dir_filter::EntryDirFilter,
+    entry_dir_file_priority::EntryDirFilePriority,
+    entry_dir_priority::EntryDirPriority,
+};
 
 const DIR_COLOR: Color = Color::Green;
 const FILE_COLOR: Color = Color::Blue;
@@ -17,6 +22,8 @@ pub struct DirEntry {
     pub selected: bool,
     pub entry_file_filter: Option<Vec<EntryFileFilter>>,
     pub entry_dir_filter: Option<Vec<EntryDirFilter>>,
+    pub entry_dir_file_priority: Option<Vec<EntryDirFilePriority>>,
+    pub entry_dir_priority: Option<Vec<EntryDirPriority>>,
 }
 
 impl DirEntry {

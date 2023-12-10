@@ -15,6 +15,7 @@ pub struct FileListState {
     pub table_rows: Vec<(Vec<String>, Color)>,
     pub current_path: PathBuf,
     pub history: Vec<usize>,
+    pub is_priority_mode: bool,
 }
 
 impl FileListState {
@@ -29,6 +30,15 @@ impl FileListState {
 
         Ok(state)
     }
+
+    pub fn is_selected_dir(&mut self) -> bool {
+        if let Some(entry) = self.get_selected_entry() {
+            return entry.is_dir();
+        }
+
+        false
+    }
+
     pub fn init_index_table(&mut self) {
         let len = self.table_rows.len();
         table_util::init_index_table(&mut self.table_state, len)

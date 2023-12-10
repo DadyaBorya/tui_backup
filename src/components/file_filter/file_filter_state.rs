@@ -5,7 +5,7 @@ use crate::models::entry_file_filter::EntryFileFilter;
 #[derive(Default)]
 pub struct FileFilterState {
     pub list_state: ListState,
-    pub rules: Vec<EntryFileFilter>
+    pub rules: Vec<EntryFileFilter>,
 }
 
 impl FileFilterState {

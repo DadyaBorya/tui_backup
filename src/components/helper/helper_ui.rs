@@ -26,8 +26,8 @@ fn get_helper_text(app: &App) -> &'static str {
         AppMode::MessagePopup => app.components.message_popup.get_helper_text(),
         AppMode::FileFilter => app.components.file_filter.get_helper_text(),
         AppMode::DirFilter => app.components.dir_filter.get_helper_text(),
-        AppMode::FilePriority => todo!(),
-        AppMode::DirPriority => todo!(),
-        AppMode::DirFilePriority => todo!(),
+        AppMode::FilePriority => app.components.file_priority.get_helper_text(),
+        AppMode::DirPriority => app.components.dir_priority.get_helper_text(),
+        AppMode::DirFilePriority => app.components.dir_file_priority.get_helper_text(),
     }
 }

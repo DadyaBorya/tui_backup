@@ -9,7 +9,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
             file_filter.state.list_state.select(None);
             app.change_mode(AppMode::FileList, AppMode::FileFilter);
         }
-        KeyCode::Tab => {
+        KeyCode::Char(']') => {
             file_filter.state.list_state.select(None);
             app.change_mode(AppMode::DirFilter, AppMode::FileList);
         }

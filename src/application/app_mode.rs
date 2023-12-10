@@ -5,9 +5,9 @@ pub enum AppMode {
     MessagePopup,
     FileFilter,
     DirFilter,
-    FilePriority,
     DirPriority,
-    DirFilePriority
+    DirFilePriority,
+    FilePriority,
     // ErrorPopup,
     // HelpPopup,
     // TemplateList,
