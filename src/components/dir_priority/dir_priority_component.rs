@@ -1,3 +1,5 @@
+use crate::application::{ app::App, app_mode::AppMode };
+
 use super::dir_priority_state::DirPriorityState;
 
 const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | [~Prev |";
@@ -11,6 +13,18 @@ impl DirPriorityComponent {
         DirPriorityComponent {
             state: DirPriorityState::init(),
         }
+    }
+
+    pub fn exit(app: &mut App) {
+        let dir_priority = &mut app.components.dir_priority;
+        dir_priority.state.list_state.select(None);
+        app.change_mode(AppMode::FileList, AppMode::DirFilePriority);
+    }
+
+    pub fn prev_component(app: &mut App) {
+        let dir_priority = &mut app.components.dir_priority;
+        dir_priority.state.list_state.select(None);
+        app.change_mode(AppMode::DirFilePriority, AppMode::DirFilePriority);
     }
 
     pub fn get_helper_text(&self) -> &'static str {

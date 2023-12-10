@@ -3,7 +3,7 @@ use rayon::prelude::*;
 
 use tui::style::Color;
 
-use crate::services::file_service;
+use crate::services::{ file_service, file_system_service };
 
 use super::{
     entry_file_filter::EntryFileFilter,
@@ -72,8 +72,7 @@ impl DirEntry {
     pub fn renew_children(&mut self) -> Result<(), std::io::Error> {
         if self.is_dir() {
             let new_children = Some(file_service::entries(self.path.as_path())?);
-
-            self.compare_old_and_new_children(new_children.unwrap_or_default());
+            file_system_service::add_existing_items(self, new_children.unwrap());
             self.sort_children();
         }
 
@@ -100,22 +99,6 @@ impl DirEntry {
 
             self.children = Some(dirs);
         }
-    }
-
-    pub fn compare_old_and_new_children(&mut self, new_children: Vec<DirEntry>) {
-        let mut children = vec![];
-
-        if let Some(old_children) = self.children.clone() {
-            children = old_children;
-        }
-
-        for entry in new_children {
-            if !children.iter().any(|selected_entry| selected_entry.path == entry.path) {
-                children.push(entry);
-            }
-        }
-
-        self.children = Some(children);
     }
 
     pub fn set_select(&mut self, bool: bool) {
@@ -151,16 +134,14 @@ impl DirEntry {
 
         self.selected = bool;
 
-        self.children
-            .as_mut()
-            .unwrap()
-            .par_iter_mut()
-            .for_each(|entry| {
+        if let Some(children) = self.children.as_mut() {
+            children.par_iter_mut().for_each(|entry| {
                 if entry.is_dir() {
                     entry.select_deep_entries(bool)
                 } else {
                     entry.selected = bool;
                 }
             });
+        }
     }
 }

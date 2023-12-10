@@ -24,3 +24,23 @@ pub fn find_in_dir<'a>(dir: &'a mut DirEntry, path: &Path) -> Option<&'a mut Dir
 
     None
 }
+
+pub fn add_existing_items(entry: &mut DirEntry, entries: Vec<DirEntry>) {
+    entries.iter().for_each(|e| add_existing_item(entry, e.clone()));
+}
+
+pub fn add_existing_item(entry: &mut DirEntry, new_entry: DirEntry) {
+    if entry.children.is_none() {
+        entry.children = Some(Vec::new());
+    }
+
+    let is_exist = entry.children
+        .as_ref()
+        .unwrap()
+        .iter()
+        .any(|e| e.path.as_path() == new_entry.path.as_path());
+
+    if !is_exist {
+        entry.children.as_mut().unwrap().push(new_entry);
+    }
+}

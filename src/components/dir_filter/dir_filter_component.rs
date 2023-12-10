@@ -1,3 +1,5 @@
+use crate::application::{ app::App, app_mode::AppMode };
+
 use super::dir_filter_state::DirFilterState;
 
 const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | [~Prev |";
@@ -11,6 +13,18 @@ impl DirFilterComponent {
         DirFilterComponent {
             state: DirFilterState::init(),
         }
+    }
+
+    pub fn exit(app: &mut App) {
+        let dir_filter = &mut app.components.dir_filter;
+        dir_filter.state.list_state.select(None);
+        app.change_mode(AppMode::FileList, AppMode::DirFilter);
+    }
+
+    pub fn prev_component(app: &mut App) {
+        let dir_filter = &mut app.components.dir_filter;
+        dir_filter.state.list_state.select(None);
+        app.change_mode(AppMode::FileFilter, AppMode::DirFilter);
     }
 
     pub fn get_helper_text(&self) -> &'static str {
