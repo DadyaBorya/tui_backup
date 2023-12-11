@@ -12,10 +12,10 @@ pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
         .margin(2)
         .constraints(
             [
-                Constraint::Percentage(20),
-                Constraint::Percentage(20),
-                Constraint::Percentage(20),
-                Constraint::Percentage(40),
+                Constraint::Length(3),
+                Constraint::Length(3),
+                Constraint::Length(3),
+                Constraint::Min(0),
                 Constraint::Length(3),
             ].as_ref()
         )
@@ -43,7 +43,7 @@ pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
         "Priority*".to_string(),
         form.state.priority.to_owned(),
         "2".to_string(),
-        app.state.mode == AppMode::DirFilePriorityForm(DirFilePriorityForm::Deep)
+        app.state.mode == AppMode::DirFilePriorityForm(DirFilePriorityForm::Priority)
     );
     f.render_widget(priority_input, chunks[2]);
 

@@ -33,7 +33,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                         KeyCode::Tab =>
                             DirFilePriorityFormComponent::next(
                                 app,
-                                DirFilePriorityForm::Content,
+                                DirFilePriorityForm::Priority,
                                 DirFilePriorityForm::Deep
                             ),
                         KeyCode::BackTab =>
@@ -46,6 +46,29 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                             file_form.state.deep.pop();
                         }
                         KeyCode::Char(c) => file_form.state.deep.push(c),
+                        _ => {}
+                    }
+                }
+                DirFilePriorityForm::Priority => {
+                    match key_code {
+                        KeyCode::Esc =>
+                            DirFilePriorityFormComponent::exit(app, DirFilePriorityForm::Content),
+                        KeyCode::Tab =>
+                            DirFilePriorityFormComponent::next(
+                                app,
+                                DirFilePriorityForm::Content,
+                                DirFilePriorityForm::Priority
+                            ),
+                        KeyCode::BackTab =>
+                            DirFilePriorityFormComponent::next(
+                                app,
+                                DirFilePriorityForm::Deep,
+                                DirFilePriorityForm::Priority
+                            ),
+                        KeyCode::Backspace => {
+                            file_form.state.priority.pop();
+                        }
+                        KeyCode::Char(c) => file_form.state.priority.push(c),
                         _ => {}
                     }
                 }
@@ -62,31 +85,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                         KeyCode::BackTab =>
                             DirFilePriorityFormComponent::next(
                                 app,
-                                DirFilePriorityForm::Deep,
-                                DirFilePriorityForm::Content
-                            ),
-                        KeyCode::Backspace => {
-                            file_form.state.content.pop();
-                        }
-                        KeyCode::Char(c) => file_form.state.content.push(c),
-                        KeyCode::Enter => file_form.state.content.push('\n'),
-                        _ => {}
-                    }
-                }
-                DirFilePriorityForm::Priority => {
-                    match key_code {
-                        KeyCode::Esc =>
-                            DirFilePriorityFormComponent::exit(app, DirFilePriorityForm::Content),
-                        KeyCode::Tab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Submit,
-                                DirFilePriorityForm::Content
-                            ),
-                        KeyCode::BackTab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Deep,
+                                DirFilePriorityForm::Priority,
                                 DirFilePriorityForm::Content
                             ),
                         KeyCode::Backspace => {
