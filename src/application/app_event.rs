@@ -4,6 +4,7 @@ use crate::components::dir_file_priority::dir_file_priority_event;
 use crate::components::dir_filter::dir_filter_event;
 use crate::components::dir_priority::dir_priority_event;
 use crate::components::file_filter::file_filter_event;
+use crate::components::file_filter_form::file_filter_form_event;
 use crate::components::file_list::file_list_event;
 use crate::components::file_priority::file_priority_event;
 use crate::components::message_popup::message_popup_event;
@@ -26,6 +27,7 @@ pub fn event(app: &mut App) -> Result<(), std::io::Error> {
                     AppMode::FilePriority => file_priority_event::event(app, key.code)?,
                     AppMode::DirPriority => dir_priority_event::event(app, key.code)?,
                     AppMode::DirFilePriority => dir_file_priority_event::event(app, key.code)?,
+                    AppMode::FileFilterForm(_) => file_filter_form_event::event(app, key.code)?,
                 }
             }
         }

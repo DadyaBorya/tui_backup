@@ -5,6 +5,7 @@ use crate::components::{
     file_list::file_list_ui,
     tab::tab_ui,
     message_popup::message_popup_ui,
+    file_filter_form::file_filter_form_ui,
 };
 
 use super::{ app::App, app_mode::AppMode };
@@ -41,6 +42,7 @@ fn handle_current_app_mode<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: 
     match app.state.mode {
         AppMode::Tab => tab_ui::ui(app, f, &chunks),
         AppMode::MessagePopup => message_popup_ui::ui(f, app),
+        AppMode::FileFilterForm(_) => file_filter_form_ui::ui(app, f),
         _ => {}
     }
 }

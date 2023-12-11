@@ -7,3 +7,4 @@ pub mod dir_filter;
 pub mod dir_file_priority;
 pub mod dir_priority;
 pub mod file_priority;
+pub mod file_filter_form;
