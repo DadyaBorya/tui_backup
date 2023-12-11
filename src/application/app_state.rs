@@ -6,7 +6,8 @@ use crate::components::{
     dir_filter::dir_filter_component::DirFilterComponent,
     dir_file_priority::dir_file_priority_component::DirFilePriorityComponent,
     dir_priority::dir_priority_component::DirPriorityComponent,
-    file_priority::file_priority_component::FilePriorityComponent, file_filter_form::file_filter_form_component::FileFilterFormComponent,
+    file_priority::file_priority_component::FilePriorityComponent,
+    file_filter_form::file_filter_form_component::FileFilterFormComponent, dir_filter_form::dir_filter_form_component::DirFilterFormComponent,
 };
 
 use super::app_mode::AppMode;
@@ -37,7 +38,8 @@ pub struct AppComponents {
     pub dir_file_priority: DirFilePriorityComponent,
     pub dir_priority: DirPriorityComponent,
     pub file_priority: FilePriorityComponent,
-    pub file_filter_form: FileFilterFormComponent
+    pub file_filter_form: FileFilterFormComponent,
+    pub dir_filter_form: DirFilterFormComponent,
 }
 
 impl AppState {
@@ -62,7 +64,8 @@ impl AppComponents {
             dir_file_priority: DirFilePriorityComponent::init(),
             dir_priority: DirPriorityComponent::init(),
             file_priority: FilePriorityComponent::init(),
-            file_filter_form: FileFilterFormComponent::init()
+            file_filter_form: FileFilterFormComponent::init(),
+            dir_filter_form: DirFilterFormComponent::init(),
         })
     }
 }

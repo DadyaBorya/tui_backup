@@ -28,7 +28,7 @@ impl FileFilterComponent {
     }
 
     pub fn new_rule(app: &mut App) {
-        app.change_mode(AppMode::FileFilterForm(FileFilterForm::Regex), AppMode::FileFilter)
+        app.change_mode(AppMode::FileFilterForm(FileFilterForm::Regex), AppMode::FileFilter);
     }
 
     pub fn get_helper_text(&self) -> &'static str {

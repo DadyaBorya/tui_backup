@@ -30,5 +30,6 @@ fn get_helper_text(app: &App) -> &'static str {
         AppMode::DirPriority => app.components.dir_priority.get_helper_text(),
         AppMode::DirFilePriority => app.components.dir_file_priority.get_helper_text(),
         AppMode::FileFilterForm(_) => app.components.file_filter_form.get_helper_text(),
+        AppMode::DirFilterForm(_) => app.components.dir_filter_form.get_helper_text(),
     }
 }

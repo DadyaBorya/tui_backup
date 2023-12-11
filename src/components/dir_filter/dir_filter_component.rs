@@ -1,4 +1,4 @@
-use crate::application::{ app::App, app_mode::AppMode };
+use crate::application::{ app::App, app_mode::{ AppMode, DirFilterForm } };
 
 use super::dir_filter_state::DirFilterState;
 
@@ -25,6 +25,10 @@ impl DirFilterComponent {
         let dir_filter = &mut app.components.dir_filter;
         dir_filter.state.list_state.select(None);
         app.change_mode(AppMode::FileFilter, AppMode::DirFilter);
+    }
+
+    pub fn new_rule(app: &mut App) {
+        app.change_mode(AppMode::DirFilterForm(DirFilterForm::Regex), AppMode::DirFilter);
     }
 
     pub fn get_helper_text(&self) -> &'static str {
