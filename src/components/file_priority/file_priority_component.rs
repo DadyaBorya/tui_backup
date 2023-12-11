@@ -1,4 +1,4 @@
-use crate::application::{app::App, app_mode::AppMode};
+use crate::application::{ app::App, app_mode::{ AppMode, FilePriorityForm } };
 
 use super::file_priority_state::FilePriorityState;
 
@@ -19,6 +19,10 @@ impl FilePriorityComponent {
         let file_priority = &mut app.components.file_priority;
         file_priority.state.list_state.select(None);
         app.change_mode(AppMode::FileList, AppMode::FilePriority);
+    }
+
+    pub fn new_rule(app: &mut App) {
+        app.change_mode(AppMode::FilePriorityForm(FilePriorityForm::Regex), AppMode::FilePriority);
     }
 
     pub fn get_helper_text(&self) -> &'static str {
