@@ -1,4 +1,4 @@
-#[derive(Default, Clone)]
+#[derive(Default, Clone, PartialEq, Eq)]
 pub struct EntryFileFilter {
     pub regex: String,
     pub content: String,

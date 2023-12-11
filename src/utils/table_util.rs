@@ -22,7 +22,7 @@ pub fn move_down(table_state: &mut TableState, len: usize) {
 
     let i = match table_state.selected() {
         Some(i) => {
-            if i >= len - 1 { Some(i) } else { Some(i + 1) }
+            if i >= len - 1 { Some(len - 1) } else { Some(i + 1) }
         }
         None => None,
     };

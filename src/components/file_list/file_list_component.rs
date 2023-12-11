@@ -92,6 +92,7 @@ impl FileListComponent {
         let file_list = &mut app.components.file_list;
         if file_list.state.is_selected_dir() {
             file_list.state.is_priority_mode = false;
+            app.components.file_filter.state.init_index_table();
             app.change_mode(AppMode::FileFilter, AppMode::FileList);
         }
     }

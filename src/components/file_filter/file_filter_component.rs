@@ -1,4 +1,4 @@
-use crate::application::{ app::App, app_mode::{AppMode, FileFilterForm} };
+use crate::{ application::{ app::App, app_mode::{ AppMode, FileFilterForm } }, utils::list_utils };
 
 use super::file_filter_state::FileFilterState;
 
@@ -25,6 +25,39 @@ impl FileFilterComponent {
         let file_filter = &mut app.components.file_filter;
         file_filter.state.list_state.select(None);
         app.change_mode(AppMode::DirFilter, AppMode::FileList);
+    }
+
+    pub fn move_up(&mut self) {
+        list_utils::move_up(&mut self.state.list_state, self.state.rules.len());
+    }
+
+    pub fn move_down(&mut self) {
+        list_utils::move_down(&mut self.state.list_state, self.state.rules.len());
+    }
+
+    pub fn delete(app: &mut App) {
+        if let Some(entry) = app.components.file_list.state.get_selected_entry() {
+            if let Some(index) = app.components.file_filter.state.list_state.selected() {
+                entry.entry_file_filter.as_mut().unwrap().remove(index);
+                app.components.file_filter.state.rules.remove(index);
+                app.components.file_filter.move_up();
+            }
+        }
+    }
+
+    pub fn edit(app: &mut App) {
+        if let Some(index) = app.components.file_filter.state.list_state.selected() {
+            let filter = app.components.file_filter.state.rules[index].clone();
+            let state = &mut app.components.file_filter_form.state;
+            state.regex = filter.regex;
+            state.content = filter.content;
+            state.deep = filter.deep.to_string();
+            app.components.file_filter.state.is_edit = true;
+            app.change_mode(
+                AppMode::FileFilterForm(FileFilterForm::Regex),
+                app.state.prev_mode.clone()
+            );
+        }
     }
 
     pub fn new_rule(app: &mut App) {

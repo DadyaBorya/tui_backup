@@ -79,7 +79,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                                 FileFilterForm::Content,
                                 FileFilterForm::Submit
                             ),
-                        KeyCode::Enter => FileFilterFormComponent::create(app),
+                        KeyCode::Enter => FileFilterFormComponent::add(app),
                         _ => {}
                     }
                 }

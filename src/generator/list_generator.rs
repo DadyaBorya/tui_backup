@@ -1,10 +1,13 @@
 use tui::{
     widgets::{ ListItem, List, Block, Borders, BorderType },
     layout::Alignment,
-    style::{ Style, Modifier },
+    style::{ Style, Modifier, Color },
 };
 
 use crate::application::app::ACTIVE_BORDER_COLOR;
+
+const SELECTED_BG_COLOR: Color = Color::Yellow;
+const SELECTED_FG_COLOR: Color = Color::Black;
 
 pub fn list(title: String, is_selected: bool, items: Vec<String>) -> List<'static> {
     let items: Vec<ListItem> = items
@@ -27,5 +30,10 @@ pub fn list(title: String, is_selected: bool, items: Vec<String>) -> List<'stati
                 .title_alignment(Alignment::Center)
         )
         .highlight_symbol("->")
-        .highlight_style(Style::default().add_modifier(Modifier::BOLD))
+        .highlight_style(
+            Style::default()
+                .add_modifier(Modifier::BOLD)
+                .bg(SELECTED_BG_COLOR)
+                .fg(SELECTED_FG_COLOR)
+        )
 }
