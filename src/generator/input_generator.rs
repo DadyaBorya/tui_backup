@@ -25,7 +25,7 @@ pub fn input<'a>(
 
     match value.is_empty() {
         true => {
-            let style = Style::default().fg(Color::Rgb(220, 220, 220));
+            let style = Style::default().fg(Color::DarkGray);
             Paragraph::new(place_holder).style(style).block(block)
         }
         false => {

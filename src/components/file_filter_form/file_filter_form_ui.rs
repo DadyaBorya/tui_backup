@@ -12,9 +12,9 @@ pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
         .margin(2)
         .constraints(
             [
-                Constraint::Length(3),
-                Constraint::Length(3),
-                Constraint::Length(6),
+                Constraint::Min(3),
+                Constraint::Min(3),
+                Constraint::Min(0),
                 Constraint::Length(3),
             ].as_ref()
         )
