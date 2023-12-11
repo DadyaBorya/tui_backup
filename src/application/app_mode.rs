@@ -10,6 +10,7 @@ pub enum AppMode {
     FilePriority,
     FileFilterForm(FileFilterForm),
     DirFilterForm(DirFilterForm),
+    DirFilePriorityForm(DirFilePriorityForm),
 }
 
 #[derive(PartialEq, Clone)]
@@ -24,5 +25,14 @@ pub enum FileFilterForm {
 pub enum DirFilterForm {
     Regex,
     Deep,
+    Submit,
+}
+
+#[derive(PartialEq, Clone)]
+pub enum DirFilePriorityForm {
+    Regex,
+    Deep,
+    Priority,
+    Content,
     Submit,
 }

@@ -1,8 +1,9 @@
 use crossterm::event::{ self, KeyEventKind };
 use crossterm::event::Event::Key;
 use crate::components::dir_file_priority::dir_file_priority_event;
+use crate::components::dir_file_priority_form::{dir_file_priority_form_component, dir_file_priority_form_event};
 use crate::components::dir_filter::dir_filter_event;
-use crate::components::dir_filter_form::{dir_filter_form_component, dir_filter_form_event};
+use crate::components::dir_filter_form::dir_filter_form_event;
 use crate::components::dir_priority::dir_priority_event;
 use crate::components::file_filter::file_filter_event;
 use crate::components::file_filter_form::file_filter_form_event;
@@ -29,7 +30,9 @@ pub fn event(app: &mut App) -> Result<(), std::io::Error> {
                     AppMode::DirPriority => dir_priority_event::event(app, key.code)?,
                     AppMode::DirFilePriority => dir_file_priority_event::event(app, key.code)?,
                     AppMode::FileFilterForm(_) => file_filter_form_event::event(app, key.code)?,
-                    AppMode::DirFilterForm(_) => dir_filter_form_event::event(app, key.code)?
+                    AppMode::DirFilterForm(_) => dir_filter_form_event::event(app, key.code)?,
+                    AppMode::DirFilePriorityForm(_) => dir_file_priority_form_event::event(app, key.code)?
+            
                 }
             }
         }

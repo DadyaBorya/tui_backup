@@ -8,6 +8,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
     match key_code {
         KeyCode::Esc => DirFilePriorityComponent::exit(app),
         KeyCode::Char(']') => DirFilePriorityComponent::next_component(app),
+        KeyCode::Char('n') => DirFilePriorityComponent::new_rule(app),
         _ => {}
     }
     Ok(())

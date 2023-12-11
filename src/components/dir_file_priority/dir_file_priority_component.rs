@@ -1,4 +1,4 @@
-use crate::application::{app::App, app_mode::AppMode};
+use crate::application::{ app::App, app_mode::{ AppMode, DirFilePriorityForm } };
 
 use super::dir_file_priority_state::DirFilePriorityState;
 
@@ -26,6 +26,13 @@ impl DirFilePriorityComponent {
         let dir_file_priority = &mut app.components.dir_file_priority;
         dir_file_priority.state.list_state.select(None);
         app.change_mode(AppMode::DirPriority, AppMode::DirFilePriority);
+    }
+
+    pub fn new_rule(app: &mut App) {
+        app.change_mode(
+            AppMode::DirFilePriorityForm(DirFilePriorityForm::Regex),
+            AppMode::DirFilePriority
+        );
     }
 
     pub fn get_helper_text(&self) -> &'static str {
