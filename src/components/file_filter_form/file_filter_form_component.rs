@@ -1,4 +1,7 @@
-use crate::application::{ app_mode::{ AppMode, FileFilterForm }, app::App };
+use crate::{
+    application::{ app_mode::{ AppMode, FileFilterForm }, app::App },
+    components::message_popup::message_popup_components::MessagePopupComponent,
+};
 
 use super::file_filter_form_state::FileFilterFormState;
 
@@ -24,6 +27,20 @@ impl FileFilterFormComponent {
 
     pub fn next(app: &mut App, next: FileFilterForm, prev_mode: FileFilterForm) {
         app.change_mode(AppMode::FileFilterForm(next), AppMode::FileFilterForm(prev_mode));
+    }
+
+    pub fn create(app: &mut App) {
+        let state = &app.components.file_filter_form.state;
+
+        let validate = state.validate();
+
+        if let Err(errors) = validate {
+            MessagePopupComponent::show_vec(
+                app,
+                errors,
+                AppMode::FileFilterForm(FileFilterForm::Submit)
+            );
+        }
     }
 
     pub fn get_helper_text(&self, mode: &FileFilterForm) -> &'static str {
