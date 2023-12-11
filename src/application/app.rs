@@ -33,7 +33,7 @@ impl App {
         terminal.draw(|f| app_ui::ui(self, f))?;
 
         if let Err(err) = app_event::event(self) {
-            self.components.message_popup.state.edit("Error".to_string(), err.to_string());
+            self.components.message_popup.state.edit("Error".to_string(), err.to_string(), 60, 20);
             self.change_mode(AppMode::MessagePopup, self.state.mode.clone());
         }
         Ok(())

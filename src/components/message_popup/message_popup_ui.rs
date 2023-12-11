@@ -18,7 +18,7 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         .border_style(Style::default().fg(ACTIVE_BORDER_COLOR))
         .border_type(BorderType::Rounded);
 
-    let area = popup::centered_rect(60, 20, f.size());
+    let area = popup::centered_rect(popup_state.w,  popup_state.h, f.size());
     f.render_widget(Clear, area);
     f.render_widget(block, area);
 
