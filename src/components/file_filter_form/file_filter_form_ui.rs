@@ -6,16 +6,17 @@ use crate::{
 };
 
 pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
-    let area = popup::popup(60, 60, f);
+    let area = popup::popup(60, 58, f);
 
     let chunks = Layout::default()
         .margin(2)
         .constraints(
             [
-                Constraint::Min(3),
-                Constraint::Min(3),
-                Constraint::Min(0),
                 Constraint::Length(3),
+                Constraint::Length(3),
+                Constraint::Length(6),
+                Constraint::Length(3),
+                Constraint::Min(0),
             ].as_ref()
         )
         .split(area);
