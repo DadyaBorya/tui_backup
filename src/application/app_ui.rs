@@ -5,7 +5,7 @@ use crate::components::{
     file_list::file_list_ui,
     tab::tab_ui,
     message_popup::message_popup_ui,
-    file_filter_form::file_filter_form_ui, dir_filter_form::dir_filter_form_ui, dir_file_priority_form::dir_file_priority_form_ui,
+    file_filter_form::file_filter_form_ui, dir_filter_form::dir_filter_form_ui, dir_file_priority_form::dir_file_priority_form_ui, dir_priority_form::dir_priority_form_ui,
 };
 
 use super::{ app::App, app_mode::AppMode };
@@ -45,6 +45,7 @@ fn handle_current_app_mode<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: 
         AppMode::FileFilterForm(_) => file_filter_form_ui::ui(app, f),
         AppMode::DirFilterForm(_) => dir_filter_form_ui::ui(app, f),
         AppMode::DirFilePriorityForm(_) => dir_file_priority_form_ui::ui(app, f),
+        AppMode::DirPriorityForm(_) => dir_priority_form_ui::ui(app, f),
         _ => {}
     }
 }
