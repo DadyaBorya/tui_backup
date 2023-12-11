@@ -2,7 +2,10 @@ use crate::application::{ app::App, app_mode::{ AppMode, DirPriorityForm } };
 
 use super::dir_priority_form_state::DirPriorityFormState;
 
-const HELP: &'static str = "";
+const HELP_REGEX: &'static str = "| ESC~Exit | a-z0-9~Input | TAB~Next |";
+const HELP_DEEP: &'static str = "| ESC~Exit | a-z0-9~Input | TAB~Next | BACKTAB~Prev |";
+const HELP_PRIORITY: &'static str = "| ESC~Exit | a-z0-9~Input | TAB~Next | BACKTAB~Prev |";
+const HELP_SUBMIT: &'static str = "| ESC~Exit | BACKTAB~Prev | ENTER~Submit |";
 
 pub struct DirPriorityFormComponent {
     pub state: DirPriorityFormState,
@@ -26,7 +29,12 @@ impl DirPriorityFormComponent {
         );
     }
 
-    pub fn get_help_text(&self) -> &'static str {
-        HELP
+    pub fn get_help_text(&self, mode: &DirPriorityForm) -> &'static str {
+        match mode {
+            DirPriorityForm::Regex => HELP_REGEX,
+            DirPriorityForm::Deep => HELP_DEEP,
+            DirPriorityForm::Priority => HELP_PRIORITY,
+            DirPriorityForm::Submit => HELP_SUBMIT
+        }
     }
 }

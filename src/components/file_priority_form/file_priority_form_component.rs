@@ -1,8 +1,11 @@
-use crate::application::{app::App, app_mode::{FilePriorityForm, AppMode}};
+use crate::application::{ app::App, app_mode::{ FilePriorityForm, AppMode } };
 
 use super::file_priority_form_state::FilePriorityFormState;
 
-const HELP: &'static str = "";
+const HELP_REGEX: &'static str = "| ESC~Exit | a-z0-9~Input | TAB~Next |";
+const HELP_CONTENT: &'static str = "| ESC~Exit | a-z0-9~Input | TAB~Next | BACKTAB~Prev |";
+const HELP_PRIORITY: &'static str = "| ESC~Exit | a-z0-9~Input | TAB~Next | BACKTAB~Prev |";
+const HELP_SUBMIT: &'static str = "| ESC~Exit | BACKTAB~Prev | ENTER~Submit |";
 
 pub struct FilePriorityFormComponent {
     pub state: FilePriorityFormState,
@@ -23,7 +26,12 @@ impl FilePriorityFormComponent {
         app.change_mode(AppMode::FilePriorityForm(next), AppMode::FilePriorityForm(prev_mode));
     }
 
-    pub fn get_help_text(&self) -> &'static str {
-        HELP
+    pub fn get_help_text(&self, mode: &FilePriorityForm) -> &'static str {
+        match mode {
+            FilePriorityForm::Regex => HELP_REGEX,
+            FilePriorityForm::Priority => HELP_PRIORITY,
+            FilePriorityForm::Content => HELP_CONTENT,
+            FilePriorityForm::Submit => HELP_SUBMIT,
+        }
     }
 }

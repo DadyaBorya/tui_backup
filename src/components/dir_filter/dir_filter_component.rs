@@ -1,4 +1,4 @@
-use crate::application::{ app::App, app_mode::{ AppMode, DirFilterForm } };
+use crate::application::{ app::App, app_mode::{AppMode, DirFilterForm} };
 
 use super::dir_filter_state::DirFilterState;
 

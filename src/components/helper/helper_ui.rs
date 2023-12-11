@@ -29,10 +29,11 @@ fn get_helper_text(app: &App) -> &'static str {
         AppMode::FilePriority => app.components.file_priority.get_helper_text(),
         AppMode::DirPriority => app.components.dir_priority.get_helper_text(),
         AppMode::DirFilePriority => app.components.dir_file_priority.get_helper_text(),
-        AppMode::FileFilterForm(_) => app.components.file_filter_form.get_helper_text(),
-        AppMode::DirFilterForm(_) => app.components.dir_filter_form.get_helper_text(),
-        AppMode::DirFilePriorityForm(_) => app.components.dir_file_priority_form.get_helper_text(),
-        AppMode::DirPriorityForm(_) => app.components.dir_priority_form.get_help_text(),
-        AppMode::FilePriorityForm(_) => app.components.file_priority_form.get_help_text(),
+        AppMode::FileFilterForm(mode) =>
+            app.components.file_filter_form.get_helper_text(&mode),
+        AppMode::DirFilterForm(mode) => app.components.dir_filter_form.get_helper_text(&mode),
+        AppMode::DirFilePriorityForm(mode) => app.components.dir_file_priority_form.get_helper_text(&mode),
+        AppMode::DirPriorityForm(mode) => app.components.dir_priority_form.get_help_text(&mode),
+        AppMode::FilePriorityForm(mode) => app.components.file_priority_form.get_help_text(&mode),
     }
 }
