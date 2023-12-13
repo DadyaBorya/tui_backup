@@ -62,6 +62,9 @@ fn file_list_actions<B: Backend>(chunks: &Vec<Rect>, app: &mut App, f: &mut Fram
         .clone()
         .unwrap_or_default();
     app.components.dir_priority.state.rules = entry.entry_dir_priority.clone().unwrap_or_default();
+    app.components.file_priority.state.rules = entry.entry_file_priority
+        .clone()
+        .unwrap_or_default();
 
     match entry.is_dir() {
         true =>

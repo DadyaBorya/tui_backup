@@ -9,37 +9,14 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
     match &mut app.state.mode {
         AppMode::FilePriorityForm(form) => {
             match form {
-                FilePriorityForm::Regex => {
-                    match key_code {
-                        KeyCode::Esc =>
-                            FilePriorityFormComponent::exit(app, FilePriorityForm::Regex),
-                        KeyCode::Tab =>
-                            FilePriorityFormComponent::next(
-                                app,
-                                FilePriorityForm::Priority,
-                                FilePriorityForm::Regex
-                            ),
-                        KeyCode::Backspace => {
-                            file_form.state.regex.pop();
-                        }
-                        KeyCode::Char(c) => file_form.state.regex.push(c),
-                        _ => {}
-                    }
-                }
                 FilePriorityForm::Priority => {
                     match key_code {
                         KeyCode::Esc =>
-                            FilePriorityFormComponent::exit(app, FilePriorityForm::Regex),
+                            FilePriorityFormComponent::exit(app, FilePriorityForm::Priority),
                         KeyCode::Tab =>
                             FilePriorityFormComponent::next(
                                 app,
                                 FilePriorityForm::Content,
-                                FilePriorityForm::Priority
-                            ),
-                        KeyCode::BackTab =>
-                            FilePriorityFormComponent::next(
-                                app,
-                                FilePriorityForm::Regex,
                                 FilePriorityForm::Priority
                             ),
                         KeyCode::Backspace => {
@@ -52,7 +29,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 FilePriorityForm::Content => {
                     match key_code {
                         KeyCode::Esc =>
-                            FilePriorityFormComponent::exit(app, FilePriorityForm::Regex),
+                            FilePriorityFormComponent::exit(app, FilePriorityForm::Content),
                         KeyCode::Tab =>
                             FilePriorityFormComponent::next(
                                 app,
@@ -83,6 +60,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                                 FilePriorityForm::Content,
                                 FilePriorityForm::Submit
                             ),
+                            KeyCode::Enter => FilePriorityFormComponent::add(app),
                         _ => {}
                     }
                 }

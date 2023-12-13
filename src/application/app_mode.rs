@@ -49,7 +49,6 @@ pub enum DirPriorityForm {
 
 #[derive(PartialEq, Clone)]
 pub enum FilePriorityForm {
-    Regex,
     Priority,
     Content,
     Submit,

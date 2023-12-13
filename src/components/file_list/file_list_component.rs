@@ -107,7 +107,10 @@ impl FileListComponent {
                     app.components.dir_file_priority.state.init_index_table();
                     app.change_mode(AppMode::DirFilePriority, AppMode::FileList)
                 }
-                false => app.change_mode(AppMode::FilePriority, AppMode::FileList),
+                false => {
+                    app.components.file_priority.state.init_index_table();
+                    app.change_mode(AppMode::FilePriority, AppMode::FileList)
+                }
             }
         }
     }

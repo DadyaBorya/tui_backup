@@ -75,8 +75,6 @@ impl DirFilePriorityFormComponent {
         app.change_mode(AppMode::DirFilePriority, app.state.mode.clone());
     }
 
-    
-
     pub fn next(app: &mut App, next: DirFilePriorityForm, prev_mode: DirFilePriorityForm) {
         app.change_mode(
             AppMode::DirFilePriorityForm(next),

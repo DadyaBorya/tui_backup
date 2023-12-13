@@ -9,7 +9,7 @@ use super::{
     entry_file_filter::EntryFileFilter,
     entry_dir_filter::EntryDirFilter,
     entry_dir_file_priority::EntryDirFilePriority,
-    entry_dir_priority::EntryDirPriority,
+    entry_dir_priority::EntryDirPriority, entry_file_priority::EntryFilePriority,
 };
 
 const DIR_COLOR: Color = Color::Green;
@@ -24,6 +24,7 @@ pub struct DirEntry {
     pub entry_dir_filter: Option<Vec<EntryDirFilter>>,
     pub entry_dir_file_priority: Option<Vec<EntryDirFilePriority>>,
     pub entry_dir_priority: Option<Vec<EntryDirPriority>>,
+    pub entry_file_priority: Option<Vec<EntryFilePriority>>
 }
 
 impl DirEntry {
