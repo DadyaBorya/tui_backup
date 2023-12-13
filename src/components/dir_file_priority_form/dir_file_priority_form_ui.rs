@@ -15,8 +15,9 @@ pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
                 Constraint::Length(3),
                 Constraint::Length(3),
                 Constraint::Length(3),
-                Constraint::Min(0),
+                Constraint::Min(6),
                 Constraint::Length(3),
+                Constraint::Min(0),
             ].as_ref()
         )
         .split(area);

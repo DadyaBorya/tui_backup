@@ -12,10 +12,10 @@ pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
         .margin(2)
         .constraints(
             [
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
+                Constraint::Length(3),
+                Constraint::Length(3),
+                Constraint::Length(3),
+                Constraint::Min(0),
             ].as_ref()
         )
         .split(area);
