@@ -79,6 +79,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                                 DirPriorityForm::Priority,
                                 DirPriorityForm::Submit
                             ),
+                        KeyCode::Enter => DirPriorityFormComponent::add(app),
                         _ => {}
                     }
                 }

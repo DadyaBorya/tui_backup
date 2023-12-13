@@ -6,7 +6,7 @@ use crate::{
 };
 
 pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
-    let area = popup::popup(50, 60, f);
+    let area = popup::popup(50, 60, "File Priority".to_string() ,f);
 
     let chunks = Layout::default()
         .margin(2)

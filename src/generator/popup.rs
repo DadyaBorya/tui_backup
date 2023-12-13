@@ -32,9 +32,9 @@ pub fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
         .split(popup_layout[1])[1]
 }
 
-pub fn popup<B: Backend>(percent_x: u16, percent_y: u16, f: &mut Frame<B>) -> Rect {
+pub fn popup<B: Backend>(percent_x: u16, percent_y: u16, title: String, f: &mut Frame<B>) -> Rect {
     let block = Block::default()
-        .title("Create file filter")
+        .title(title)
         .title_alignment(Alignment::Center)
         .borders(Borders::ALL)
         .border_style(Style::default().fg(ACTIVE_BORDER_COLOR))

@@ -24,14 +24,7 @@ pub struct AppState {
 }
 
 #[derive(Default)]
-pub struct AppFlags {
-    pub is_edit_folder_filter_form_popup: bool,
-    pub is_edit_file_filter_form_popup: bool,
-    pub is_edit_folder_priority_form_popup: bool,
-    pub is_edit_file_folder_priority_form_popup: bool,
-    pub is_edit_file_priority_form_popup: bool,
-    pub is_edit_template_list: bool,
-}
+pub struct AppFlags {}
 
 pub struct AppComponents {
     pub tabs: TabComponent,

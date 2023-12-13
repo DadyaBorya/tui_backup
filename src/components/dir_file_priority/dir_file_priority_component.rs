@@ -26,6 +26,8 @@ impl DirFilePriorityComponent {
     }
 
     pub fn next_component(app: &mut App) {
+        let dir_priority = &mut app.components.dir_priority;
+        dir_priority.state.init_index_table();
         let dir_file_priority = &mut app.components.dir_file_priority;
         dir_file_priority.state.list_state.select(None);
         app.change_mode(AppMode::DirPriority, AppMode::DirFilePriority);

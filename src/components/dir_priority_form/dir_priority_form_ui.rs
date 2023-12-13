@@ -6,12 +6,13 @@ use crate::{
 };
 
 pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
-    let area = popup::popup(50, 50, f);
+    let area = popup::popup(50, 50, "Dir Priority".to_string(), f);
 
     let chunks = Layout::default()
         .margin(2)
         .constraints(
             [
+                Constraint::Length(3),
                 Constraint::Length(3),
                 Constraint::Length(3),
                 Constraint::Length(3),
