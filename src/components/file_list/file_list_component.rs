@@ -103,7 +103,10 @@ impl FileListComponent {
             file_list.state.is_priority_mode = true;
 
             match file_list.state.is_selected_dir() {
-                true => app.change_mode(AppMode::DirFilePriority, AppMode::FileList),
+                true => {
+                    app.components.dir_file_priority.state.init_index_table();
+                    app.change_mode(AppMode::DirFilePriority, AppMode::FileList)
+                }
                 false => app.change_mode(AppMode::FilePriority, AppMode::FileList),
             }
         }

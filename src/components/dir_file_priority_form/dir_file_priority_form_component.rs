@@ -1,4 +1,8 @@
-use crate::application::{ app::App, app_mode::{ DirFilePriorityForm, AppMode } };
+use crate::{
+    application::{ app::App, app_mode::{ DirFilePriorityForm, AppMode } },
+    models::entry_dir_file_priority::EntryDirFilePriority,
+    components::message_popup::message_popup_components::MessagePopupComponent,
+};
 
 use super::dir_file_priority_form_state::DirFilePriorityFormState;
 
@@ -20,7 +24,55 @@ impl DirFilePriorityFormComponent {
     }
 
     pub fn exit(app: &mut App, prev_mode: DirFilePriorityForm) {
+        app.components.dir_file_priority_form.state.clear();
         app.change_mode(AppMode::DirFilePriority, AppMode::DirFilePriorityForm(prev_mode));
+    }
+
+    pub fn create(app: &mut App) -> Option<EntryDirFilePriority> {
+        let state = &app.components.dir_file_priority_form.state;
+
+        let validate = state.validate();
+
+        match validate {
+            Ok(value) => { Some(value) }
+            Err(errors) => {
+                MessagePopupComponent::show_vec(
+                    app,
+                    errors,
+                    AppMode::DirFilePriorityForm(DirFilePriorityForm::Submit)
+                );
+                None
+            }
+        }
+    }
+
+    pub fn add(app: &mut App) {
+        let mut filter = match DirFilePriorityFormComponent::create(app) {
+            Some(value) => value,
+            None => {
+                return;
+            }
+        };
+
+        let entry = app.components.file_list.state.get_selected_entry().unwrap();
+        filter.root = Some(entry.path.as_path().display().to_string());
+
+        match app.components.dir_file_priority.state.is_edit {
+            true => {
+                if let Some(rules) = entry.entry_dir_file_priority.as_mut() {
+                    let index = app.components.dir_file_priority.state.list_state
+                        .selected()
+                        .unwrap();
+                    rules[index] = filter;
+                }
+
+                app.components.dir_filter.state.is_edit = false;
+            }
+            false => entry.entry_dir_file_priority.get_or_insert(Vec::new()).push(filter),
+        }
+
+        app.components.dir_file_priority_form.state.clear();
+        app.change_mode(AppMode::DirFilePriority, app.state.mode.clone());
     }
 
     pub fn next(app: &mut App, next: DirFilePriorityForm, prev_mode: DirFilePriorityForm) {

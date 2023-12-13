@@ -106,6 +106,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                                 DirFilePriorityForm::Content,
                                 DirFilePriorityForm::Submit
                             ),
+                        KeyCode::Enter => DirFilePriorityFormComponent::add(app),
                         _ => {}
                     }
                 }

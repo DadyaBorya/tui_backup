@@ -10,7 +10,8 @@ use crate::components::{
     file_filter_form::file_filter_form_component::FileFilterFormComponent,
     dir_filter_form::dir_filter_form_component::DirFilterFormComponent,
     dir_file_priority_form::dir_file_priority_form_component::DirFilePriorityFormComponent,
-    dir_priority_form::dir_priority_form_component::DirPriorityFormComponent, file_priority_form::file_priority_form_component::FilePriorityFormComponent,
+    dir_priority_form::dir_priority_form_component::DirPriorityFormComponent,
+    file_priority_form::file_priority_form_component::FilePriorityFormComponent,
 };
 
 use super::app_mode::AppMode;
