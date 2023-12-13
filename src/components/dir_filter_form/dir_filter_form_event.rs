@@ -56,6 +56,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                                 DirFilterForm::Deep,
                                 DirFilterForm::Submit
                             ),
+                        KeyCode::Enter => DirFilterFormComponent::add(app),
                         _ => {}
                     }
                 }

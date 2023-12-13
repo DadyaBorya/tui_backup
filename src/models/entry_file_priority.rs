@@ -2,7 +2,7 @@
 pub struct EntryFilePriority {
     pub regex: String,
     pub content: String,
-    pub priority: usize
+    pub priority: usize,
 }
 
 impl EntryFilePriority {

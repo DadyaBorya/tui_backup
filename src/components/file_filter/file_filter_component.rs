@@ -24,6 +24,8 @@ impl FileFilterComponent {
     pub fn next_component(app: &mut App) {
         let file_filter = &mut app.components.file_filter;
         file_filter.state.list_state.select(None);
+        let dir_filter = &mut app.components.dir_filter;
+        dir_filter.state.init_index_table();
         app.change_mode(AppMode::DirFilter, AppMode::FileList);
     }
 
@@ -38,6 +40,10 @@ impl FileFilterComponent {
     pub fn delete(app: &mut App) {
         if let Some(entry) = app.components.file_list.state.get_selected_entry() {
             if let Some(index) = app.components.file_filter.state.list_state.selected() {
+                if entry.entry_file_filter.as_ref().unwrap()[index].root.is_none() {
+                    return;
+                }
+
                 entry.entry_file_filter.as_mut().unwrap().remove(index);
                 app.components.file_filter.state.rules.remove(index);
                 app.components.file_filter.move_up();
@@ -48,6 +54,11 @@ impl FileFilterComponent {
     pub fn edit(app: &mut App) {
         if let Some(index) = app.components.file_filter.state.list_state.selected() {
             let filter = app.components.file_filter.state.rules[index].clone();
+
+            if filter.root.is_none() {
+                return;
+            }
+
             let state = &mut app.components.file_filter_form.state;
             state.regex = filter.regex;
             state.content = filter.content;

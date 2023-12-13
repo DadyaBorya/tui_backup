@@ -2,7 +2,8 @@
 pub struct EntryDirPriority {
     pub regex: String,
     pub deep: usize,
-    pub priority: usize
+    pub priority: usize,
+    pub root: Option<String>,
 }
 
 impl EntryDirPriority {

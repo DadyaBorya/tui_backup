@@ -3,7 +3,8 @@ pub struct EntryDirFilePriority {
     pub regex: String,
     pub content: String,
     pub priority: usize,
-    pub deep: usize
+    pub deep: usize,
+    pub root: Option<String>
 }
 
 impl EntryDirFilePriority {

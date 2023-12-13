@@ -50,7 +50,7 @@ impl FileFilterFormComponent {
     }
 
     pub fn add(app: &mut App) {
-        let filter = match FileFilterFormComponent::create(app) {
+        let mut filter = match FileFilterFormComponent::create(app) {
             Some(value) => value,
             None => {
                 return;
@@ -58,6 +58,7 @@ impl FileFilterFormComponent {
         };
 
         let entry = app.components.file_list.state.get_selected_entry().unwrap();
+        filter.root = Some(entry.path.as_path().display().to_string());
 
         match app.components.file_filter.state.is_edit {
             true => {

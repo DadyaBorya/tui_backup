@@ -1,4 +1,4 @@
-use crate::application::{ app::App, app_mode::{AppMode, DirFilterForm} };
+use crate::{ application::{ app::App, app_mode::{ AppMode, DirFilterForm } }, utils::list_utils };
 
 use super::dir_filter_state::DirFilterState;
 
@@ -15,13 +15,56 @@ impl DirFilterComponent {
         }
     }
 
+    pub fn move_up(&mut self) {
+        list_utils::move_up(&mut self.state.list_state, self.state.rules.len());
+    }
+
+    pub fn move_down(&mut self) {
+        list_utils::move_down(&mut self.state.list_state, self.state.rules.len());
+    }
+
     pub fn exit(app: &mut App) {
         let dir_filter = &mut app.components.dir_filter;
         dir_filter.state.list_state.select(None);
         app.change_mode(AppMode::FileList, AppMode::DirFilter);
     }
 
+    pub fn delete(app: &mut App) {
+        if let Some(entry) = app.components.file_list.state.get_selected_entry() {
+            if let Some(index) = app.components.dir_filter.state.list_state.selected() {
+                if entry.entry_dir_filter.as_ref().unwrap()[index].root.is_none() {
+                    return;
+                }
+
+                entry.entry_dir_filter.as_mut().unwrap().remove(index);
+                app.components.dir_filter.state.rules.remove(index);
+                app.components.dir_filter.move_up();
+            }
+        }
+    }
+
+    pub fn edit(app: &mut App) {
+        if let Some(index) = app.components.dir_filter.state.list_state.selected() {
+            let filter = app.components.dir_filter.state.rules[index].clone();
+
+            if filter.root.is_none() {
+                return;
+            }
+
+            let state = &mut app.components.dir_filter_form.state;
+            state.regex = filter.regex;
+            state.deep = filter.deep.to_string();
+            app.components.dir_filter.state.is_edit = true;
+            app.change_mode(
+                AppMode::DirFilterForm(DirFilterForm::Regex),
+                app.state.prev_mode.clone()
+            );
+        }
+    }
+
     pub fn prev_component(app: &mut App) {
+        let file_filter = &mut app.components.file_filter;
+        file_filter.state.init_index_table();
         let dir_filter = &mut app.components.dir_filter;
         dir_filter.state.list_state.select(None);
         app.change_mode(AppMode::FileFilter, AppMode::DirFilter);
