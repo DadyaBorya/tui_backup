@@ -35,12 +35,13 @@ impl FileFilterFormState {
             }
             Err(error) => errors.push(format!("Deep field: [{}]", error)),
         }
-
-        match validator::regex(&self.content) {
-            Ok(value) => {
-                filter.content = value;
+        if !self.content.is_empty() {
+            match validator::regex(&self.content) {
+                Ok(value) => {
+                    filter.content = value;
+                }
+                Err(error) => errors.push(format!("Content field: [{}]", error)),
             }
-            Err(error) => errors.push(format!("Content field: [{}]", error)),
         }
 
         match errors.is_empty() {

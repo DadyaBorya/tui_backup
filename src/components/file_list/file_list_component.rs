@@ -38,8 +38,7 @@ impl FileListComponent {
 
             entry.renew_children()?;
 
-            entry_filter_service::set_up_dir_file_filter(entry);
-            entry_filter_service::apply_dir_file_filter(entry);
+            entry_filter_service::filter(entry);
 
             self.state.history.push(self.state.table_state.selected().unwrap());
             self.state.table_state.select(Some(0));
@@ -73,7 +72,7 @@ impl FileListComponent {
 
         let entry = self.state.get_selected_entry().unwrap();
 
-        entry_filter_service::delete_not_root_dir_file_filter(entry);
+        entry_filter_service::delete_not_root(entry);
     }
 
     pub fn select(&mut self) -> Result<(), std::io::Error> {

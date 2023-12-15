@@ -37,6 +37,11 @@ impl DirFilterComponent {
                 }
 
                 entry.entry_dir_filter.as_mut().unwrap().remove(index);
+
+                if entry.entry_dir_filter.as_ref().unwrap().len() == 0 {
+                    entry.entry_dir_filter = None;
+                }
+
                 app.components.dir_filter.state.rules.remove(index);
                 app.components.dir_filter.move_up();
             }

@@ -30,6 +30,11 @@ impl FilePriorityComponent {
         if let Some(entry) = app.components.file_list.state.get_selected_entry() {
             if let Some(index) = app.components.file_priority.state.list_state.selected() {
                 entry.entry_file_priority.as_mut().unwrap().remove(index);
+
+                if entry.entry_file_priority.as_ref().unwrap().is_empty() {
+                    entry.entry_file_priority = None;
+                }
+
                 app.components.file_priority.state.rules.remove(index);
                 app.components.file_priority.move_up();
             }

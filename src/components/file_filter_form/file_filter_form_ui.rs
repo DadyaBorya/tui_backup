@@ -40,9 +40,9 @@ pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
     f.render_widget(deep_input, chunks[1]);
 
     let content_input = input_generator::input(
-        "Content*".to_string(),
+        "Content".to_string(),
         form.state.content.to_owned(),
-        "Paragraph*".to_string(),
+        "Paragraph".to_string(),
         app.state.mode == AppMode::FileFilterForm(FileFilterForm::Content)
     );
     f.render_widget(content_input, chunks[2]);

@@ -49,6 +49,11 @@ impl DirFilePriorityComponent {
                 }
 
                 entry.entry_dir_file_priority.as_mut().unwrap().remove(index);
+
+                if entry.entry_dir_file_priority.as_ref().unwrap().is_empty() {
+                    entry.entry_dir_file_priority = None;
+                }
+
                 app.components.dir_file_priority.state.rules.remove(index);
                 app.components.dir_file_priority.move_up();
             }
