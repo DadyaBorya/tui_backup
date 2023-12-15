@@ -1,10 +1,8 @@
 use crate::models::dir_entry::DirEntry;
 
 pub fn dir_entry_to_template(entry: &DirEntry) -> String {
-    let mut content = "".to_string();
-
+    let mut content = String::new();
     dir_entry_to_template_recursive(entry, &mut content);
-
     content
 }
 
@@ -18,23 +16,29 @@ fn dir_entry_to_template_recursive(entry: &DirEntry, content: &mut String) {
         let dir_priority = dir_priority(entry);
         let file_priority = file_priority(entry);
 
-        let selected = match entry.selected {
-            true => String::from("s"),
-            false => String::from(""),
+        let selected = if
+            entry.selected ||
+            dir_file_priority.is_empty() ||
+            !file_priority.is_empty() ||
+            !file_priority.is_empty()
+        {
+            "s"
+        } else {
+            ""
         };
 
-        content.push_str(
-            &format!(
-                "{}>{}{}{}{}{}{}\n",
-                path,
-                file_filter,
-                dir_filter,
-                dir_file_priority,
-                dir_priority,
-                file_priority,
-                selected
-            )
+        let formatted_content = format!(
+            "{}>{}{}{}{}{}{}\n",
+            path,
+            file_filter,
+            dir_filter,
+            dir_file_priority,
+            dir_priority,
+            file_priority,
+            selected
         );
+
+        content.push_str(&formatted_content);
     }
 
     if let Some(children) = entry.children.as_ref() {
@@ -103,7 +107,7 @@ fn file_filter(entry: &DirEntry) -> String {
                 strings.push(format!("{{{}, {}, {}}}", filter.regex, filter.deep, filter.content));
             }
         }
-        return format!("ff[{}]", strings.join(","));
+        return format!("1[{}]", strings.join(","));
     }
     String::new()
 }
@@ -117,7 +121,7 @@ fn dir_filter(entry: &DirEntry) -> String {
                 strings.push(format!("{{{}, {}}}", filter.regex, filter.deep));
             }
         }
-        return format!("df[{}]", strings.join(","));
+        return format!("2[{}]", strings.join(","));
     }
     String::new()
 }
@@ -139,7 +143,7 @@ fn dir_file_priority(entry: &DirEntry) -> String {
                 );
             }
         }
-        return format!("dfp[{}]", strings.join(","));
+        return format!("3[{}]", strings.join(","));
     }
     String::new()
 }
@@ -155,7 +159,7 @@ fn dir_priority(entry: &DirEntry) -> String {
                 );
             }
         }
-        return format!("dp[{}]", strings.join(","));
+        return format!("4[{}]", strings.join(","));
     }
     String::new()
 }
@@ -169,7 +173,7 @@ fn file_priority(entry: &DirEntry) -> String {
                 strings.push(format!("{{{}, {}}}", priority.priority, priority.content));
             }
         }
-        return format!("fp[{}]", strings.join(","));
+        return format!("5[{}]", strings.join(","));
     }
     String::new()
 }

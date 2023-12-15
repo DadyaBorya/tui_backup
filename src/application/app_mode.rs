@@ -13,6 +13,7 @@ pub enum AppMode {
     DirFilePriorityForm(DirFilePriorityForm),
     DirPriorityForm(DirPriorityForm),
     FilePriorityForm(FilePriorityForm),
+    CreateTemplateForm(CreateTemplateForm),
 }
 
 #[derive(PartialEq, Clone)]
@@ -51,5 +52,11 @@ pub enum DirPriorityForm {
 pub enum FilePriorityForm {
     Priority,
     Content,
+    Submit,
+}
+
+#[derive(PartialEq, Clone)]
+pub enum CreateTemplateForm {
+    Name,
     Submit,
 }

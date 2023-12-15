@@ -2,8 +2,8 @@ use std::path::PathBuf;
 
 use crate::{
     utils::table_util,
-    application::{ app::App, app_mode::AppMode },
-    services::{ entry_filter_service, entry_priority_service, map_template_service, file_service },
+    application::{ app::App, app_mode::{AppMode, CreateTemplateForm} },
+    services::{ entry_filter_service, entry_priority_service },
 };
 
 use super::file_list_state::FileListState;
@@ -29,9 +29,7 @@ impl FileListComponent {
     }
 
     pub fn save(app: &mut App) {
-        let content = map_template_service::dir_entry_to_template(&app.components.file_list.state.root);
-        let file_name = format!("{}/test.txt", &app.config.paths.templates);
-        let _ = file_service::save(&PathBuf::from(file_name), content);
+       app.change_mode(AppMode::CreateTemplateForm(CreateTemplateForm::Name), app.state.mode.clone());
     }
 
     pub fn open(&mut self) -> Result<(), std::io::Error> {

@@ -10,6 +10,7 @@ use crate::components::{
     dir_file_priority_form::dir_file_priority_form_ui,
     dir_priority_form::dir_priority_form_ui,
     file_priority_form::file_priority_form_ui,
+    create_template_form::create_template_form_ui,
 };
 
 use super::{ app::App, app_mode::AppMode };
@@ -51,6 +52,7 @@ fn handle_current_app_mode<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: 
         AppMode::DirFilePriorityForm(_) => dir_file_priority_form_ui::ui(app, f),
         AppMode::DirPriorityForm(_) => dir_priority_form_ui::ui(app, f),
         AppMode::FilePriorityForm(_) => file_priority_form_ui::ui(app, f),
+        AppMode::CreateTemplateForm(_) => create_template_form_ui::ui(app, f),
         _ => {}
     }
 }

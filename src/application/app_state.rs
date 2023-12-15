@@ -12,6 +12,7 @@ use crate::components::{
     dir_file_priority_form::dir_file_priority_form_component::DirFilePriorityFormComponent,
     dir_priority_form::dir_priority_form_component::DirPriorityFormComponent,
     file_priority_form::file_priority_form_component::FilePriorityFormComponent,
+    create_template_form::create_template_form_component::CreateTemplateFormComponent,
 };
 
 use super::app_mode::AppMode;
@@ -40,6 +41,7 @@ pub struct AppComponents {
     pub dir_file_priority_form: DirFilePriorityFormComponent,
     pub dir_priority_form: DirPriorityFormComponent,
     pub file_priority_form: FilePriorityFormComponent,
+    pub create_template_form: CreateTemplateFormComponent,
 }
 
 impl AppState {
@@ -69,6 +71,7 @@ impl AppComponents {
             dir_file_priority_form: DirFilePriorityFormComponent::init(),
             dir_priority_form: DirPriorityFormComponent::init(),
             file_priority_form: FilePriorityFormComponent::init(),
+            create_template_form: CreateTemplateFormComponent::init(),
         })
     }
 }

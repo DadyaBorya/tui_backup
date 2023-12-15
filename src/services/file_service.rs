@@ -49,6 +49,14 @@ pub fn save(path: &Path, content: String) -> Result<(), std::io::Error> {
     Ok(())
 }
 
+pub fn create_dir(path: &Path) -> Result<(), std::io::Error> {
+    if !path.exists() {
+        return fs::create_dir(path);
+    }
+
+    Ok(())
+}
+
 pub fn read_file(path: &Path) -> Result<String, std::io::Error> {
     fs::read_to_string(path)
 }
