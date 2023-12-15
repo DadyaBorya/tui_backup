@@ -1,4 +1,4 @@
-use std::{ path::{ PathBuf, Path }, fs };
+use std::{ path::{ PathBuf, Path }, fs::{ self, OpenOptions }, io::Write };
 
 use crate::models::dir_entry::DirEntry;
 
@@ -40,6 +40,13 @@ pub fn entries(path: &Path) -> Result<Vec<DirEntry>, std::io::Error> {
     }
 
     Ok(dir_entries)
+}
+
+pub fn save(path: &Path, content: String) -> Result<(), std::io::Error> {
+    let mut file = OpenOptions::new().write(true).create(true).truncate(true).open(path)?;
+
+    file.write_all(content.as_bytes())?;
+    Ok(())
 }
 
 pub fn read_file(path: &Path) -> Result<String, std::io::Error> {

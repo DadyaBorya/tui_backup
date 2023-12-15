@@ -111,24 +111,10 @@ impl DirEntry {
         self.selected = bool;
     }
 
-    pub fn select_dir_entries(&mut self, bool: bool) -> Result<(), std::io::Error> {
-        self.renew_children()?;
-
-        self.selected = bool;
-
-        if let Some(children) = self.children.as_mut() {
-            for entry in children {
-                entry.selected = bool;
-            }
-        }
-
-        Ok(())
-    }
-
     pub fn select_all(&mut self) {
         if let Some(children) = self.children.as_mut() {
             for entry in children {
-                let _ = entry.select_dir_entries(!entry.selected);
+                let _ = entry.set_select(!entry.selected);
             }
         }
     }

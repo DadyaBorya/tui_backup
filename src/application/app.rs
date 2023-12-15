@@ -7,6 +7,8 @@ use crossterm::{
 };
 use tui::{ backend::{ CrosstermBackend, Backend }, Terminal, style::Color };
 
+use crate::models::config::Config;
+
 use super::{ app_state::{ AppState, AppComponents }, app_ui, app_event, app_mode::AppMode };
 
 pub static ACTIVE_BORDER_COLOR: Color = Color::Yellow;
@@ -14,11 +16,12 @@ pub static ACTIVE_BORDER_COLOR: Color = Color::Yellow;
 pub struct App {
     pub state: AppState,
     pub components: AppComponents,
+    pub config: Config
 }
 
 impl App {
     pub fn init() -> Result<Self, std::io::Error> {
-        Ok(App { state: AppState::init()?, components: AppComponents::init()? })
+        Ok(App { state: AppState::init()?, components: AppComponents::init()?, config: Config::init()? })
     }
 
     pub fn change_mode(&mut self, mode: AppMode, prev_mode: AppMode) {

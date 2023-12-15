@@ -9,6 +9,7 @@ use crate::models::{
 
 pub fn priority(entry: &mut DirEntry) {
     set_up_dir_priority(entry);
+
     set_up_dir_file_priority(entry);
 }
 

@@ -3,13 +3,13 @@ use std::path::PathBuf;
 use crate::{
     utils::table_util,
     application::{ app::App, app_mode::AppMode },
-    services::{ entry_filter_service, entry_priority_service },
+    services::{ entry_filter_service, entry_priority_service, map_template_service, file_service },
 };
 
 use super::file_list_state::FileListState;
 
 const HELP: &'static str =
-    "| ESC~Back | ↑ ↓ ← → Move | SPACE~Select | s~Select Deep | a~Select All | f~filter | p~priority |";
+    "| ESC~Back | ↑ ↓ ← → Move | SPACE~Select | s~Select Deep | a~Select All | f~Filter | p~Priority | c~Create/Edit |";
 
 pub struct FileListComponent {
     pub state: FileListState,
@@ -26,6 +26,12 @@ impl FileListComponent {
 
     pub fn move_down(&mut self) {
         table_util::move_down(&mut self.state.table_state, self.state.table_rows.len());
+    }
+
+    pub fn save(app: &mut App) {
+        let content = map_template_service::dir_entry_to_template(&app.components.file_list.state.root);
+        let file_name = format!("{}/test.txt", &app.config.paths.templates);
+        let _ = file_service::save(&PathBuf::from(file_name), content);
     }
 
     pub fn open(&mut self) -> Result<(), std::io::Error> {
@@ -108,6 +114,7 @@ impl FileListComponent {
             app.change_mode(AppMode::FileFilter, AppMode::FileList);
         }
     }
+
     pub fn open_priority(app: &mut App) {
         let file_list = &mut app.components.file_list;
 

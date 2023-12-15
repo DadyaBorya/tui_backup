@@ -64,10 +64,7 @@ impl FileListState {
     }
     pub fn select(&mut self) -> Result<(), std::io::Error> {
         if let Some(entry) = self.get_selected_entry() {
-            match entry.is_dir() {
-                true => entry.select_dir_entries(!entry.selected)?,
-                false => entry.set_select(!entry.selected),
-            };
+            entry.set_select(!entry.selected);
         }
         Ok(())
     }
