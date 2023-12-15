@@ -45,6 +45,11 @@ impl FileFilterComponent {
                 }
 
                 entry.entry_file_filter.as_mut().unwrap().remove(index);
+
+                if entry.entry_file_filter.as_ref().unwrap().len() == 0 {
+                    entry.entry_file_filter = None;
+                }
+
                 app.components.file_filter.state.rules.remove(index);
                 app.components.file_filter.move_up();
             }

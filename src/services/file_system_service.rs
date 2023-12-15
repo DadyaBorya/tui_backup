@@ -44,3 +44,5 @@ pub fn add_existing_item(entry: &mut DirEntry, new_entry: DirEntry) {
         entry.children.as_mut().unwrap().push(new_entry);
     }
 }
+
+

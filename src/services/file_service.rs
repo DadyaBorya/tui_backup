@@ -41,3 +41,7 @@ pub fn entries(path: &Path) -> Result<Vec<DirEntry>, std::io::Error> {
 
     Ok(dir_entries)
 }
+
+pub fn read_file(path: &Path) -> Result<String, std::io::Error> {
+    fs::read_to_string(path)
+}
