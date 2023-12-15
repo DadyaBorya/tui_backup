@@ -71,6 +71,10 @@ impl DirEntry {
         (vec![brackets, self.file_name(), self.extension()], self.color())
     }
 
+    pub fn path(&self) -> String {
+        self.path.as_path().display().to_string()
+    }
+
     pub fn renew_children(&mut self) -> Result<(), std::io::Error> {
         if self.is_dir() {
             let new_children = Some(file_service::entries(self.path.as_path())?);

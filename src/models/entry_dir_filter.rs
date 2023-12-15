@@ -2,7 +2,7 @@
 pub struct EntryDirFilter {
     pub regex: String,
     pub deep: usize,
-    pub root: Option<String>,
+    pub root: String,
 }
 
 impl EntryDirFilter {

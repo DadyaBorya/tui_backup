@@ -49,9 +49,9 @@ pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>) {
     f.render_widget(priority_input, chunks[2]);
 
     let content_input = input_generator::input(
-        "Content*".to_string(),
+        "Content".to_string(),
         form.state.content.to_owned(),
-        "Paragraph*".to_string(),
+        "Paragraph".to_string(),
         app.state.mode == AppMode::DirFilePriorityForm(DirFilePriorityForm::Content)
     );
     f.render_widget(content_input, chunks[3]);

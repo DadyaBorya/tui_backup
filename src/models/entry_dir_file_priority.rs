@@ -1,10 +1,10 @@
-#[derive(Default, Clone)]
+#[derive(Default, Clone, PartialEq, Eq)]
 pub struct EntryDirFilePriority {
     pub regex: String,
     pub content: String,
     pub priority: usize,
     pub deep: usize,
-    pub root: Option<String>
+    pub root: String,
 }
 
 impl EntryDirFilePriority {

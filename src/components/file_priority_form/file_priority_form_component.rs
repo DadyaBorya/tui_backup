@@ -45,7 +45,7 @@ impl FilePriorityFormComponent {
     }
 
     pub fn add(app: &mut App) {
-        let filter = match FilePriorityFormComponent::create(app) {
+        let mut priority = match FilePriorityFormComponent::create(app) {
             Some(value) => value,
             None => {
                 return;
@@ -53,17 +53,18 @@ impl FilePriorityFormComponent {
         };
 
         let entry = app.components.file_list.state.get_selected_entry().unwrap();
+        priority.root = entry.path();
 
         match app.components.file_priority.state.is_edit {
             true => {
                 if let Some(rules) = entry.entry_file_priority.as_mut() {
                     let index = app.components.file_priority.state.list_state.selected().unwrap();
-                    rules[index] = filter;
+                    rules[index] = priority;
                 }
 
                 app.components.file_priority.state.is_edit = false;
             }
-            false => entry.entry_file_priority.get_or_insert(Vec::new()).push(filter),
+            false => entry.entry_file_priority.get_or_insert(Vec::new()).push(priority),
         }
 
         app.components.file_priority_form.state.clear();

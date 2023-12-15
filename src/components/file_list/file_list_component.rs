@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use crate::{
     utils::table_util,
     application::{ app::App, app_mode::AppMode },
-    services::entry_filter_service,
+    services::{ entry_filter_service, entry_priority_service },
 };
 
 use super::file_list_state::FileListState;
@@ -39,6 +39,7 @@ impl FileListComponent {
             entry.renew_children()?;
 
             entry_filter_service::filter(entry);
+            entry_priority_service::priority(entry);
 
             self.state.history.push(self.state.table_state.selected().unwrap());
             self.state.table_state.select(Some(0));
@@ -73,6 +74,7 @@ impl FileListComponent {
         let entry = self.state.get_selected_entry().unwrap();
 
         entry_filter_service::delete_not_root(entry);
+        entry_priority_service::delete_not_root(entry);
     }
 
     pub fn select(&mut self) -> Result<(), std::io::Error> {

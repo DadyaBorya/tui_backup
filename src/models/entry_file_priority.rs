@@ -1,15 +1,14 @@
-#[derive(Default, Clone)]
+#[derive(Default, Clone, PartialEq, Eq)]
 pub struct EntryFilePriority {
-    pub regex: String,
     pub content: String,
     pub priority: usize,
+    pub root: String,
 }
 
 impl EntryFilePriority {
     pub fn row(&self) -> String {
         format!(
-            "regex: {regex} priority: {priority}\n{content}",
-            regex = self.regex,
+            "priority: {priority}\n{content}",
             content = self.content,
             priority = self.priority
         )

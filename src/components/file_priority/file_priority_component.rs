@@ -1,6 +1,7 @@
 use crate::{
     application::{ app::App, app_mode::{ AppMode, FilePriorityForm } },
     utils::list_utils,
+    components::message_popup::message_popup_components::MessagePopupComponent,
 };
 
 use super::file_priority_state::FilePriorityState;
@@ -29,6 +30,17 @@ impl FilePriorityComponent {
     pub fn delete(app: &mut App) {
         if let Some(entry) = app.components.file_list.state.get_selected_entry() {
             if let Some(index) = app.components.file_priority.state.list_state.selected() {
+                let priority_root = entry.entry_file_priority.as_ref().unwrap()[index].root.clone();
+
+                if priority_root != entry.path() {
+                    MessagePopupComponent::show(
+                        app,
+                        "Can't delete root priority".to_string(),
+                        format!("Root priority is {}", priority_root)
+                    );
+                    return;
+                }
+
                 entry.entry_file_priority.as_mut().unwrap().remove(index);
 
                 if entry.entry_file_priority.as_ref().unwrap().is_empty() {
@@ -43,11 +55,22 @@ impl FilePriorityComponent {
 
     pub fn edit(app: &mut App) {
         if let Some(index) = app.components.file_priority.state.list_state.selected() {
-            let filter = app.components.file_priority.state.rules[index].clone();
+            let priority = app.components.file_priority.state.rules[index].clone();
+
+            let entry = app.components.file_list.state.get_selected_entry().unwrap();
+
+            if priority.root != entry.path() {
+                MessagePopupComponent::show(
+                    app,
+                    "Can't edit root priority".to_string(),
+                    format!("Root priority is {}", priority.root)
+                );
+                return;
+            }
 
             let state = &mut app.components.file_priority_form.state;
-            state.content = filter.content;
-            state.priority = filter.priority.to_string();
+            state.content = priority.content;
+            state.priority = priority.priority.to_string();
             app.components.file_priority.state.is_edit = true;
             app.change_mode(
                 AppMode::FilePriorityForm(FilePriorityForm::Priority),

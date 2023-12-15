@@ -1,4 +1,4 @@
-use crate::{ application::{ app::App, app_mode::{ AppMode, DirFilterForm } }, utils::list_utils };
+use crate::{ application::{ app::App, app_mode::{ AppMode, DirFilterForm } }, utils::list_utils, components::message_popup::message_popup_components::MessagePopupComponent };
 
 use super::dir_filter_state::DirFilterState;
 
@@ -32,7 +32,14 @@ impl DirFilterComponent {
     pub fn delete(app: &mut App) {
         if let Some(entry) = app.components.file_list.state.get_selected_entry() {
             if let Some(index) = app.components.dir_filter.state.list_state.selected() {
-                if entry.entry_dir_filter.as_ref().unwrap()[index].root.is_none() {
+                let filter_root = entry.entry_dir_filter.as_ref().unwrap()[index].root.clone();
+
+                if filter_root != entry.path() {
+                    MessagePopupComponent::show(
+                        app,
+                        "Can't delete root filter".to_string(),
+                        format!("Root filter is {}", filter_root)
+                    );
                     return;
                 }
 
@@ -52,7 +59,14 @@ impl DirFilterComponent {
         if let Some(index) = app.components.dir_filter.state.list_state.selected() {
             let filter = app.components.dir_filter.state.rules[index].clone();
 
-            if filter.root.is_none() {
+            let entry = app.components.file_list.state.get_selected_entry().unwrap();
+
+            if filter.root != entry.path() {
+                MessagePopupComponent::show(
+                        app,
+                        "Can't edit root filter".to_string(),
+                        format!("Root filter is {}", filter.root)
+                    );
                 return;
             }
 

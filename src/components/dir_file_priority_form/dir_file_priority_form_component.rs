@@ -55,7 +55,7 @@ impl DirFilePriorityFormComponent {
         };
 
         let entry = app.components.file_list.state.get_selected_entry().unwrap();
-        filter.root = Some(entry.path.as_path().display().to_string());
+        filter.root = entry.path();
 
         match app.components.dir_file_priority.state.is_edit {
             true => {

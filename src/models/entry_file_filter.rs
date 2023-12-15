@@ -3,7 +3,7 @@ pub struct EntryFileFilter {
     pub regex: String,
     pub content: String,
     pub deep: usize,
-    pub root: Option<String>,
+    pub root: String,
 }
 
 impl EntryFileFilter {

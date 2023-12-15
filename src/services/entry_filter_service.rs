@@ -57,7 +57,7 @@ pub fn set_up_dir_filter(entry: &mut DirEntry) {
                 let new_filter = EntryDirFilter {
                     regex: filter.regex.clone(),
                     deep: filter.deep - 1,
-                    root: None,
+                    root: filter.root.clone(),
                 };
 
                 let entry_filters = child.entry_dir_filter.get_or_insert_with(Vec::new);
@@ -73,8 +73,10 @@ pub fn set_up_dir_filter(entry: &mut DirEntry) {
 pub fn delete_not_root_dir_filter(entry: &mut DirEntry) {
     if let Some(children) = &mut entry.children {
         for child in children {
+            let child_path = child.path();
+
             if let Some(filters) = &mut child.entry_dir_filter {
-                filters.retain(|filter| filter.root.is_some());
+                filters.retain(|filter| filter.root == child_path);
 
                 if filters.is_empty() {
                     child.entry_dir_filter = None;
@@ -101,7 +103,7 @@ pub fn set_up_dir_file_filter(entry: &mut DirEntry) {
                     regex: filter.regex.clone(),
                     content: filter.content.clone(),
                     deep: filter.deep - 1,
-                    root: None,
+                    root: filter.root.clone(),
                 };
 
                 let entry_filters = child.entry_file_filter.get_or_insert_with(Vec::new);
@@ -117,9 +119,10 @@ pub fn set_up_dir_file_filter(entry: &mut DirEntry) {
 pub fn delete_not_root_dir_file_filter(entry: &mut DirEntry) {
     if let Some(children) = &mut entry.children {
         for child in children {
-            if let Some(filters) = &mut child.entry_file_filter {
-                filters.retain(|filter| filter.root.is_some());
+            let child_path = child.path();
 
+            if let Some(filters) = &mut child.entry_file_filter {
+                filters.retain(|filter| filter.root == child_path);
                 if filters.is_empty() {
                     child.entry_file_filter = None;
                 }

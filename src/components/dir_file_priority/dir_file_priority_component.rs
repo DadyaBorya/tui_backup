@@ -1,6 +1,7 @@
 use crate::{
     application::{ app::App, app_mode::{ AppMode, DirFilePriorityForm } },
     utils::list_utils,
+    components::message_popup::message_popup_components::MessagePopupComponent,
 };
 
 use super::dir_file_priority_state::DirFilePriorityState;
@@ -44,7 +45,17 @@ impl DirFilePriorityComponent {
     pub fn delete(app: &mut App) {
         if let Some(entry) = app.components.file_list.state.get_selected_entry() {
             if let Some(index) = app.components.dir_file_priority.state.list_state.selected() {
-                if entry.entry_dir_file_priority.as_ref().unwrap()[index].root.is_none() {
+                let priority_root = entry.entry_dir_file_priority
+                    .as_ref()
+                    .unwrap()
+                    [index].root.clone();
+
+                if priority_root != entry.path() {
+                    MessagePopupComponent::show(
+                        app,
+                        "Can't delete root priority".to_string(),
+                        format!("Root priority is {}", priority_root)
+                    );
                     return;
                 }
 
@@ -62,17 +73,23 @@ impl DirFilePriorityComponent {
 
     pub fn edit(app: &mut App) {
         if let Some(index) = app.components.dir_file_priority.state.list_state.selected() {
-            let filter = app.components.dir_file_priority.state.rules[index].clone();
+            let priority = app.components.dir_file_priority.state.rules[index].clone();
 
-            if filter.root.is_none() {
+            let entry = app.components.file_list.state.get_selected_entry().unwrap();
+
+            if priority.root != entry.path() {
+                MessagePopupComponent::show(
+                    app,
+                    "Can't edit root priority".to_string(),
+                    format!("Root priority is {}", priority.root)
+                );
                 return;
             }
-
             let state = &mut app.components.dir_file_priority_form.state;
-            state.regex = filter.regex;
-            state.content = filter.content;
-            state.deep = filter.deep.to_string();
-            state.priority = filter.priority.to_string();
+            state.regex = priority.regex;
+            state.content = priority.content;
+            state.deep = priority.deep.to_string();
+            state.priority = priority.priority.to_string();
             app.components.dir_file_priority.state.is_edit = true;
             app.change_mode(
                 AppMode::DirFilePriorityForm(DirFilePriorityForm::Regex),
