@@ -1,17 +1,20 @@
-use crate::components::{
-    file_list::file_list_component::FileListComponent,
-    tab::tab_component::TabComponent,
-    message_popup::message_popup_components::MessagePopupComponent,
-    file_filter::file_filter_component::FileFilterComponent,
-    dir_filter::dir_filter_component::DirFilterComponent,
-    dir_file_priority::dir_file_priority_component::DirFilePriorityComponent,
-    dir_priority::dir_priority_component::DirPriorityComponent,
-    file_priority::file_priority_component::FilePriorityComponent,
-    file_filter_form::file_filter_form_component::FileFilterFormComponent,
-    dir_filter_form::dir_filter_form_component::DirFilterFormComponent,
-    dir_file_priority_form::dir_file_priority_form_component::DirFilePriorityFormComponent,
-    dir_priority_form::dir_priority_form_component::DirPriorityFormComponent,
-    file_priority_form::file_priority_form_component::FilePriorityFormComponent,
+use crate::{
+    components::{
+        file_list::file_list_component::FileListComponent,
+        tab::tab_component::TabComponent,
+        message_popup::message_popup_components::MessagePopupComponent,
+        file_filter::file_filter_component::FileFilterComponent,
+        dir_filter::dir_filter_component::DirFilterComponent,
+        dir_file_priority::dir_file_priority_component::DirFilePriorityComponent,
+        dir_priority::dir_priority_component::DirPriorityComponent,
+        file_priority::file_priority_component::FilePriorityComponent,
+        file_filter_form::file_filter_form_component::FileFilterFormComponent,
+        dir_filter_form::dir_filter_form_component::DirFilterFormComponent,
+        dir_file_priority_form::dir_file_priority_form_component::DirFilePriorityFormComponent,
+        dir_priority_form::dir_priority_form_component::DirPriorityFormComponent,
+        file_priority_form::file_priority_form_component::FilePriorityFormComponent,
+    },
+    models::config::Config,
 };
 
 use super::app_mode::AppMode;
@@ -20,6 +23,7 @@ pub struct AppState {
     pub mode: AppMode,
     pub prev_mode: AppMode,
     pub flags: AppFlags,
+    pub config: Config,
     pub exit: bool,
 }
 
@@ -48,6 +52,7 @@ impl AppState {
             mode: AppMode::Tab,
             prev_mode: AppMode::Tab,
             flags: AppFlags::default(),
+            config: Config::init()?,
             exit: false,
         })
     }
