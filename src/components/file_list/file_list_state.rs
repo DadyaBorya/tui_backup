@@ -55,6 +55,10 @@ impl FileListState {
                     self.current_path.as_path()
                 )
             {
+                if !entry.is_dir() {
+                    return None;
+                }
+
                 if let Some(children) = entry.children.as_mut() {
                     return children.get_mut(index);
                 }
@@ -80,22 +84,28 @@ impl FileListState {
     }
     pub fn select_all(&mut self) {
         if
-            let Some(dir) = file_system_service::find_in_dir(
+            let Some(entry) = file_system_service::find_in_dir(
                 &mut self.root,
                 self.current_path.as_path()
             )
         {
-            dir.select_all();
+            if entry.is_dir() {
+                entry.select_all();
+            }
         }
     }
     pub fn rows(&mut self) -> Vec<(Vec<String>, Color)> {
         if
-            let Some(dir) = file_system_service::find_in_dir(
+            let Some(entry) = file_system_service::find_in_dir(
                 &mut self.root,
                 self.current_path.as_path()
             )
         {
-            match &dir.children {
+            if !entry.is_dir() {
+                return vec![];
+            }
+
+            match &entry.children {
                 Some(children) => {
                     return children
                         .iter()

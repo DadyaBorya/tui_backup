@@ -16,7 +16,7 @@ use super::{
 const DIR_COLOR: Color = Color::Green;
 const FILE_COLOR: Color = Color::Blue;
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct DirEntry {
     pub path: PathBuf,
     pub children: Option<Vec<DirEntry>>,

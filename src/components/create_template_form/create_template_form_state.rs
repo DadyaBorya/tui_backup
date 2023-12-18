@@ -1,6 +1,7 @@
 #[derive(Default)]
 pub struct CreateTemplateFormState {
     pub name: String,
+    pub is_edit: bool
 }
 
 impl CreateTemplateFormState {

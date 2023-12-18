@@ -28,6 +28,15 @@ impl TemplateListState {
         list_utils::init_index_table(&mut self.list_state, len)
     }
 
+    pub fn selected(&self) -> Option<String> {
+        if let Some(index) = self.list_state.selected() {
+            let template = self.templates[index].clone();
+            return Some(template);
+        }
+
+        None
+    }
+
     pub fn renew(&mut self) {
         self.templates.clear();
 

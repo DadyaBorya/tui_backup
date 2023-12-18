@@ -27,7 +27,10 @@ impl CreateTemplateFormComponent {
     }
 
     pub fn exit(app: &mut App, prev_mode: CreateTemplateForm) {
-        app.components.create_template_form.state.clear();
+        if !app.components.create_template_form.state.is_edit {
+            app.components.create_template_form.state.clear();
+        }
+
         app.change_mode(AppMode::FileList, AppMode::CreateTemplateForm(prev_mode));
     }
 
@@ -62,6 +65,8 @@ impl CreateTemplateFormComponent {
         let _ = file_service::save(&PathBuf::from(path), content);
 
         app.components.create_template_form.state.clear();
+
+        app.components.create_template_form.state.is_edit = false;
 
         app.components.file_list.state = FileListState::init().unwrap();
 

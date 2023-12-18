@@ -38,6 +38,11 @@ pub fn template_to_dir_entry(content: String) -> Result<Vec<DirEntry>, ()> {
 
         entries.push(entry);
     }
+
+    if entries.is_empty() {
+        return Err(());
+    }
+
     return Ok(entries);
 }
 
