@@ -1,4 +1,4 @@
-#[derive(Default, Clone, PartialEq, Eq)]
+#[derive(Default, Clone, PartialEq, Eq, Debug)]
 pub struct EntryFilePriority {
     pub content: String,
     pub priority: usize,
@@ -7,10 +7,6 @@ pub struct EntryFilePriority {
 
 impl EntryFilePriority {
     pub fn row(&self) -> String {
-        format!(
-            "priority: {priority}\n{content}",
-            content = self.content,
-            priority = self.priority
-        )
+        format!("priority: {priority}\n{content}", content = self.content, priority = self.priority)
     }
 }

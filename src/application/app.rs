@@ -21,7 +21,9 @@ pub struct App {
 
 impl App {
     pub fn init() -> Result<Self, std::io::Error> {
-        Ok(App { state: AppState::init()?, components: AppComponents::init()?, config: Config::init()? })
+        let config = Config::init()?;
+
+        Ok(App { state: AppState::init()?, components: AppComponents::init(&config)?, config })
     }
 
     pub fn change_mode(&mut self, mode: AppMode, prev_mode: AppMode) {

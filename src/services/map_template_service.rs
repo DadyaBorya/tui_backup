@@ -17,10 +17,7 @@ fn dir_entry_to_template_recursive(entry: &DirEntry, content: &mut String) {
         let file_priority = file_priority(entry);
 
         let selected = if
-            entry.selected ||
-            dir_file_priority.is_empty() ||
-            !file_priority.is_empty() ||
-            !file_priority.is_empty()
+            entry.selected
         {
             "s"
         } else {
@@ -102,6 +99,10 @@ fn file_filter(entry: &DirEntry) -> String {
     let mut strings = vec![];
     let entry_path = entry.path();
     if let Some(filters) = entry.entry_file_filter.as_ref() {
+        if filters.is_empty() {
+            return String::new();
+        }
+
         for filter in filters.iter() {
             if filter.root == entry_path {
                 strings.push(format!("{{{}, {}, {}}}", filter.regex, filter.deep, filter.content));
@@ -116,6 +117,10 @@ fn dir_filter(entry: &DirEntry) -> String {
     let mut strings = vec![];
     let entry_path = entry.path();
     if let Some(filters) = entry.entry_dir_filter.as_ref() {
+        if filters.is_empty() {
+            return String::new();
+        }
+
         for filter in filters.iter() {
             if filter.root == entry_path {
                 strings.push(format!("{{{}, {}}}", filter.regex, filter.deep));
@@ -130,6 +135,10 @@ fn dir_file_priority(entry: &DirEntry) -> String {
     let mut strings = vec![];
     let entry_path = entry.path();
     if let Some(priorities) = entry.entry_dir_file_priority.as_ref() {
+        if priorities.is_empty() {
+            return String::new();
+        }
+
         for priority in priorities.iter() {
             if priority.root == entry_path {
                 strings.push(
@@ -152,6 +161,10 @@ fn dir_priority(entry: &DirEntry) -> String {
     let mut strings = vec![];
     let entry_path = entry.path();
     if let Some(priorities) = entry.entry_dir_priority.as_ref() {
+        if priorities.is_empty() {
+            return String::new();
+        }
+
         for priority in priorities.iter() {
             if priority.root == entry_path {
                 strings.push(
@@ -168,6 +181,10 @@ fn file_priority(entry: &DirEntry) -> String {
     let mut strings = vec![];
     let entry_path = entry.path();
     if let Some(priorities) = entry.entry_file_priority.as_ref() {
+        if priorities.is_empty() {
+            return String::new();
+        }
+
         for priority in priorities.iter() {
             if priority.root == entry_path {
                 strings.push(format!("{{{}, {}}}", priority.priority, priority.content));

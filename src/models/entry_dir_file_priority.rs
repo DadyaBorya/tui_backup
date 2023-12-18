@@ -1,4 +1,4 @@
-#[derive(Default, Clone, PartialEq, Eq)]
+#[derive(Default, Clone, PartialEq, Eq, Debug)]
 pub struct EntryDirFilePriority {
     pub regex: String,
     pub content: String,

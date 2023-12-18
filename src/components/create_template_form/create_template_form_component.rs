@@ -3,7 +3,11 @@ use std::path::PathBuf;
 use crate::{
     application::{ app_mode::{ CreateTemplateForm, AppMode }, app::App },
     services::{ map_template_service, file_service },
-    components::message_popup::message_popup_components::MessagePopupComponent,
+    components::{
+        message_popup::message_popup_components::MessagePopupComponent,
+        tab::tab_component::TabComponent,
+        file_list::file_list_state::FileListState,
+    },
 };
 
 use super::create_template_form_state::CreateTemplateFormState;
@@ -44,6 +48,11 @@ impl CreateTemplateFormComponent {
 
         let content = map_template_service::dir_entry_to_template(entry);
 
+        if content.is_empty() {
+            MessagePopupComponent::show(app, "Error".to_string(), "Template is empty".to_string());
+            return;
+        }
+
         let dir_path = &app.config.paths.templates;
 
         let _ = file_service::create_dir(&PathBuf::from(dir_path));
@@ -54,7 +63,13 @@ impl CreateTemplateFormComponent {
 
         app.components.create_template_form.state.clear();
 
-        app.change_mode(AppMode::FileList, app.state.mode.clone());
+        app.components.file_list.state = FileListState::init().unwrap();
+
+        let template_list = &mut app.components.template_list;
+
+        template_list.state.renew();
+
+        TabComponent::change_preview(app, 1);
     }
 
     pub fn get_helper_text(&self, mode: &CreateTemplateForm) -> &'static str {

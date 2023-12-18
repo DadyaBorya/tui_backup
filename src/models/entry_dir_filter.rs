@@ -1,4 +1,4 @@
-#[derive(Default, Clone, PartialEq, Eq)]
+#[derive(Default, Clone, PartialEq, Eq, Debug)]
 pub struct EntryDirFilter {
     pub regex: String,
     pub deep: usize,

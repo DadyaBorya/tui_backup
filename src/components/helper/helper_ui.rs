@@ -29,12 +29,14 @@ fn get_helper_text(app: &App) -> &'static str {
         AppMode::FilePriority => app.components.file_priority.get_helper_text(),
         AppMode::DirPriority => app.components.dir_priority.get_helper_text(),
         AppMode::DirFilePriority => app.components.dir_file_priority.get_helper_text(),
-        AppMode::FileFilterForm(mode) =>
-            app.components.file_filter_form.get_helper_text(&mode),
+        AppMode::FileFilterForm(mode) => app.components.file_filter_form.get_helper_text(&mode),
         AppMode::DirFilterForm(mode) => app.components.dir_filter_form.get_helper_text(&mode),
-        AppMode::DirFilePriorityForm(mode) => app.components.dir_file_priority_form.get_helper_text(&mode),
+        AppMode::DirFilePriorityForm(mode) =>
+            app.components.dir_file_priority_form.get_helper_text(&mode),
         AppMode::DirPriorityForm(mode) => app.components.dir_priority_form.get_help_text(&mode),
         AppMode::FilePriorityForm(mode) => app.components.file_priority_form.get_help_text(&mode),
-        AppMode::CreateTemplateForm(mode) => app.components.create_template_form.get_helper_text(&mode),
+        AppMode::CreateTemplateForm(mode) =>
+            app.components.create_template_form.get_helper_text(&mode),
+        AppMode::TemplateList => app.components.template_list.get_helper_text(),
     }
 }
