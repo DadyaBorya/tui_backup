@@ -25,6 +25,7 @@ impl FileListState {
         state.root = DirEntry::default();
         state.root.path = PathBuf::from("/");
         state.root.children = Some(file_service::root()?);
+        state.root.sort_children();
         state.current_path = PathBuf::from("/");
         state.set_rows();
 
