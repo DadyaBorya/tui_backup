@@ -69,9 +69,9 @@ impl TemplateListComponent {
                     file_list.state.history = vec![0; ancestors_vec.len()];
 
                     file_list.state.current_path = first_path;
-                    file_list.state.set_rows();
                     file_list.state.root.sort_children();
-                    
+                    file_list.state.set_rows();
+
                     app.components.template_list.state.list_state.select(None);
                     app.components.create_template_form.state.name = template;
                     app.components.create_template_form.state.is_edit = true;
