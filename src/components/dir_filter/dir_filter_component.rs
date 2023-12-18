@@ -2,7 +2,7 @@ use crate::{ application::{ app::App, app_mode::{ AppMode, DirFilterForm } }, ut
 
 use super::dir_filter_state::DirFilterState;
 
-const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | [~Prev |";
+const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | [~Prev | n~New | d~Delete | e~Edit |";
 
 pub struct DirFilterComponent {
     pub state: DirFilterState,

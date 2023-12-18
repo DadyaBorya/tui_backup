@@ -6,7 +6,7 @@ use crate::{
 
 use super::file_filter_state::FileFilterState;
 
-const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | ]~Next | n~New |";
+const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | ]~Next | n~New | d~Delete | e~Edit |";
 
 pub struct FileFilterComponent {
     pub state: FileFilterState,

@@ -6,7 +6,7 @@ use crate::{
 
 use super::dir_priority_state::DirPriorityState;
 
-const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | [~Prev |";
+const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | [~Prev | n~New | d~Delete | e~Edit |";
 
 pub struct DirPriorityComponent {
     pub state: DirPriorityState,

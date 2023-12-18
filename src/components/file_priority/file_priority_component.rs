@@ -6,7 +6,7 @@ use crate::{
 
 use super::file_priority_state::FilePriorityState;
 
-const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down |";
+const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | n~New | d~Delete | e~Edit |";
 
 pub struct FilePriorityComponent {
     pub state: FilePriorityState,
