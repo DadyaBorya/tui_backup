@@ -1,8 +1,13 @@
-use crate::{ models::config::Config, application::{ app::App, app_mode::AppMode } };
+use crate::{
+    models::config::Config,
+    application::{ app::App, app_mode::AppMode },
+    utils::list_utils,
+};
 
 use super::template_list_state::TemplateListState;
 
-const HELP: &'static str = "";
+const HELP: &'static str =
+    "| ESC~Back | ↑ ↓ Move | d~Delete | | e~Edit |";
 
 pub struct TemplateListComponent {
     pub state: TemplateListState,
@@ -13,6 +18,14 @@ impl TemplateListComponent {
         Ok(TemplateListComponent {
             state: TemplateListState::init(config)?,
         })
+    }
+
+    pub fn move_up(&mut self) {
+        list_utils::move_up(&mut self.state.list_state, self.state.templates.len());
+    }
+
+    pub fn move_down(&mut self) {
+        list_utils::move_down(&mut self.state.list_state, self.state.templates.len());
     }
 
     pub fn exit(app: &mut App) {
