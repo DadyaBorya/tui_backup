@@ -87,6 +87,8 @@ impl DirPriorityComponent {
     pub fn prev_component(app: &mut App) {
         let dir_priority = &mut app.components.dir_priority;
         dir_priority.state.list_state.select(None);
+        let dir_file_priority = &mut app.components.dir_file_priority;
+        dir_file_priority.state.list_state.select(None);
         app.change_mode(AppMode::DirFilePriority, AppMode::DirPriority);
     }
 

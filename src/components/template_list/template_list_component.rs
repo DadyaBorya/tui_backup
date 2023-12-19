@@ -88,6 +88,17 @@ impl TemplateListComponent {
         app.change_mode(AppMode::Tab, AppMode::TemplateList);
     }
 
+    pub fn delete(&mut self) {
+        if let Some(template) = self.state.selected() {
+            let mut path = self.state.template_path.clone();
+            path.push(template);
+            if let Ok(_) = file_service::delete_file(&path) {
+                self.state.renew();
+                self.move_up();
+            }
+        }
+    }
+
     pub fn get_helper_text(&self) -> &'static str {
         HELP
     }

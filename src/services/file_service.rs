@@ -60,3 +60,7 @@ pub fn create_dir(path: &Path) -> Result<(), std::io::Error> {
 pub fn read_file(path: &Path) -> Result<String, std::io::Error> {
     fs::read_to_string(path)
 }
+
+pub fn delete_file(path: &Path) -> Result<(), std::io::Error> {
+    fs::remove_file(path)
+}

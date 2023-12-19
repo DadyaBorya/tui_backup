@@ -61,7 +61,7 @@ fn file_filter(line: &str, path: String) -> Result<Option<Vec<EntryFileFilter>>,
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*([\w\s]+),\s*(\d+),*\s*([\w\s]*)\}").unwrap();
+            let regex = Regex::new(r"\{\s*(.+),\s*(\d+),*\s*(.*)\}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut filter = EntryFileFilter::default();
@@ -106,7 +106,7 @@ fn dir_filter(line: &str, path: String) -> Result<Option<Vec<EntryDirFilter>>, (
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*([\w\s]+),\s*(\d+),*\s*([\w\s]*)\}").unwrap();
+            let regex = Regex::new(r"\{\s*(.+),\s*(\d+),*\s*(.*)\}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut filter = EntryDirFilter::default();
@@ -146,7 +146,7 @@ fn dir_file_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirFile
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*([\w\s]+),\s*(\d+),\s*(\d+),*\s*([\w\s]*)}").unwrap();
+            let regex = Regex::new(r"\{\s*(.+),\s*(\d+),\s*(\d+),*\s*(.*)}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut priority = EntryDirFilePriority::default();
@@ -201,7 +201,7 @@ fn dir_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirPriority>
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*([\w\s]+),\s*(\d+),\s*(\d+)}").unwrap();
+            let regex = Regex::new(r"\{\s*(.+),\s*(\d+),\s*(\d+)}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut priority = EntryDirPriority::default();
@@ -252,7 +252,7 @@ fn file_priority(line: &str, path: String) -> Result<Option<Vec<EntryFilePriorit
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*(\d+),*\s*([\w\s]*)}").unwrap();
+            let regex = Regex::new(r"\{\s*(\d+),*\s*(.*)}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut priority = EntryFilePriority::default();
