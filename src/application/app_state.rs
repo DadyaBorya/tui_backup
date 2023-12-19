@@ -13,8 +13,9 @@ use crate::{
         dir_file_priority_form::dir_file_priority_form_component::DirFilePriorityFormComponent,
         dir_priority_form::dir_priority_form_component::DirPriorityFormComponent,
         file_priority_form::file_priority_form_component::FilePriorityFormComponent,
-        create_template_form::create_template_form_component::CreateTemplateFormComponent,
         template_list::template_list_component::TemplateListComponent,
+        scheduler_form::scheduler_form_component::SchedulerFormComponent,
+        template_form::template_form_component::TemplateFormComponent,
     },
     models::config::Config,
 };
@@ -45,8 +46,9 @@ pub struct AppComponents {
     pub dir_file_priority_form: DirFilePriorityFormComponent,
     pub dir_priority_form: DirPriorityFormComponent,
     pub file_priority_form: FilePriorityFormComponent,
-    pub create_template_form: CreateTemplateFormComponent,
+    pub template_form: TemplateFormComponent,
     pub template_list: TemplateListComponent,
+    pub scheduler_form: SchedulerFormComponent,
 }
 
 impl AppState {
@@ -76,8 +78,9 @@ impl AppComponents {
             dir_file_priority_form: DirFilePriorityFormComponent::init(),
             dir_priority_form: DirPriorityFormComponent::init(),
             file_priority_form: FilePriorityFormComponent::init(),
-            create_template_form: CreateTemplateFormComponent::init(),
+            template_form: TemplateFormComponent::init(),
             template_list: TemplateListComponent::init(config)?,
+            scheduler_form: SchedulerFormComponent::init(),
         })
     }
 }

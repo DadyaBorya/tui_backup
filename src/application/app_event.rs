@@ -1,6 +1,6 @@
 use crossterm::event::{ self, KeyEventKind };
 use crossterm::event::Event::Key;
-use crate::components::create_template_form::create_template_form_event;
+use crate::components::scheduler_form::scheduler_form_event;
 use crate::components::dir_file_priority::dir_file_priority_event;
 use crate::components::dir_file_priority_form::dir_file_priority_form_event;
 use crate::components::dir_filter::dir_filter_event;
@@ -14,6 +14,7 @@ use crate::components::file_priority::file_priority_event;
 use crate::components::file_priority_form::file_priority_form_event;
 use crate::components::message_popup::message_popup_event;
 use crate::components::tab::tab_event;
+use crate::components::template_form::template_form_event;
 use crate::components::template_list::template_list_event;
 
 use super::app::App;
@@ -39,9 +40,9 @@ pub fn event(app: &mut App) -> Result<(), std::io::Error> {
                         dir_file_priority_form_event::event(app, key.code)?,
                     AppMode::DirPriorityForm(_) => dir_priority_form_event::event(app, key.code)?,
                     AppMode::FilePriorityForm(_) => file_priority_form_event::event(app, key.code)?,
-                    AppMode::CreateTemplateForm(_) =>
-                        create_template_form_event::event(app, key.code)?,
+                    AppMode::TemplateForm(_) => template_form_event::event(app, key.code)?,
                     AppMode::TemplateList => template_list_event::event(app, key.code)?,
+                    AppMode::SchedulerForm(_) => scheduler_form_event::event(app, key.code)?,
                 }
             }
         }

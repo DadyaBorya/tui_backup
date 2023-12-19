@@ -22,13 +22,13 @@ impl FileFilterFormComponent {
         }
     }
 
-    pub fn exit(app: &mut App, prev_mode: FileFilterForm) {
+    pub fn exit(app: &mut App) {
         app.components.file_filter_form.state.clear();
-        app.change_mode(AppMode::FileFilter, AppMode::FileFilterForm(prev_mode));
+        app.change_mode(AppMode::FileFilter, app.state.mode.clone());
     }
 
-    pub fn next(app: &mut App, next: FileFilterForm, prev_mode: FileFilterForm) {
-        app.change_mode(AppMode::FileFilterForm(next), AppMode::FileFilterForm(prev_mode));
+    pub fn next(app: &mut App, next: FileFilterForm) {
+        app.change_mode(AppMode::FileFilterForm(next), app.state.mode.clone());
     }
 
     pub fn create(app: &mut App) -> Option<EntryFileFilter> {

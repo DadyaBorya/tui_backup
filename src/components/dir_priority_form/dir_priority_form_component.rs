@@ -22,9 +22,9 @@ impl DirPriorityFormComponent {
         }
     }
 
-    pub fn exit(app: &mut App, prev_mode: DirPriorityForm) {
+    pub fn exit(app: &mut App) {
         app.components.dir_priority_form.state.clear();
-        app.change_mode(AppMode::DirPriority, AppMode::DirPriorityForm(prev_mode));
+        app.change_mode(AppMode::DirPriority, app.state.mode.clone());
     }
 
     pub fn create(app: &mut App) -> Option<EntryDirPriority> {
@@ -72,8 +72,8 @@ impl DirPriorityFormComponent {
         app.change_mode(AppMode::DirPriority, app.state.mode.clone());
     }
 
-    pub fn next(app: &mut App, next: DirPriorityForm, prev_mode: DirPriorityForm) {
-        app.change_mode(AppMode::DirPriorityForm(next), AppMode::DirPriorityForm(prev_mode));
+    pub fn next(app: &mut App, next: DirPriorityForm) {
+        app.change_mode(AppMode::DirPriorityForm(next), app.state.mode.clone());
     }
 
     pub fn get_help_text(&self, mode: &DirPriorityForm) -> &'static str {

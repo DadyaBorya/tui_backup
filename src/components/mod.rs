@@ -12,5 +12,6 @@ pub mod dir_filter_form;
 pub mod dir_file_priority_form;
 pub mod dir_priority_form;
 pub mod file_priority_form;
-pub mod create_template_form;
+pub mod template_form;
 pub mod template_list;
+pub mod scheduler_form;

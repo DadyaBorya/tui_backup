@@ -13,8 +13,9 @@ pub enum AppMode {
     DirFilePriorityForm(DirFilePriorityForm),
     DirPriorityForm(DirPriorityForm),
     FilePriorityForm(FilePriorityForm),
-    CreateTemplateForm(CreateTemplateForm),
+    TemplateForm(TemplateForm),
     TemplateList,
+    SchedulerForm(SchedulerForm),
 }
 
 #[derive(PartialEq, Clone)]
@@ -57,7 +58,18 @@ pub enum FilePriorityForm {
 }
 
 #[derive(PartialEq, Clone)]
-pub enum CreateTemplateForm {
+pub enum TemplateForm {
     Name,
     Submit,
+}
+
+#[derive(PartialEq, Clone)]
+pub enum SchedulerForm {
+    Name,
+    Speed,
+    NextCron,
+    Cron,
+    NextCloud,
+    Cloud,
+    Protocol,
 }

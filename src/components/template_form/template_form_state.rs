@@ -1,12 +1,12 @@
 #[derive(Default)]
-pub struct CreateTemplateFormState {
+pub struct TemplateFormState {
     pub name: String,
-    pub is_edit: bool
+    pub is_edit: bool,
 }
 
-impl CreateTemplateFormState {
+impl TemplateFormState {
     pub fn init() -> Self {
-        CreateTemplateFormState::default()
+        TemplateFormState::default()
     }
 
     pub fn validate(&self) -> Result<String, Vec<String>> {

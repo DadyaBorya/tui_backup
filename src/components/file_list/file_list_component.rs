@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use crate::{
     utils::table_util,
-    application::{ app::App, app_mode::{AppMode, CreateTemplateForm} },
+    application::{ app::App, app_mode::{AppMode, TemplateForm} },
     services::{ entry_filter_service, entry_priority_service },
 };
 
@@ -29,7 +29,7 @@ impl FileListComponent {
     }
 
     pub fn save(app: &mut App) {
-       app.change_mode(AppMode::CreateTemplateForm(CreateTemplateForm::Name), app.state.mode.clone());
+       app.change_mode(AppMode::TemplateForm(TemplateForm::Name), app.state.mode.clone());
     }
 
     pub fn open(&mut self) -> Result<(), std::io::Error> {

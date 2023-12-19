@@ -11,14 +11,9 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
             match form {
                 DirFilePriorityForm::Regex => {
                     match key_code {
-                        KeyCode::Esc =>
-                            DirFilePriorityFormComponent::exit(app, DirFilePriorityForm::Regex),
+                        KeyCode::Esc => DirFilePriorityFormComponent::exit(app),
                         KeyCode::Tab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Deep,
-                                DirFilePriorityForm::Regex
-                            ),
+                            DirFilePriorityFormComponent::next(app, DirFilePriorityForm::Deep),
                         KeyCode::Backspace => {
                             file_form.state.regex.pop();
                         }
@@ -28,20 +23,11 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 DirFilePriorityForm::Deep => {
                     match key_code {
-                        KeyCode::Esc =>
-                            DirFilePriorityFormComponent::exit(app, DirFilePriorityForm::Deep),
+                        KeyCode::Esc => DirFilePriorityFormComponent::exit(app),
                         KeyCode::Tab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Priority,
-                                DirFilePriorityForm::Deep
-                            ),
+                            DirFilePriorityFormComponent::next(app, DirFilePriorityForm::Priority),
                         KeyCode::BackTab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Regex,
-                                DirFilePriorityForm::Deep
-                            ),
+                            DirFilePriorityFormComponent::next(app, DirFilePriorityForm::Regex),
                         KeyCode::Backspace => {
                             file_form.state.deep.pop();
                         }
@@ -51,20 +37,11 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 DirFilePriorityForm::Priority => {
                     match key_code {
-                        KeyCode::Esc =>
-                            DirFilePriorityFormComponent::exit(app, DirFilePriorityForm::Content),
+                        KeyCode::Esc => DirFilePriorityFormComponent::exit(app),
                         KeyCode::Tab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Content,
-                                DirFilePriorityForm::Priority
-                            ),
+                            DirFilePriorityFormComponent::next(app, DirFilePriorityForm::Content),
                         KeyCode::BackTab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Deep,
-                                DirFilePriorityForm::Priority
-                            ),
+                            DirFilePriorityFormComponent::next(app, DirFilePriorityForm::Deep),
                         KeyCode::Backspace => {
                             file_form.state.priority.pop();
                         }
@@ -74,20 +51,11 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 DirFilePriorityForm::Content => {
                     match key_code {
-                        KeyCode::Esc =>
-                            DirFilePriorityFormComponent::exit(app, DirFilePriorityForm::Content),
+                        KeyCode::Esc => DirFilePriorityFormComponent::exit(app),
                         KeyCode::Tab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Submit,
-                                DirFilePriorityForm::Content
-                            ),
+                            DirFilePriorityFormComponent::next(app, DirFilePriorityForm::Submit),
                         KeyCode::BackTab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Priority,
-                                DirFilePriorityForm::Content
-                            ),
+                            DirFilePriorityFormComponent::next(app, DirFilePriorityForm::Priority),
                         KeyCode::Backspace => {
                             file_form.state.content.pop();
                         }
@@ -98,14 +66,9 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 DirFilePriorityForm::Submit => {
                     match key_code {
-                        KeyCode::Esc =>
-                            DirFilePriorityFormComponent::exit(app, DirFilePriorityForm::Submit),
+                        KeyCode::Esc => DirFilePriorityFormComponent::exit(app),
                         KeyCode::BackTab =>
-                            DirFilePriorityFormComponent::next(
-                                app,
-                                DirFilePriorityForm::Content,
-                                DirFilePriorityForm::Submit
-                            ),
+                            DirFilePriorityFormComponent::next(app, DirFilePriorityForm::Content),
                         KeyCode::Enter => DirFilePriorityFormComponent::add(app),
                         _ => {}
                     }

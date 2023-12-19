@@ -21,13 +21,13 @@ impl DirFilterFormComponent {
         }
     }
 
-    pub fn exit(app: &mut App, prev_mode: DirFilterForm) {
+    pub fn exit(app: &mut App) {
         app.components.dir_filter_form.state.clear();
-        app.change_mode(AppMode::DirFilter, AppMode::DirFilterForm(prev_mode));
+        app.change_mode(AppMode::DirFilter, app.state.mode.clone());
     }
 
-    pub fn next(app: &mut App, next: DirFilterForm, prev_mode: DirFilterForm) {
-        app.change_mode(AppMode::DirFilterForm(next), AppMode::DirFilterForm(prev_mode));
+    pub fn next(app: &mut App, next: DirFilterForm) {
+        app.change_mode(AppMode::DirFilterForm(next), app.state.mode.clone());
     }
 
     pub fn create(app: &mut App) -> Option<EntryDirFilter> {

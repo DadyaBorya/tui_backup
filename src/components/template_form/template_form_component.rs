@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use crate::{
-    application::{ app_mode::{ CreateTemplateForm, AppMode }, app::App },
+    application::{ app_mode::{ TemplateForm, AppMode }, app::App },
     services::{ map_template_service, file_service },
     components::{
         message_popup::message_popup_components::MessagePopupComponent,
@@ -10,36 +10,36 @@ use crate::{
     },
 };
 
-use super::create_template_form_state::CreateTemplateFormState;
+use super::template_form_state::TemplateFormState;
 
 const HELP_NAME: &'static str = "| ESC~Exit | a-z0-9~Input | TAB~Next |";
 const HELP_SUBMIT: &'static str = "| ESC~Exit | BACKTAB~Prev | ENTER~Submit |";
 
-pub struct CreateTemplateFormComponent {
-    pub state: CreateTemplateFormState,
+pub struct TemplateFormComponent {
+    pub state: TemplateFormState,
 }
 
-impl CreateTemplateFormComponent {
+impl TemplateFormComponent {
     pub fn init() -> Self {
-        CreateTemplateFormComponent {
-            state: CreateTemplateFormState::init(),
+        TemplateFormComponent {
+            state: TemplateFormState::init(),
         }
     }
 
-    pub fn exit(app: &mut App, prev_mode: CreateTemplateForm) {
-        if !app.components.create_template_form.state.is_edit {
-            app.components.create_template_form.state.clear();
+    pub fn exit(app: &mut App) {
+        if !app.components.template_form.state.is_edit {
+            app.components.template_form.state.clear();
         }
 
-        app.change_mode(AppMode::FileList, AppMode::CreateTemplateForm(prev_mode));
+        app.change_mode(AppMode::FileList, app.state.mode.clone());
     }
 
-    pub fn next(app: &mut App, next: CreateTemplateForm, prev_mode: CreateTemplateForm) {
-        app.change_mode(AppMode::CreateTemplateForm(next), AppMode::CreateTemplateForm(prev_mode));
+    pub fn next(app: &mut App, next: TemplateForm) {
+        app.change_mode(AppMode::TemplateForm(next), app.state.mode.clone());
     }
 
     pub fn submit(app: &mut App) {
-        let name = match app.components.create_template_form.state.validate() {
+        let name = match app.components.template_form.state.validate() {
             Ok(name) => name,
             Err(errors) => {
                 MessagePopupComponent::show_vec(app, errors, app.state.mode.clone());
@@ -64,9 +64,9 @@ impl CreateTemplateFormComponent {
 
         let _ = file_service::save(&PathBuf::from(path), content);
 
-        app.components.create_template_form.state.clear();
+        app.components.template_form.state.clear();
 
-        app.components.create_template_form.state.is_edit = false;
+        app.components.template_form.state.is_edit = false;
 
         app.components.file_list.state = FileListState::init().unwrap();
 
@@ -77,10 +77,10 @@ impl CreateTemplateFormComponent {
         TabComponent::change_preview(app, 1);
     }
 
-    pub fn get_helper_text(&self, mode: &CreateTemplateForm) -> &'static str {
+    pub fn get_helper_text(&self, mode: &TemplateForm) -> &'static str {
         match mode {
-            CreateTemplateForm::Name => HELP_NAME,
-            CreateTemplateForm::Submit => HELP_SUBMIT,
+            TemplateForm::Name => HELP_NAME,
+            TemplateForm::Submit => HELP_SUBMIT,
         }
     }
 }

@@ -11,13 +11,8 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
             match form {
                 FileFilterForm::Regex => {
                     match key_code {
-                        KeyCode::Esc => FileFilterFormComponent::exit(app, FileFilterForm::Regex),
-                        KeyCode::Tab =>
-                            FileFilterFormComponent::next(
-                                app,
-                                FileFilterForm::Deep,
-                                FileFilterForm::Regex
-                            ),
+                        KeyCode::Esc => FileFilterFormComponent::exit(app),
+                        KeyCode::Tab => FileFilterFormComponent::next(app, FileFilterForm::Deep),
                         KeyCode::Backspace => {
                             file_form.state.regex.pop();
                         }
@@ -27,19 +22,10 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 FileFilterForm::Deep => {
                     match key_code {
-                        KeyCode::Esc => FileFilterFormComponent::exit(app, FileFilterForm::Deep),
-                        KeyCode::Tab =>
-                            FileFilterFormComponent::next(
-                                app,
-                                FileFilterForm::Content,
-                                FileFilterForm::Deep
-                            ),
+                        KeyCode::Esc => FileFilterFormComponent::exit(app),
+                        KeyCode::Tab => FileFilterFormComponent::next(app, FileFilterForm::Content),
                         KeyCode::BackTab =>
-                            FileFilterFormComponent::next(
-                                app,
-                                FileFilterForm::Regex,
-                                FileFilterForm::Deep
-                            ),
+                            FileFilterFormComponent::next(app, FileFilterForm::Regex),
                         KeyCode::Backspace => {
                             file_form.state.deep.pop();
                         }
@@ -49,19 +35,10 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 FileFilterForm::Content => {
                     match key_code {
-                        KeyCode::Esc => FileFilterFormComponent::exit(app, FileFilterForm::Content),
-                        KeyCode::Tab =>
-                            FileFilterFormComponent::next(
-                                app,
-                                FileFilterForm::Submit,
-                                FileFilterForm::Content
-                            ),
+                        KeyCode::Esc => FileFilterFormComponent::exit(app),
+                        KeyCode::Tab => FileFilterFormComponent::next(app, FileFilterForm::Submit),
                         KeyCode::BackTab =>
-                            FileFilterFormComponent::next(
-                                app,
-                                FileFilterForm::Deep,
-                                FileFilterForm::Content
-                            ),
+                            FileFilterFormComponent::next(app, FileFilterForm::Deep),
                         KeyCode::Backspace => {
                             file_form.state.content.pop();
                         }
@@ -72,13 +49,9 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 FileFilterForm::Submit => {
                     match key_code {
-                        KeyCode::Esc => FileFilterFormComponent::exit(app, FileFilterForm::Submit),
+                        KeyCode::Esc => FileFilterFormComponent::exit(app),
                         KeyCode::BackTab =>
-                            FileFilterFormComponent::next(
-                                app,
-                                FileFilterForm::Content,
-                                FileFilterForm::Submit
-                            ),
+                            FileFilterFormComponent::next(app, FileFilterForm::Content),
                         KeyCode::Enter => FileFilterFormComponent::add(app),
                         _ => {}
                     }

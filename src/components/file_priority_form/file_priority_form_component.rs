@@ -21,9 +21,9 @@ impl FilePriorityFormComponent {
         }
     }
 
-    pub fn exit(app: &mut App, prev_mode: FilePriorityForm) {
+    pub fn exit(app: &mut App) {
         app.components.file_priority_form.state.clear();
-        app.change_mode(AppMode::FilePriority, AppMode::FilePriorityForm(prev_mode));
+        app.change_mode(AppMode::FilePriority, app.state.mode.clone());
     }
 
     pub fn create(app: &mut App) -> Option<EntryFilePriority> {
@@ -71,8 +71,8 @@ impl FilePriorityFormComponent {
         app.change_mode(AppMode::FilePriority, app.state.mode.clone());
     }
 
-    pub fn next(app: &mut App, next: FilePriorityForm, prev_mode: FilePriorityForm) {
-        app.change_mode(AppMode::FilePriorityForm(next), AppMode::FilePriorityForm(prev_mode));
+    pub fn next(app: &mut App, next: FilePriorityForm) {
+        app.change_mode(AppMode::FilePriorityForm(next), app.state.mode.clone());
     }
 
     pub fn get_help_text(&self, mode: &FilePriorityForm) -> &'static str {

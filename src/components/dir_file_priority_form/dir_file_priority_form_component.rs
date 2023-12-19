@@ -23,9 +23,9 @@ impl DirFilePriorityFormComponent {
         }
     }
 
-    pub fn exit(app: &mut App, prev_mode: DirFilePriorityForm) {
+    pub fn exit(app: &mut App) {
         app.components.dir_file_priority_form.state.clear();
-        app.change_mode(AppMode::DirFilePriority, AppMode::DirFilePriorityForm(prev_mode));
+        app.change_mode(AppMode::DirFilePriority, app.state.mode.clone());
     }
 
     pub fn create(app: &mut App) -> Option<EntryDirFilePriority> {
@@ -75,11 +75,8 @@ impl DirFilePriorityFormComponent {
         app.change_mode(AppMode::DirFilePriority, app.state.mode.clone());
     }
 
-    pub fn next(app: &mut App, next: DirFilePriorityForm, prev_mode: DirFilePriorityForm) {
-        app.change_mode(
-            AppMode::DirFilePriorityForm(next),
-            AppMode::DirFilePriorityForm(prev_mode)
-        );
+    pub fn next(app: &mut App, next: DirFilePriorityForm) {
+        app.change_mode(AppMode::DirFilePriorityForm(next), app.state.mode.clone());
     }
 
     pub fn get_helper_text(&self, mode: &DirFilePriorityForm) -> &'static str {

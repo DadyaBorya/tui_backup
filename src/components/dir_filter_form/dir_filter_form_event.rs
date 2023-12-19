@@ -11,13 +11,8 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
             match form {
                 DirFilterForm::Regex => {
                     match key_code {
-                        KeyCode::Esc => DirFilterFormComponent::exit(app, DirFilterForm::Regex),
-                        KeyCode::Tab =>
-                            DirFilterFormComponent::next(
-                                app,
-                                DirFilterForm::Deep,
-                                DirFilterForm::Regex
-                            ),
+                        KeyCode::Esc => DirFilterFormComponent::exit(app),
+                        KeyCode::Tab => DirFilterFormComponent::next(app, DirFilterForm::Deep),
                         KeyCode::Backspace => {
                             dir_form.state.regex.pop();
                         }
@@ -27,19 +22,9 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 DirFilterForm::Deep => {
                     match key_code {
-                        KeyCode::Esc => DirFilterFormComponent::exit(app, DirFilterForm::Deep),
-                        KeyCode::Tab =>
-                            DirFilterFormComponent::next(
-                                app,
-                                DirFilterForm::Submit,
-                                DirFilterForm::Deep
-                            ),
-                        KeyCode::BackTab =>
-                            DirFilterFormComponent::next(
-                                app,
-                                DirFilterForm::Regex,
-                                DirFilterForm::Deep
-                            ),
+                        KeyCode::Esc => DirFilterFormComponent::exit(app),
+                        KeyCode::Tab => DirFilterFormComponent::next(app, DirFilterForm::Submit),
+                        KeyCode::BackTab => DirFilterFormComponent::next(app, DirFilterForm::Regex),
                         KeyCode::Backspace => {
                             dir_form.state.deep.pop();
                         }
@@ -49,13 +34,8 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 DirFilterForm::Submit => {
                     match key_code {
-                        KeyCode::Esc => DirFilterFormComponent::exit(app, DirFilterForm::Submit),
-                        KeyCode::BackTab =>
-                            DirFilterFormComponent::next(
-                                app,
-                                DirFilterForm::Deep,
-                                DirFilterForm::Submit
-                            ),
+                        KeyCode::Esc => DirFilterFormComponent::exit(app),
+                        KeyCode::BackTab => DirFilterFormComponent::next(app, DirFilterForm::Deep),
                         KeyCode::Enter => DirFilterFormComponent::add(app),
                         _ => {}
                     }

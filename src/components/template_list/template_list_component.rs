@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use crate::{
     models::{ config::Config, dir_entry::DirEntry },
-    application::{ app::App, app_mode::AppMode },
+    application::{ app::App, app_mode::{ AppMode, SchedulerForm } },
     utils::list_utils,
     services::{ file_service, map_dir_entry_service, file_system_service },
     components::tab::tab_component::TabComponent,
@@ -10,7 +10,7 @@ use crate::{
 
 use super::template_list_state::TemplateListState;
 
-const HELP: &'static str = "| ESC~Back | ↑ ↓ Move | d~Delete | | e~Edit |";
+const HELP: &'static str = "| ESC~Back | ↑ ↓ Move | d~Delete | | e~Edit | c~Create Scheduler |";
 
 pub struct TemplateListComponent {
     pub state: TemplateListState,
@@ -73,8 +73,8 @@ impl TemplateListComponent {
                     file_list.state.set_rows();
 
                     app.components.template_list.state.list_state.select(None);
-                    app.components.create_template_form.state.name = template;
-                    app.components.create_template_form.state.is_edit = true;
+                    app.components.template_form.state.name = template;
+                    app.components.template_form.state.is_edit = true;
 
                     TabComponent::change_preview(app, 0);
                 }
@@ -97,6 +97,10 @@ impl TemplateListComponent {
                 self.move_up();
             }
         }
+    }
+
+    pub fn create_scheduler(app: &mut App) {
+        app.change_mode(AppMode::SchedulerForm(SchedulerForm::Name), app.state.prev_mode.clone())
     }
 
     pub fn get_helper_text(&self) -> &'static str {

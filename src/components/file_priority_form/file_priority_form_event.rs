@@ -11,14 +11,9 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
             match form {
                 FilePriorityForm::Priority => {
                     match key_code {
-                        KeyCode::Esc =>
-                            FilePriorityFormComponent::exit(app, FilePriorityForm::Priority),
+                        KeyCode::Esc => FilePriorityFormComponent::exit(app),
                         KeyCode::Tab =>
-                            FilePriorityFormComponent::next(
-                                app,
-                                FilePriorityForm::Content,
-                                FilePriorityForm::Priority
-                            ),
+                            FilePriorityFormComponent::next(app, FilePriorityForm::Content),
                         KeyCode::Backspace => {
                             file_form.state.priority.pop();
                         }
@@ -28,20 +23,11 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 FilePriorityForm::Content => {
                     match key_code {
-                        KeyCode::Esc =>
-                            FilePriorityFormComponent::exit(app, FilePriorityForm::Content),
+                        KeyCode::Esc => FilePriorityFormComponent::exit(app),
                         KeyCode::Tab =>
-                            FilePriorityFormComponent::next(
-                                app,
-                                FilePriorityForm::Submit,
-                                FilePriorityForm::Content
-                            ),
+                            FilePriorityFormComponent::next(app, FilePriorityForm::Submit),
                         KeyCode::BackTab =>
-                            FilePriorityFormComponent::next(
-                                app,
-                                FilePriorityForm::Priority,
-                                FilePriorityForm::Content
-                            ),
+                            FilePriorityFormComponent::next(app, FilePriorityForm::Priority),
                         KeyCode::Backspace => {
                             file_form.state.content.pop();
                         }
@@ -52,15 +38,10 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                 }
                 FilePriorityForm::Submit => {
                     match key_code {
-                        KeyCode::Esc =>
-                            FilePriorityFormComponent::exit(app, FilePriorityForm::Submit),
+                        KeyCode::Esc => FilePriorityFormComponent::exit(app),
                         KeyCode::BackTab =>
-                            FilePriorityFormComponent::next(
-                                app,
-                                FilePriorityForm::Content,
-                                FilePriorityForm::Submit
-                            ),
-                            KeyCode::Enter => FilePriorityFormComponent::add(app),
+                            FilePriorityFormComponent::next(app, FilePriorityForm::Content),
+                        KeyCode::Enter => FilePriorityFormComponent::add(app),
                         _ => {}
                     }
                 }
