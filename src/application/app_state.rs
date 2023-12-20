@@ -16,6 +16,7 @@ use crate::{
         template_list::template_list_component::TemplateListComponent,
         scheduler_form::scheduler_form_component::SchedulerFormComponent,
         template_form::template_form_component::TemplateFormComponent,
+        scheduler_list::scheduler_list_component::SchedulerListComponent,
     },
     models::config::Config,
 };
@@ -49,6 +50,7 @@ pub struct AppComponents {
     pub template_form: TemplateFormComponent,
     pub template_list: TemplateListComponent,
     pub scheduler_form: SchedulerFormComponent,
+    pub scheduler_list: SchedulerListComponent,
 }
 
 impl AppState {
@@ -81,6 +83,7 @@ impl AppComponents {
             template_form: TemplateFormComponent::init(),
             template_list: TemplateListComponent::init(config)?,
             scheduler_form: SchedulerFormComponent::init(),
+            scheduler_list: SchedulerListComponent::init(config)?,
         })
     }
 }

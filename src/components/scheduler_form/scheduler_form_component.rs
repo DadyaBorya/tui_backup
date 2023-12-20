@@ -63,7 +63,8 @@ impl SchedulerFormComponent {
 
         state.clear();
 
-        TabComponent::change_preview(app, 1);
+        app.components.scheduler_list.state.renew();
+        TabComponent::change_preview(app, 2);
         Ok(())
     }
 

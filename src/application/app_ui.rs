@@ -13,6 +13,7 @@ use crate::components::{
     template_list::template_list_ui,
     scheduler_form::scheduler_form_ui,
     template_form::template_form_ui,
+    scheduler_list::scheduler_list_ui,
 };
 
 use super::{ app::App, app_mode::AppMode };
@@ -42,6 +43,7 @@ fn preview<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
     match index {
         0 => file_list_ui::ui(app, f, &chunks),
         1 => template_list_ui::ui(app, f, &chunks),
+        2 => scheduler_list_ui::ui(app, f, &chunks),
         _ => {}
     }
 }

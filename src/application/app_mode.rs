@@ -16,6 +16,7 @@ pub enum AppMode {
     TemplateForm(TemplateForm),
     TemplateList,
     SchedulerForm(SchedulerForm),
+    SchedulerList
 }
 
 #[derive(PartialEq, Clone)]

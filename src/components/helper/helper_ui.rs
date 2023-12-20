@@ -38,5 +38,6 @@ fn get_helper_text(app: &App) -> &'static str {
         AppMode::TemplateForm(mode) => app.components.template_form.get_helper_text(&mode),
         AppMode::TemplateList => app.components.template_list.get_helper_text(),
         AppMode::SchedulerForm(mode) => app.components.scheduler_form.get_helper_text(&mode),
+        AppMode::SchedulerList => app.components.scheduler_list.get_helper_text(),
     }
 }

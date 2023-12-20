@@ -15,3 +15,4 @@ pub mod file_priority_form;
 pub mod template_form;
 pub mod template_list;
 pub mod scheduler_form;
+pub mod scheduler_list;

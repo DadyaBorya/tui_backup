@@ -13,6 +13,7 @@ use crate::components::file_list::file_list_event;
 use crate::components::file_priority::file_priority_event;
 use crate::components::file_priority_form::file_priority_form_event;
 use crate::components::message_popup::message_popup_event;
+use crate::components::scheduler_list::scheduler_list_event;
 use crate::components::tab::tab_event;
 use crate::components::template_form::template_form_event;
 use crate::components::template_list::template_list_event;
@@ -43,6 +44,7 @@ pub fn event(app: &mut App) -> Result<(), std::io::Error> {
                     AppMode::TemplateForm(_) => template_form_event::event(app, key.code)?,
                     AppMode::TemplateList => template_list_event::event(app, key.code)?,
                     AppMode::SchedulerForm(_) => scheduler_form_event::event(app, key.code)?,
+                    AppMode::SchedulerList => scheduler_list_event::event(app, key.code)?,
                 }
             }
         }

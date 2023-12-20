@@ -43,6 +43,10 @@ impl TabComponent {
                 app.components.template_list.state.init_index_table();
                 app.change_mode(AppMode::TemplateList, AppMode::Tab)
             }
+            2 => {
+                app.components.scheduler_list.state.init_index_table();
+                app.change_mode(AppMode::SchedulerList, AppMode::Tab)
+            }
             _ => {}
         }
     }

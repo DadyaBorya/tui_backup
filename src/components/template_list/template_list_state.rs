@@ -44,7 +44,7 @@ impl TemplateListState {
             for entry in entries.iter().filter(|entry| !entry.is_dir()) {
                 if let Ok(content) = file_service::read_file(&entry.path) {
                     if let Ok(_) = map_dir_entry_service::template_to_dir_entry(content) {
-                        self.templates.push(entry.file_name());
+                       self.templates.push(entry.file_name()); 
                     }
                 }
             }
