@@ -1,8 +1,13 @@
+use std::path::PathBuf;
+
 use crate::{
     application::{ app_mode::{ SchedulerForm, AppMode }, app::App },
     utils::list_utils,
-    models::scheduler::Scheduler,
-    components::message_popup::message_popup_components::MessagePopupComponent,
+    components::{
+        message_popup::message_popup_components::MessagePopupComponent,
+        tab::tab_component::TabComponent,
+    },
+    services::file_service,
 };
 
 use super::scheduler_form_state::SchedulerFormState;
@@ -29,31 +34,37 @@ impl SchedulerFormComponent {
         }
     }
 
-    pub fn create(app: &mut App) -> Option<Scheduler> {
-        let state = &app.components.scheduler_form.state;
+    pub fn submit(app: &mut App) -> Result<(), std::io::Error> {
+        let state = &mut app.components.scheduler_form.state;
 
         let validate = state.validate();
 
-        match validate {
-            Ok(value) => { Some(value) }
+        let scheduler = match validate {
+            Ok(value) => { value }
             Err(errors) => {
                 MessagePopupComponent::show_vec(
                     app,
                     errors,
                     AppMode::SchedulerForm(SchedulerForm::Submit)
                 );
-                None
-            }
-        }
-    }
-
-    pub fn add(app: &mut App) {
-        let scheduler = match SchedulerFormComponent::create(app) {
-            Some(value) => value,
-            None => {
-                return;
+                return Ok(());
             }
         };
+
+        let dir_path = &app.config.paths.schedulers;
+
+        file_service::create_dir(&PathBuf::from(dir_path))?;
+
+        let path = format!("{}/{}.json", dir_path, scheduler.name);
+
+        let json = serde_json::to_string_pretty(&scheduler)?;
+
+        file_service::save(&PathBuf::from(path), json)?;
+
+        state.clear();
+
+        TabComponent::change_preview(app, 1);
+        Ok(())
     }
 
     pub fn exit(app: &mut App) {

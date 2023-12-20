@@ -100,7 +100,16 @@ impl TemplateListComponent {
     }
 
     pub fn create_scheduler(app: &mut App) {
-        app.change_mode(AppMode::SchedulerForm(SchedulerForm::Name), app.state.prev_mode.clone())
+        let template_state = &mut app.components.template_list.state;
+
+        if let Some(name) = template_state.selected() {
+            let scheduler_state = &mut app.components.scheduler_form.state;
+            scheduler_state.root = format!("{}/{}", &app.config.paths.templates, name);
+            app.change_mode(
+                AppMode::SchedulerForm(SchedulerForm::Name),
+                app.state.prev_mode.clone()
+            )
+        }
     }
 
     pub fn get_helper_text(&self) -> &'static str {

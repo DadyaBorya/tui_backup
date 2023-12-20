@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
+use serde::{ Serialize, Deserialize };
+
+#[derive(PartialEq, Eq, Hash, Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Protocol {
     Https,
     Http,
@@ -9,7 +11,7 @@ pub enum Protocol {
 
 impl Protocol {}
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
+#[derive(PartialEq, Eq, Hash, Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Cloud {
     Mega,
     GoogleDrive,
@@ -28,10 +30,11 @@ impl Cloud {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Scheduler {
     pub name: String,
     pub cron: String,
     pub speed: usize,
-    pub clouds: HashMap<Cloud, Vec<Protocol>>
+    pub clouds: HashMap<Cloud, Vec<Protocol>>,
+    pub root: String
 }
