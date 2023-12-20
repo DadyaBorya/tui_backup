@@ -17,8 +17,6 @@ pub fn init_index_table(list_state: &mut ListState, len: usize) {
 
     if !is_selected {
         list_state.select(Some(0))
-    } else {
-        list_state.select(None);
     }
 }
 

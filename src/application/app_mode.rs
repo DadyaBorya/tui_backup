@@ -70,6 +70,9 @@ pub enum SchedulerForm {
     NextCron,
     Cron,
     NextCloud,
+    PrevName,
     Cloud,
     Protocol,
+    PrevCron,
+    Submit,
 }

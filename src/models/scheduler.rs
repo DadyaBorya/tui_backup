@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
-enum Protocol {
+pub enum Protocol {
     Https,
     Http,
     Webdav,
@@ -10,7 +8,7 @@ enum Protocol {
 impl Protocol {}
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
-enum Cloud {
+pub enum Cloud {
     Mega,
     GoogleDrive,
 }
@@ -25,22 +23,5 @@ impl Cloud {
 
     pub fn list() -> Vec<Cloud> {
         vec![Cloud::Mega, Cloud::GoogleDrive]
-    }
-}
-
-#[derive(Default)]
-struct Scheduler {
-    pub clouds: HashMap<Cloud, Vec<Protocol>>,
-}
-
-impl Scheduler {
-    pub fn new() -> Self {
-        let clouds = Cloud::list()
-            .iter()
-            .fold(HashMap::new(), |mut acc, cloud| {
-                acc.insert(*cloud, cloud.protocols());
-                acc
-            });
-        Scheduler { clouds }
     }
 }
