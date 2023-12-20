@@ -26,6 +26,7 @@ impl FilePriorityFormState {
             }
             Err(error) => errors.push(format!("Priority field: [{}]", error)),
         }
+        
         if !self.content.is_empty() {
             match validator::regex(&self.content) {
                 Ok(value) => {

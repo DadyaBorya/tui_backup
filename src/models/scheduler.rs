@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
 pub enum Protocol {
     Https,
@@ -24,4 +26,12 @@ impl Cloud {
     pub fn list() -> Vec<Cloud> {
         vec![Cloud::Mega, Cloud::GoogleDrive]
     }
+}
+
+#[derive(Default)]
+pub struct Scheduler {
+    pub name: String,
+    pub cron: String,
+    pub speed: usize,
+    pub clouds: HashMap<Cloud, Vec<Protocol>>
 }

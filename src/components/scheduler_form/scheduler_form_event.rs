@@ -111,6 +111,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
                         KeyCode::Esc => SchedulerFormComponent::exit(app),
                         KeyCode::BackTab =>
                             SchedulerFormComponent::next(app, SchedulerForm::PrevCron),
+                            KeyCode::Enter => SchedulerFormComponent::add(app),
                         _ => {}
                     }
                 }

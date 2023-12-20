@@ -133,7 +133,7 @@ fn cloud_part<B: Backend>(app: &mut App, f: &mut Frame<B>) {
     f.render_stateful_widget(cloud_list, list_chunks[0], &mut state.cloud_list_state);
 
     let protocol_list = list_generator::list(
-        "Protocol".to_string(),
+        "Protocols".to_string(),
         app.state.mode == AppMode::SchedulerForm(SchedulerForm::Protocol),
         state.protocols()
     );

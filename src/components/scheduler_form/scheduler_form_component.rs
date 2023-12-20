@@ -1,4 +1,9 @@
-use crate::{ application::{ app_mode::{ SchedulerForm, AppMode }, app::App }, utils::list_utils };
+use crate::{
+    application::{ app_mode::{ SchedulerForm, AppMode }, app::App },
+    utils::list_utils,
+    models::scheduler::Scheduler,
+    components::message_popup::message_popup_components::MessagePopupComponent,
+};
 
 use super::scheduler_form_state::SchedulerFormState;
 
@@ -13,6 +18,33 @@ impl SchedulerFormComponent {
         SchedulerFormComponent {
             state: SchedulerFormState::init(),
         }
+    }
+
+    pub fn create(app: &mut App) -> Option<Scheduler> {
+        let state = &app.components.scheduler_form.state;
+
+        let validate = state.validate();
+
+        match validate {
+            Ok(value) => { Some(value) }
+            Err(errors) => {
+                MessagePopupComponent::show_vec(
+                    app,
+                    errors,
+                    AppMode::SchedulerForm(SchedulerForm::Submit)
+                );
+                None
+            }
+        }
+    }
+
+    pub fn add(app: &mut App) {
+        let scheduler = match SchedulerFormComponent::create(app) {
+            Some(value) => value,
+            None => {
+                return;
+            }
+        };
     }
 
     pub fn exit(app: &mut App) {
@@ -34,7 +66,7 @@ impl SchedulerFormComponent {
 
     pub fn select_protocol(&mut self) {
         if let Some(protocol) = self.state.selected_protocols() {
-           protocol.1 = !protocol.1;
+            protocol.1 = !protocol.1;
         }
     }
 

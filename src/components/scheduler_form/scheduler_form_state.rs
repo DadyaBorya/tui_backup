@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 use tui::widgets::ListState;
 
 use crate::{
-    models::scheduler::{ Cloud, Protocol },
-    utils::list_utils,
+    models::scheduler::{ Cloud, Protocol, Scheduler },
+    utils::{ list_utils, validator },
     application::app_mode::SchedulerForm,
 };
 
@@ -139,5 +141,63 @@ impl SchedulerFormState {
         }
 
         None
+    }
+
+    pub fn validate(&self) -> Result<Scheduler, Vec<String>> {
+        let mut errors = vec![];
+        let mut scheduler = Scheduler::default();
+
+        match validator::is_empty(&self.name) {
+            Ok(value) => {
+                scheduler.name = value;
+            }
+            Err(error) => errors.push(format!("Name field: [{}]", error)),
+        }
+
+        match validator::uszie(&self.speed) {
+            Ok(value) => {
+                scheduler.speed = value;
+            }
+            Err(error) => errors.push(format!("Speed limit field: [{}]", error)),
+        }
+
+        match validator::cron(&self.cron) {
+            Ok(value) => {
+                scheduler.cron = value;
+            }
+            Err(error) => errors.push(format!("Cron field: [{}]", error)),
+        }
+        let mut clouds = HashMap::new();
+
+        for (cloud, protocols) in self.clouds_protocols.iter() {
+            if !cloud.1 {
+                continue;
+            }
+
+            let mut selected_protocols = vec![];
+
+            for protocol in protocols {
+                if protocol.1 {
+                    selected_protocols.push(protocol.0);
+                }
+            }
+
+            if !selected_protocols.is_empty() {
+                clouds.insert(cloud.0, selected_protocols);
+            }
+        }
+
+        match clouds.keys().len() == 0 {
+            true =>
+                errors.push(String::from("Clouds field: [Clouds and Protocols were not selected]")),
+            false => {
+                scheduler.clouds = clouds;
+            }
+        }
+
+        match errors.is_empty() {
+            true => Ok(scheduler),
+            false => Err(errors),
+        }
     }
 }
