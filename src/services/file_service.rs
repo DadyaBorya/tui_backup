@@ -1,4 +1,7 @@
-use std::{ path::{ PathBuf, Path }, fs::{ self, OpenOptions }, io::Write };
+use std::{ path::Path, fs::{ self, OpenOptions }, io::Write };
+
+#[cfg(target_os="windows")]
+use std::path::PathBuf;
 
 use crate::models::dir_entry::DirEntry;
 
