@@ -33,6 +33,7 @@ const CRON_TEMPLATES: [(&'static str, &'static str); 20] = [
 
 #[derive(Default)]
 pub struct SchedulerFormState {
+    pub root: String,
     pub name: String,
     pub cron: String,
     pub speed: String,
@@ -194,6 +195,8 @@ impl SchedulerFormState {
                 scheduler.clouds = clouds;
             }
         }
+
+        scheduler.root = self.root.clone();
 
         match errors.is_empty() {
             true => Ok(scheduler),
