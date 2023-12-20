@@ -2,14 +2,14 @@ use std::path::PathBuf;
 
 use crate::{
     utils::table_util,
-    application::{ app::App, app_mode::{AppMode, TemplateForm} },
+    application::{ app::App, app_mode::{ AppMode, TemplateForm } },
     services::{ entry_filter_service, entry_priority_service },
 };
 
 use super::file_list_state::FileListState;
 
 const HELP: &'static str =
-    "| ESC~Back | ↑ ↓ ← → Move | SPACE~Select | s~Select Deep | a~Select All | f~Filter | p~Priority | c~Create/Edit |";
+    "| ESC~Back | ↑ ↓ ← → Move | SPACE~Select | s~Select Deep | a~Select All | f~Filter | p~Priority | c~Create/Edit | n~New |";
 
 pub struct FileListComponent {
     pub state: FileListState,
@@ -18,6 +18,12 @@ pub struct FileListComponent {
 impl FileListComponent {
     pub fn init() -> Result<Self, std::io::Error> {
         Ok(FileListComponent { state: FileListState::init()? })
+    }
+
+    pub fn clear(&mut self) -> Result<(), std::io::Error> {
+        self.state = FileListState::init()?;
+        self.state.table_state.select(Some(0));
+        Ok(())
     }
 
     pub fn move_up(&mut self) {
@@ -29,7 +35,7 @@ impl FileListComponent {
     }
 
     pub fn save(app: &mut App) {
-       app.change_mode(AppMode::TemplateForm(TemplateForm::Name), app.state.mode.clone());
+        app.change_mode(AppMode::TemplateForm(TemplateForm::Name), app.state.mode.clone());
     }
 
     pub fn open(&mut self) -> Result<(), std::io::Error> {

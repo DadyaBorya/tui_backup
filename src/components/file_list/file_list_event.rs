@@ -21,6 +21,7 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         KeyCode::Char('f') => FileListComponent::open_filter(app),
         KeyCode::Char('p') => FileListComponent::open_priority(app),
         KeyCode::Char('c') => FileListComponent::save(app),
+        KeyCode::Char('n') => file_list.clear()?,
         _ => {}
     }
     Ok(())
