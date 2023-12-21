@@ -42,6 +42,7 @@ pub struct SchedulerFormState {
     pub clouds_protocols: Vec<((Cloud, bool), Vec<(Protocol, bool)>)>,
     pub cloud_list_state: ListState,
     pub protocol_list_state: ListState,
+    pub is_edit: bool
 }
 
 impl SchedulerFormState {

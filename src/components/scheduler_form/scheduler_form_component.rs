@@ -70,7 +70,13 @@ impl SchedulerFormComponent {
 
     pub fn exit(app: &mut App) {
         app.components.scheduler_form.state.clear();
-        app.change_mode(AppMode::TemplateList, app.state.mode.clone());
+
+        app.components.scheduler_form.state.is_edit = false; 
+
+        match app.components.scheduler_form.state.is_edit {
+            true => app.change_mode(AppMode::SchedulerList, app.state.mode.clone()),
+            false => app.change_mode(AppMode::TemplateList, app.state.mode.clone()),
+        }
     }
 
     pub fn paste_current_cron(&mut self) {

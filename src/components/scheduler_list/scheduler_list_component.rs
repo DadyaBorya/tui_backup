@@ -47,6 +47,7 @@ impl SchedulerListComponent {
                     scheduler_form_state.root = scheduler.root;
 
                     scheduler_form_state.fill_cloud_protocols();
+                    scheduler_form_state.is_edit = true;
 
                     for (k, v) in scheduler.clouds.iter() {
                         for (c, p) in scheduler_form_state.clouds_protocols.iter_mut() {
