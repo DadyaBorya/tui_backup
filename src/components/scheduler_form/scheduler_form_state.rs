@@ -72,7 +72,7 @@ impl SchedulerFormState {
         vec![]
     }
 
-    fn fill_cloud_protocols(&mut self) {
+    pub fn fill_cloud_protocols(&mut self) {
         self.clouds_protocols = vec![];
         for cloud in Cloud::list() {
             let protocols = cloud

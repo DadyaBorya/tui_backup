@@ -28,6 +28,14 @@ impl SchedulerListState {
         table_util::init_index_table(&mut self.table_state, len)
     }
 
+    pub fn selected(&self) -> Option<String> {
+        if let Some(index) = self.table_state.selected() {
+            return Some(format!("{}/{}.json", self.scheduler_path.display(), self.schedulers[index].0[0]));
+        }
+
+        None
+    }
+
     pub fn renew(&mut self) {
         self.schedulers.clear();
 

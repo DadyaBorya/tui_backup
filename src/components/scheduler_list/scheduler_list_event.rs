@@ -10,6 +10,8 @@ pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         KeyCode::Esc => SchedulerListComponent::exit(app),
         KeyCode::Up => template_list.move_up(),
         KeyCode::Down => template_list.move_down(),
+        KeyCode::Char('d') => template_list.delete(),
+        KeyCode::Char('e') => SchedulerListComponent::edit(app),
         _ => {}
     }
     Ok(())
