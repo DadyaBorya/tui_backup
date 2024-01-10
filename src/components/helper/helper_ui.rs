@@ -5,7 +5,7 @@ use tui::{
     widgets::{ Block, Borders, BorderType, Paragraph },
 };
 
-use crate::application::{ app::App, app_mode::AppMode };
+use crate::application::{ app::App, mode::AppMode };
 
 pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
     let helper_text = get_helper_text(&app);

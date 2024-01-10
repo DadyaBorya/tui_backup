@@ -1,5 +1,5 @@
-pub mod app;
+pub mod component;
 pub mod event;
-pub mod mode;
 pub mod state;
 pub mod ui;
+pub mod form;
