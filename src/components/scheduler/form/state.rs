@@ -156,7 +156,7 @@ impl SchedulerFormState {
             Err(error) => errors.push(format!("Name field: [{}]", error)),
         }
 
-        match validator::uszie(&self.speed) {
+        match validator::ufloat(&self.speed) {
             Ok(value) => {
                 scheduler.speed = value;
             }

@@ -47,3 +47,20 @@ pub fn uszie(str: &String) -> Result<usize, String> {
         Err(_) => Err(format!("Invalid value: {}", str)),
     }
 }
+
+pub fn ufloat(str: &String) -> Result<f32, String> {
+    if let Err(err) = empty(str) {
+        return Err(format!("Invalid value: {}", err));
+    }
+
+    match str.parse::<f32>() {
+        Ok(value) => {
+            if value <= 0.0 {
+                return Err(format!("Invalid value: {}", str));
+            }
+
+            Ok(value)
+        },
+        Err(_) => Err(format!("Invalid value: {}", str)),
+    }
+}

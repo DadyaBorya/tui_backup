@@ -37,7 +37,7 @@ impl Cloud {
 pub struct Scheduler {
     pub name: String,
     pub cron: String,
-    pub speed: usize,
+    pub speed: f32,
     pub clouds: HashMap<Cloud, Vec<Protocol>>,
     pub root: String,
 }

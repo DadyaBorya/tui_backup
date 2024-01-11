@@ -52,7 +52,7 @@ impl SchedulerFormComponent {
         f.render_widget(name_input, chunks[0]);
     
         let speed_input = input_generator::input(
-            "Speed Limit(Mb/s)*".to_string(),
+            "Speed Limit(Kb/s)*".to_string(),
             form.state.speed.to_owned(),
             "100".to_string(),
             app.state.mode == AppMode::SchedulerForm(SchedulerForm::Speed)
