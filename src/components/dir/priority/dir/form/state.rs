@@ -29,13 +29,14 @@ impl DirPriorityFormState {
             Err(error) => errors.push(format!("Regex field: [{}]", error)),
         }
 
-        match validator::uszie(&self.deep) {
-            Ok(value) => {
-                filter.deep = value;
+        if !self.deep.is_empty() {
+            match validator::uszie(&self.deep) {
+                Ok(value) => {
+                    filter.deep = Some(value);
+                }
+                Err(error) => errors.push(format!("Deep field: [{}]", error)),
             }
-            Err(error) => errors.push(format!("Deep field: [{}]", error)),
         }
-
         match validator::uszie(&self.priority) {
             Ok(value) => {
                 filter.priority = value;

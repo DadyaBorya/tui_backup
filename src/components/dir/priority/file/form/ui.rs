@@ -36,7 +36,7 @@ impl DirFilePriorityFormComponent {
         f.render_widget(regex_input, chunks[0]);
     
         let deep_input = input_generator::input(
-            "Deep*".to_string(),
+            "Deep".to_string(),
             form.state.deep.to_owned(),
             "2".to_string(),
             app.state.mode == AppMode::DirFilePriorityForm(DirFilePriorityForm::Deep)

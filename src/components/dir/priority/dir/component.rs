@@ -4,7 +4,7 @@ use crate::{
         mode::{AppMode, DirPriorityForm},
     },
     components::popup::message::component::MessagePopupComponent,
-    utils::list_utils,
+    utils::list_utils, models::entry_dir_priority::EntryDirPriority,
 };
 
 use super::state::DirPriorityState;
@@ -86,7 +86,7 @@ impl DirPriorityComponent {
             }
             let state = &mut app.components.dir_priority_form.state;
             state.regex = priority.regex;
-            state.deep = priority.deep.to_string();
+            state.deep = EntryDirPriority::get_deep(priority.deep);
             state.priority = priority.priority.to_string();
             app.components.dir_priority.state.is_edit = true;
             app.change_mode(
@@ -97,7 +97,7 @@ impl DirPriorityComponent {
     }
 
     pub fn move_up(app: &mut App) {
-        let dir_priority = &mut app.components.dir_file_priority;
+        let dir_priority = &mut app.components.dir_priority;
         match dir_priority.state.list_state.selected() {
             Some(_) => list_utils::move_up(
                 &mut dir_priority.state.list_state,
@@ -108,7 +108,7 @@ impl DirPriorityComponent {
     }
 
     pub fn move_down(app: &mut App) {
-        let dir_priority = &mut app.components.dir_file_priority;
+        let dir_priority = &mut app.components.dir_priority;
         match dir_priority.state.list_state.selected() {
             Some(_) => list_utils::move_down(
                 &mut dir_priority.state.list_state,

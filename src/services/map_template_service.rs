@@ -1,4 +1,7 @@
-use crate::models::dir_entry::DirEntry;
+use crate::models::{
+    dir_entry::DirEntry, entry_dir_file_priority::EntryDirFilePriority,
+    entry_file_filter::EntryFileFilter, entry_dir_priority::EntryDirPriority,
+};
 
 pub fn dir_entry_to_template(entry: &DirEntry) -> String {
     let mut content = String::new();
@@ -15,22 +18,11 @@ fn dir_entry_to_template_recursive(entry: &DirEntry, content: &mut String) {
         let dir_priority = dir_priority(entry);
         let file_priority = file_priority(entry);
 
-        let selected = if
-            entry.selected
-        {
-            "s"
-        } else {
-            ""
-        };
+        let selected = if entry.selected { "s" } else { "" };
 
         let formatted_content = format!(
             "{}>{}{}{}{}{}\n",
-            path,
-            file_filter,
-            dir_file_priority,
-            dir_priority,
-            file_priority,
-            selected
+            path, file_filter, dir_file_priority, dir_priority, file_priority, selected
         );
 
         content.push_str(&formatted_content);
@@ -95,16 +87,19 @@ fn file_filter(entry: &DirEntry) -> String {
 
         for filter in filters.iter() {
             if filter.root == entry_path {
-                strings.push(format!("{{{}, {}, {}}}", filter.regex, filter.deep, filter.content));
+                strings.push(format!(
+                    "{{{}, {}, {}}}",
+                    filter.regex,
+                    EntryFileFilter::get_deep(filter.deep),
+                    filter.content
+                ));
             }
         }
 
         match strings.is_empty() {
-            true =>  return String::new(),
-            false =>  return format!("1[{}]", strings.join(","))
+            true => return String::new(),
+            false => return format!("1[{}]", strings.join(",")),
         }
-
-       
     }
     String::new()
 }
@@ -119,21 +114,19 @@ fn dir_file_priority(entry: &DirEntry) -> String {
 
         for priority in priorities.iter() {
             if priority.root == entry_path {
-                strings.push(
-                    format!(
-                        "{{{}, {}, {}, {}}}",
-                        priority.regex,
-                        priority.deep,
-                        priority.priority,
-                        priority.content
-                    )
-                );
+                strings.push(format!(
+                    "{{{}, {}, {}, {}}}",
+                    priority.regex,
+                    EntryDirFilePriority::get_deep(priority.deep),
+                    priority.priority,
+                    priority.content
+                ));
             }
         }
 
         match strings.is_empty() {
-            true =>  return String::new(),
-            false =>  return format!("2[{}]", strings.join(","))
+            true => return String::new(),
+            false => return format!("2[{}]", strings.join(",")),
         }
     }
     String::new()
@@ -149,15 +142,16 @@ fn dir_priority(entry: &DirEntry) -> String {
 
         for priority in priorities.iter() {
             if priority.root == entry_path {
-                strings.push(
-                    format!("{{{}, {}, {}}}", priority.regex, priority.deep, priority.priority)
-                );
+                strings.push(format!(
+                    "{{{}, {}, {}}}",
+                    priority.regex, EntryDirPriority::get_deep(priority.deep), priority.priority
+                ));
             }
         }
 
         match strings.is_empty() {
-            true =>  return String::new(),
-            false =>  return format!("3[{}]", strings.join(","))
+            true => return String::new(),
+            false => return format!("3[{}]", strings.join(",")),
         }
     }
     String::new()
@@ -177,8 +171,8 @@ fn file_priority(entry: &DirEntry) -> String {
             }
         }
         match strings.is_empty() {
-            true =>  return String::new(),
-            false =>  return format!("4[{}]", strings.join(","))
+            true => return String::new(),
+            false => return format!("4[{}]", strings.join(",")),
         }
     }
     String::new()

@@ -59,7 +59,7 @@ fn file_filter(line: &str, path: String) -> Result<Option<Vec<EntryFileFilter>>,
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*(.+),\s*(\d+),*\s*(.*)\}").unwrap();
+            let regex = Regex::new(r"\{(\w+),\s*(\d*|\s*),*\s*(\w*)\}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut filter = EntryFileFilter::default();
@@ -71,9 +71,9 @@ fn file_filter(line: &str, path: String) -> Result<Option<Vec<EntryFileFilter>>,
 
                 if let Some(deep) = cap.get(2) {
                     if let Ok(number) = deep.as_str().parse::<usize>() {
-                        filter.deep = number;
+                        filter.deep = Some(number);
                     } else {
-                        return Err(());
+                        filter.deep = None
                     }
                 } else {
                     return Err(());
@@ -104,7 +104,7 @@ fn dir_file_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirFile
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*(.+),\s*(\d+),\s*(\d+),*\s*(.*)}").unwrap();
+            let regex = Regex::new(r"\{\s*(\w+),\s*(\d*|\s*),\s*(\d+),*\s*(\w*)}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut priority = EntryDirFilePriority::default();
@@ -116,9 +116,9 @@ fn dir_file_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirFile
 
                 if let Some(deep) = cap.get(2) {
                     if let Ok(number) = deep.as_str().parse::<usize>() {
-                        priority.deep = number;
+                        priority.deep = Some(number);
                     } else {
-                        return Err(());
+                        priority.deep = None
                     }
                 } else {
                     return Err(());
@@ -159,7 +159,7 @@ fn dir_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirPriority>
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*(.+),\s*(\d+),\s*(\d+)}").unwrap();
+            let regex = Regex::new(r"\{\s*(\w+),\s*(\d*|\s*),\s*(\d+)}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut priority = EntryDirPriority::default();
@@ -171,9 +171,9 @@ fn dir_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirPriority>
 
                 if let Some(deep) = cap.get(2) {
                     if let Ok(number) = deep.as_str().parse::<usize>() {
-                        priority.deep = number;
+                        priority.deep = Some(number);
                     } else {
-                        return Err(());
+                        priority.deep = None;
                     }
                 } else {
                     return Err(());

@@ -27,13 +27,20 @@ pub fn set_up_dir_priority(entry: &mut DirEntry) {
     {
         for child in children.iter_mut().filter(|child| child.is_dir()) {
             for priority in priorities {
-                if priority.deep == 0 {
-                    continue;
-                }
+                let priority_deep = match priority.deep {
+                    Some(value) => {
+                        if value == 0 {
+                            continue;
+                        }
+
+                        Some(value - 1)
+                    },
+                    None => None,
+                };
 
                 let new_priority = EntryDirPriority {
                     regex: priority.regex.clone(),
-                    deep: priority.deep - 1,
+                    deep: priority_deep,
                     priority: priority.priority,
                     root: priority.root.clone(),
                 };
@@ -73,13 +80,20 @@ pub fn set_up_dir_file_priority(entry: &mut DirEntry) {
     {
         for child in children.iter_mut().filter(|child| child.is_dir()) {
             for priority in priorities {
-                if priority.deep == 0 {
-                    continue;
-                }
+                let priority_deep = match priority.deep {
+                    Some(value) => {
+                        if value == 0 {
+                            continue;
+                        }
+
+                        Some(value - 1)
+                    },
+                    None => None,
+                };
 
                 let new_priority = EntryDirFilePriority {
                     regex: priority.regex.clone(),
-                    deep: priority.deep - 1,
+                    deep: priority_deep,
                     priority: priority.priority,
                     content: priority.content.clone(),
                     root: priority.root.clone(),

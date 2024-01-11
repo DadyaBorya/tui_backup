@@ -25,14 +25,22 @@ pub fn set_up_dir_file_filter(entry: &mut DirEntry) {
     {
         for child in children.iter_mut().filter(|child| child.is_dir()) {
             for filter in filters {
-                if filter.deep == 0 {
-                    continue;
-                }
+                let filter_deep = match filter.deep {
+                    Some(value) => {
+                        if value == 0 {
+                            continue;
+                        }
+
+                        Some(value - 1)
+                    },
+                    None => None,
+                };
+               
 
                 let new_filter = EntryFileFilter {
                     regex: filter.regex.clone(),
                     content: filter.content.clone(),
-                    deep: filter.deep - 1,
+                    deep: filter_deep,
                     root: filter.root.clone(),
                 };
 

@@ -29,12 +29,16 @@ impl FileFilterFormState {
             Err(error) => errors.push(format!("Regex field: [{}]", error)),
         }
 
-        match validator::uszie(&self.deep) {
-            Ok(value) => {
-                filter.deep = value;
+        if !self.deep.is_empty() {
+            match validator::uszie(&self.deep) {
+                Ok(value) => {
+                    filter.deep = Some(value);
+                }
+                Err(error) => errors.push(format!("Deep field: [{}]", error)),
             }
-            Err(error) => errors.push(format!("Deep field: [{}]", error)),
         }
+
+        
         if !self.content.is_empty() {
             match validator::regex(&self.content) {
                 Ok(value) => {

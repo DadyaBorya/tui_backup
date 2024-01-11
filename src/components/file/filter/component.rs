@@ -4,7 +4,7 @@ use crate::{
         mode::{AppMode, FileFilterForm},
     },
     components::popup::message::component::MessagePopupComponent,
-    utils::list_utils,
+    utils::list_utils, models::entry_file_filter::EntryFileFilter,
 };
 
 use super::state::FileFilterState;
@@ -141,7 +141,7 @@ impl FileFilterComponent {
             let state = &mut app.components.file_filter_form.state;
             state.regex = filter.regex;
             state.content = filter.content;
-            state.deep = filter.deep.to_string();
+            state.deep = EntryFileFilter::get_deep(filter.deep);
             app.components.file_filter.state.is_edit = true;
             app.change_mode(
                 AppMode::FileFilterForm(FileFilterForm::Regex),

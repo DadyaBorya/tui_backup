@@ -4,7 +4,7 @@ use crate::{
         mode::{AppMode, DirFilePriorityForm},
     },
     components::popup::message::component::MessagePopupComponent,
-    utils::list_utils,
+    utils::list_utils, models::entry_dir_file_priority::EntryDirFilePriority,
 };
 
 use super::state::DirFilePriorityState;
@@ -140,7 +140,7 @@ impl DirFilePriorityComponent {
             let state = &mut app.components.dir_file_priority_form.state;
             state.regex = priority.regex;
             state.content = priority.content;
-            state.deep = priority.deep.to_string();
+            state.deep = EntryDirFilePriority::get_deep(priority.deep);
             state.priority = priority.priority.to_string();
             app.components.dir_file_priority.state.is_edit = true;
             app.change_mode(
