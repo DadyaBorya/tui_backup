@@ -1,10 +1,13 @@
 use std::path::PathBuf;
 
 use crate::{
-    application::{ mode::{ SchedulerForm, AppMode }, app::App },
-    utils::list_utils,
-    components::{tab::component::TabComponent, popup::message::component::MessagePopupComponent},
+    application::{
+        app::App,
+        mode::{AppMode, SchedulerForm},
+    },
+    components::{popup::{message::component::MessagePopupComponent, confirm::component::ConfirmPopupComponent}, tab::component::TabComponent},
     services::file_service,
+    utils::list_utils,
 };
 
 use super::state::SchedulerFormState;
@@ -37,12 +40,12 @@ impl SchedulerFormComponent {
         let validate = state.validate();
 
         let scheduler = match validate {
-            Ok(value) => { value }
+            Ok(value) => value,
             Err(errors) => {
                 MessagePopupComponent::show_vec(
                     app,
                     errors,
-                    AppMode::SchedulerForm(SchedulerForm::Submit)
+                    AppMode::SchedulerForm(SchedulerForm::Submit),
                 );
                 return Ok(());
             }
@@ -66,14 +69,19 @@ impl SchedulerFormComponent {
     }
 
     pub fn exit(app: &mut App) {
-        app.components.scheduler_form.state.clear();
-
-        match app.components.scheduler_form.state.is_edit {
-            true => app.change_mode(AppMode::SchedulerList, app.state.mode.clone()),
-            false => app.change_mode(AppMode::TemplateList, app.state.mode.clone()),
-        }
+       let mode = match app.components.scheduler_form.state.is_edit {
+            true => AppMode::SchedulerList,
+            false => AppMode::TemplateList,
+        };
 
         app.components.scheduler_form.state.is_edit = false;
+
+        ConfirmPopupComponent::show(
+            app,
+            "Confiramation".to_string(),
+            "Do you want to exit?".to_string(),
+            mode,
+        );
     }
 
     pub fn paste_current_cron(&mut self) {
@@ -96,16 +104,14 @@ impl SchedulerFormComponent {
 
     pub fn move_up(&mut self, mode: SchedulerForm) {
         match mode {
-            SchedulerForm::Cron =>
-                list_utils::move_up(
-                    &mut self.state.cron_list_state,
-                    self.state.cron_templates.len()
-                ),
-            SchedulerForm::Cloud =>
-                list_utils::move_up(
-                    &mut self.state.cloud_list_state,
-                    self.state.clouds_protocols.len()
-                ),
+            SchedulerForm::Cron => list_utils::move_up(
+                &mut self.state.cron_list_state,
+                self.state.cron_templates.len(),
+            ),
+            SchedulerForm::Cloud => list_utils::move_up(
+                &mut self.state.cloud_list_state,
+                self.state.clouds_protocols.len(),
+            ),
             SchedulerForm::Protocol => {
                 let len = self.state.protocols().len();
                 list_utils::move_up(&mut self.state.protocol_list_state, len);
@@ -116,17 +122,15 @@ impl SchedulerFormComponent {
 
     pub fn move_down(&mut self, mode: SchedulerForm) {
         match mode {
-            SchedulerForm::Cron =>
-                list_utils::move_down(
-                    &mut self.state.cron_list_state,
-                    self.state.cron_templates.len()
-                ),
+            SchedulerForm::Cron => list_utils::move_down(
+                &mut self.state.cron_list_state,
+                self.state.cron_templates.len(),
+            ),
 
-            SchedulerForm::Cloud =>
-                list_utils::move_down(
-                    &mut self.state.cloud_list_state,
-                    self.state.clouds_protocols.len()
-                ),
+            SchedulerForm::Cloud => list_utils::move_down(
+                &mut self.state.cloud_list_state,
+                self.state.clouds_protocols.len(),
+            ),
 
             SchedulerForm::Protocol => {
                 let len = self.state.protocols().len();

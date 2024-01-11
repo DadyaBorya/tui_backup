@@ -11,5 +11,4 @@ impl MessagePopupComponent {
             _ => {}
         }
     }
-    
 }

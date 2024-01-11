@@ -1,6 +1,12 @@
 use crate::{
-    application::{ app::App, mode::{ AppMode, DirPriorityForm } },
-    models::entry_dir_priority::EntryDirPriority, components::popup::message::component::MessagePopupComponent,
+    application::{
+        app::App,
+        mode::{AppMode, DirPriorityForm},
+    },
+    components::popup::{
+        confirm::component::ConfirmPopupComponent, message::component::MessagePopupComponent,
+    },
+    models::entry_dir_priority::EntryDirPriority,
 };
 
 use super::state::DirPriorityFormState;
@@ -22,8 +28,12 @@ impl DirPriorityFormComponent {
     }
 
     pub fn exit(app: &mut App) {
-        app.components.dir_priority_form.state.clear();
-        app.change_mode(AppMode::DirPriority, app.state.mode.clone());
+        ConfirmPopupComponent::show(
+            app,
+            "Confiramation".to_string(),
+            "Do you want to exit?".to_string(),
+            AppMode::DirPriority,
+        );
     }
 
     pub fn create(app: &mut App) -> Option<EntryDirPriority> {
@@ -32,12 +42,12 @@ impl DirPriorityFormComponent {
         let validate = state.validate();
 
         match validate {
-            Ok(value) => { Some(value) }
+            Ok(value) => Some(value),
             Err(errors) => {
                 MessagePopupComponent::show_vec(
                     app,
                     errors,
-                    AppMode::DirPriorityForm(DirPriorityForm::Submit)
+                    AppMode::DirPriorityForm(DirPriorityForm::Submit),
                 );
                 None
             }
@@ -58,13 +68,22 @@ impl DirPriorityFormComponent {
         match app.components.dir_priority.state.is_edit {
             true => {
                 if let Some(rules) = entry.entry_dir_priority.as_mut() {
-                    let index = app.components.dir_priority.state.list_state.selected().unwrap();
+                    let index = app
+                        .components
+                        .dir_priority
+                        .state
+                        .list_state
+                        .selected()
+                        .unwrap();
                     rules[index] = filter;
                 }
 
                 app.components.dir_priority.state.is_edit = false;
             }
-            false => entry.entry_dir_priority.get_or_insert(Vec::new()).push(filter),
+            false => entry
+                .entry_dir_priority
+                .get_or_insert(Vec::new())
+                .push(filter),
         }
 
         app.components.dir_priority_form.state.clear();

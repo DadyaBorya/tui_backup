@@ -15,7 +15,14 @@ pub enum AppMode {
     TemplateList,
     SchedulerForm(SchedulerForm),
     SchedulerList,
-    FileListSettings
+    FileListSettings,
+    Confirm(Confirm)
+}
+
+impl Default for AppMode {
+    fn default() -> Self {
+        AppMode::Tab
+    }
 }
 
 #[derive(PartialEq, Clone)]
@@ -69,4 +76,10 @@ pub enum SchedulerForm {
     Protocol,
     PrevCron,
     Submit,
+}
+
+#[derive(PartialEq, Clone)]
+pub enum Confirm {
+    Cancel,
+    Submit
 }

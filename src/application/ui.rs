@@ -14,7 +14,7 @@ use crate::components::{
         priority::form::component::FilePriorityFormComponent,
     },
     helper::helper_ui,
-    popup::message::component::MessagePopupComponent,
+    popup::{message::component::MessagePopupComponent, confirm::component::ConfirmPopupComponent},
     scheduler::{form::component::SchedulerFormComponent, list::component::SchedulerListComponent},
     tab::component::TabComponent,
     template::{form::component::TemplateFormComponent, list::component::TemplateListComponent},
@@ -71,6 +71,7 @@ impl App {
             AppMode::FilePriorityForm(_) => FilePriorityFormComponent::ui(app, f),
             AppMode::TemplateForm(_) => TemplateFormComponent::ui(app, f),
             AppMode::SchedulerForm(_) => SchedulerFormComponent::ui(app, f),
+            AppMode::Confirm(_) => ConfirmPopupComponent::ui(app, f),
             _ => {}
         }
     }

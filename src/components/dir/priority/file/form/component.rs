@@ -1,6 +1,6 @@
 use crate::{
     application::{ app::App, mode::{ DirFilePriorityForm, AppMode } },
-    models::entry_dir_file_priority::EntryDirFilePriority, components::popup::message::component::MessagePopupComponent,
+    models::entry_dir_file_priority::EntryDirFilePriority, components::popup::{message::component::MessagePopupComponent, confirm::component::ConfirmPopupComponent},
 };
 
 use super::state::DirFilePriorityFormState;
@@ -24,8 +24,12 @@ impl DirFilePriorityFormComponent {
     }
 
     pub fn exit(app: &mut App) {
-        app.components.dir_file_priority_form.state.clear();
-        app.change_mode(AppMode::DirFilePriority, app.state.mode.clone());
+        ConfirmPopupComponent::show(
+            app,
+            "Confiramation".to_string(),
+            "Do you want to exit?".to_string(),
+            AppMode::DirFilePriority,
+        );
     }
 
     pub fn create(app: &mut App) -> Option<EntryDirFilePriority> {

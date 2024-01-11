@@ -44,6 +44,7 @@ fn get_helper_text(app: &App) -> &'static str {
         AppMode::TemplateList => app.components.template_list.get_helper_text(),
         AppMode::SchedulerForm(mode) => app.components.scheduler_form.get_helper_text(&mode),
         AppMode::SchedulerList => app.components.scheduler_list.get_helper_text(),
-        AppMode::FileListSettings => "",
+        AppMode::FileListSettings => app.components.file_list_settings.get_helper_text(),
+        AppMode::Confirm(mode) => app.components.confirm.get_helper_text(&mode),
     }
 }

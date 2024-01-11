@@ -1,11 +1,18 @@
 use std::path::PathBuf;
 
 use crate::{
-    application::{ mode::{ TemplateForm, AppMode }, app::App },
-    services::{ map_template_service, file_service },
-    components::{
-        tab::component::TabComponent, popup::message::component::MessagePopupComponent, file::list::state::FileListState,
+    application::{
+        app::App,
+        mode::{AppMode, TemplateForm},
     },
+    components::{
+        file::list::state::FileListState,
+        popup::{
+            confirm::component::ConfirmPopupComponent, message::component::MessagePopupComponent,
+        },
+        tab::component::TabComponent,
+    },
+    services::{file_service, map_template_service},
 };
 
 use super::state::TemplateFormState;
@@ -25,11 +32,12 @@ impl TemplateFormComponent {
     }
 
     pub fn exit(app: &mut App) {
-        if !app.components.template_form.state.is_edit {
-            app.components.template_form.state.clear();
-        }
-
-        app.change_mode(AppMode::FileList, app.state.mode.clone());
+        ConfirmPopupComponent::show(
+            app,
+            "Confiramation".to_string(),
+            "Do you want to exit?".to_string(),
+            AppMode::FileList,
+        );
     }
 
     pub fn next(app: &mut App, next: TemplateForm) {

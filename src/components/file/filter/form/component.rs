@@ -1,6 +1,6 @@
 use crate::{
     application::{ mode::{ AppMode, FileFilterForm }, app::App },
-    models::entry_file_filter::EntryFileFilter, components::popup::message::component::MessagePopupComponent,
+    models::entry_file_filter::EntryFileFilter, components::popup::{message::component::MessagePopupComponent, confirm::component::ConfirmPopupComponent},
 };
 
 use super::state::FileFilterFormState;
@@ -22,8 +22,12 @@ impl FileFilterFormComponent {
     }
 
     pub fn exit(app: &mut App) {
-        app.components.file_filter_form.state.clear();
-        app.change_mode(AppMode::FileFilter, app.state.mode.clone());
+        ConfirmPopupComponent::show(
+            app,
+            "Confiramation".to_string(),
+            "Do you want to exit?".to_string(),
+            AppMode::FileFilter,
+        );
     }
 
     pub fn next(app: &mut App, next: FileFilterForm) {

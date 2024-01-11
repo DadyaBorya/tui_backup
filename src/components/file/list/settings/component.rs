@@ -1,6 +1,11 @@
-use crate::{application::{app::App, mode::AppMode}, utils::list_utils};
+use crate::{
+    application::{app::App, mode::AppMode},
+    utils::list_utils,
+};
 
 use super::state::FileListSettingState;
+
+const HELP: &'static str = "| ESC~Back | ↑ ↓ Move | SPACE~Select |";
 
 #[derive(Default)]
 pub struct FileListSettingComponent {
@@ -24,12 +29,8 @@ impl FileListSettingComponent {
 
         if let Some(index) = state.list_state.selected() {
             match state.seleted_items.contains(&index) {
-                true => {
-                    state.seleted_items.retain(|i| i != &index)
-                },
-                false => {
-                    state.seleted_items.push(index)
-                },
+                true => state.seleted_items.retain(|i| i != &index),
+                false => state.seleted_items.push(index),
             }
         }
     }
@@ -41,5 +42,9 @@ impl FileListSettingComponent {
 
     pub fn exit(app: &mut App) {
         app.change_mode(AppMode::FileList, app.state.prev_mode.clone())
+    }
+
+    pub fn get_helper_text(&self) -> &'static str {
+        HELP
     }
 }

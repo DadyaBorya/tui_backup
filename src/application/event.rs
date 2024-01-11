@@ -8,6 +8,7 @@ use crate::components::file::list::component::FileListComponent;
 use crate::components::file::list::settings::component::FileListSettingComponent;
 use crate::components::file::priority::component::FilePriorityComponent;
 use crate::components::file::priority::form::component::FilePriorityFormComponent;
+use crate::components::popup::confirm::component::ConfirmPopupComponent;
 use crate::components::popup::message::component::MessagePopupComponent;
 use crate::components::scheduler::form::component::SchedulerFormComponent;
 use crate::components::scheduler::list::component::SchedulerListComponent;
@@ -53,7 +54,7 @@ impl App {
                         AppMode::TemplateForm(_) => TemplateFormComponent::event(self, key.code)?,
                         AppMode::TemplateList => TemplateListComponent::event(self, key.code)?,
                         AppMode::FileListSettings => FileListSettingComponent::event(self, key.code)?,
-                        
+                        AppMode::Confirm(_) => ConfirmPopupComponent::event(self, key.code)  
                     }
                 }
             }

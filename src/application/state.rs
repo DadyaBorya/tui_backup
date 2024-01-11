@@ -13,7 +13,7 @@ use crate::{
                 component::FilePriorityComponent, form::component::FilePriorityFormComponent,
             },
         },
-        popup::message::component::MessagePopupComponent,
+        popup::{message::component::MessagePopupComponent, confirm::component::ConfirmPopupComponent},
         scheduler::{
             form::component::SchedulerFormComponent, list::component::SchedulerListComponent,
         },
@@ -54,6 +54,7 @@ pub struct AppComponents {
     pub scheduler_form: SchedulerFormComponent,
     pub scheduler_list: SchedulerListComponent,
     pub file_list_settings: FileListSettingComponent,
+    pub confirm: ConfirmPopupComponent
 }
 
 impl AppState {
@@ -86,6 +87,7 @@ impl AppComponents {
             scheduler_form: SchedulerFormComponent::init(),
             scheduler_list: SchedulerListComponent::init(config)?,
             file_list_settings: FileListSettingComponent::init(),
+            confirm: ConfirmPopupComponent::init(),
         })
     }
 }
