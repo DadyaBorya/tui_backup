@@ -1,11 +1,12 @@
 use std::path::PathBuf;
 
-use tui::{ widgets::TableState, style::Color };
+use tui::{style::Color, widgets::TableState};
 
 use crate::{
-    utils::table_util,
+    application::mode::AppMode,
     models::dir_entry::DirEntry,
-    services::{ file_service, file_system_service },
+    services::{file_service, file_system_service},
+    utils::table_util,
 };
 
 #[derive(Default)]
@@ -16,6 +17,25 @@ pub struct FileListState {
     pub current_path: PathBuf,
     pub history: Vec<usize>,
     pub is_priority_mode: bool,
+    pub settings: Vec<AppMode>,
+}
+
+pub struct Settings {
+    pub is_file_priority: bool,
+    pub is_dir_priority: bool,
+    pub is_dir_file_priority: bool,
+    pub id_file_filter: bool,
+}
+
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            is_file_priority: true,
+            is_dir_priority: true,
+            is_dir_file_priority: true,
+            id_file_filter: true,
+        }
+    }
 }
 
 impl FileListState {
@@ -49,11 +69,8 @@ impl FileListState {
     }
     pub fn get_selected_entry(&mut self) -> Option<&mut DirEntry> {
         if let Some(index) = self.table_state.selected() {
-            if
-                let Some(entry) = file_system_service::find_in_dir(
-                    &mut self.root,
-                    self.current_path.as_path()
-                )
+            if let Some(entry) =
+                file_system_service::find_in_dir(&mut self.root, self.current_path.as_path())
             {
                 if !entry.is_dir() {
                     return None;
@@ -83,11 +100,8 @@ impl FileListState {
         Ok(())
     }
     pub fn select_all(&mut self) {
-        if
-            let Some(entry) = file_system_service::find_in_dir(
-                &mut self.root,
-                self.current_path.as_path()
-            )
+        if let Some(entry) =
+            file_system_service::find_in_dir(&mut self.root, self.current_path.as_path())
         {
             if entry.is_dir() {
                 entry.select_all();
@@ -95,11 +109,8 @@ impl FileListState {
         }
     }
     pub fn rows(&mut self) -> Vec<(Vec<String>, Color)> {
-        if
-            let Some(entry) = file_system_service::find_in_dir(
-                &mut self.root,
-                self.current_path.as_path()
-            )
+        if let Some(entry) =
+            file_system_service::find_in_dir(&mut self.root, self.current_path.as_path())
         {
             if !entry.is_dir() {
                 return vec![];

@@ -66,7 +66,7 @@ impl DirFilePriorityFormComponent {
                     rules[index] = filter;
                 }
 
-                app.components.dir_filter.state.is_edit = false;
+                app.components.dir_file_priority.state.is_edit = false;
             }
             false => entry.entry_dir_file_priority.get_or_insert(Vec::new()).push(filter),
         }

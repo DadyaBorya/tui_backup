@@ -1,11 +1,15 @@
 use crate::{
-    application::{ app::App, mode::{ AppMode, DirPriorityForm } },
-    utils::list_utils, components::popup::message::component::MessagePopupComponent,
+    application::{
+        app::App,
+        mode::{AppMode, DirPriorityForm},
+    },
+    components::popup::message::component::MessagePopupComponent,
+    utils::list_utils,
 };
 
 use super::state::DirPriorityState;
 
-const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | [~Prev | n~New | d~Delete | e~Edit |";
+const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | ENTER~Select | n~New | d~Delete | e~Edit |";
 
 pub struct DirPriorityComponent {
     pub state: DirPriorityState,
@@ -21,13 +25,15 @@ impl DirPriorityComponent {
     pub fn delete(app: &mut App) {
         if let Some(entry) = app.components.file_list.state.get_selected_entry() {
             if let Some(index) = app.components.dir_priority.state.list_state.selected() {
-                let priority_root = entry.entry_dir_priority.as_ref().unwrap()[index].root.clone();
+                let priority_root = entry.entry_dir_priority.as_ref().unwrap()[index]
+                    .root
+                    .clone();
 
                 if priority_root != entry.path() {
                     MessagePopupComponent::show(
                         app,
                         "Can't delete root priority".to_string(),
-                        format!("Root priority is {}", priority_root)
+                        format!("Root priority is {}", priority_root),
                     );
                     return;
                 }
@@ -38,15 +44,30 @@ impl DirPriorityComponent {
                 }
 
                 app.components.dir_priority.state.rules.remove(index);
-                app.components.dir_priority.move_up();
+                DirPriorityComponent::move_up(app);
             }
         }
     }
 
     pub fn exit(app: &mut App) {
         let dir_priority = &mut app.components.dir_priority;
-        dir_priority.state.list_state.select(None);
+
+        if let Some(_) = dir_priority.state.list_state.selected() {
+            dir_priority.state.list_state.select(None);
+            return;
+        }
+
+        
         app.change_mode(AppMode::FileList, AppMode::DirPriority);
+    }
+
+    pub fn select_list(app: &mut App) {
+        let dir_priority = &mut app.components.dir_priority;
+
+        match dir_priority.state.list_state.selected() {
+            None => dir_priority.state.init_index_table(),
+            _ => {}
+        };
     }
 
     pub fn edit(app: &mut App) {
@@ -59,7 +80,7 @@ impl DirPriorityComponent {
                 MessagePopupComponent::show(
                     app,
                     "Can't delete root priority".to_string(),
-                    format!("Root priority is {}", priority.root)
+                    format!("Root priority is {}", priority.root),
                 );
                 return;
             }
@@ -70,29 +91,59 @@ impl DirPriorityComponent {
             app.components.dir_priority.state.is_edit = true;
             app.change_mode(
                 AppMode::DirPriorityForm(DirPriorityForm::Regex),
-                app.state.prev_mode.clone()
+                app.state.prev_mode.clone(),
             );
         }
     }
 
-    pub fn move_up(&mut self) {
-        list_utils::move_up(&mut self.state.list_state, self.state.rules.len());
+    pub fn move_up(app: &mut App) {
+        let dir_priority = &mut app.components.dir_file_priority;
+        match dir_priority.state.list_state.selected() {
+            Some(_) => list_utils::move_up(
+                &mut dir_priority.state.list_state,
+                dir_priority.state.rules.len(),
+            ),
+            None => DirPriorityComponent::prev_component(app),
+        };
     }
 
-    pub fn move_down(&mut self) {
-        list_utils::move_down(&mut self.state.list_state, self.state.rules.len());
+    pub fn move_down(app: &mut App) {
+        let dir_priority = &mut app.components.dir_file_priority;
+        match dir_priority.state.list_state.selected() {
+            Some(_) => list_utils::move_down(
+                &mut dir_priority.state.list_state,
+                dir_priority.state.rules.len(),
+            ),
+            None => {}
+        };
     }
 
     pub fn prev_component(app: &mut App) {
-        let dir_priority = &mut app.components.dir_priority;
-        dir_priority.state.list_state.select(None);
-        let dir_file_priority = &mut app.components.dir_file_priority;
-        dir_file_priority.state.list_state.select(None);
-        app.change_mode(AppMode::DirFilePriority, AppMode::DirPriority);
+        let mut settings = app
+            .components
+            .file_list_settings
+            .state
+            .seleted_items
+            .clone();
+
+        settings.retain(|i| i != &3);
+        settings.sort();
+
+        if settings.len() > 1 {
+            let index = settings.iter().position(|i| i == &2).unwrap() - 1;
+            match settings[index] {
+                0 => app.change_mode(AppMode::FileFilter, app.state.prev_mode.clone()),
+                1 => app.change_mode(AppMode::DirFilePriority, app.state.prev_mode.clone()),
+                _ => {}
+            }
+        }
     }
 
     pub fn new_rule(app: &mut App) {
-        app.change_mode(AppMode::DirPriorityForm(DirPriorityForm::Regex), AppMode::DirPriority);
+        app.change_mode(
+            AppMode::DirPriorityForm(DirPriorityForm::Regex),
+            AppMode::DirPriority,
+        );
     }
 
     pub fn get_helper_text(&self) -> &'static str {

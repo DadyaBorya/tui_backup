@@ -7,7 +7,6 @@ use crate::services::{ file_service, file_system_service };
 
 use super::{
     entry_file_filter::EntryFileFilter,
-    entry_dir_filter::EntryDirFilter,
     entry_dir_file_priority::EntryDirFilePriority,
     entry_dir_priority::EntryDirPriority,
     entry_file_priority::EntryFilePriority,
@@ -22,7 +21,6 @@ pub struct DirEntry {
     pub children: Option<Vec<DirEntry>>,
     pub selected: bool,
     pub entry_file_filter: Option<Vec<EntryFileFilter>>,
-    pub entry_dir_filter: Option<Vec<EntryDirFilter>>,
     pub entry_dir_file_priority: Option<Vec<EntryDirFilePriority>>,
     pub entry_dir_priority: Option<Vec<EntryDirPriority>>,
     pub entry_file_priority: Option<Vec<EntryFilePriority>>,

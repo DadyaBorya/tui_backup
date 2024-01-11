@@ -9,6 +9,7 @@ impl FilePriorityComponent {
         let priority = &mut app.components.file_priority;
         match key_code {
             KeyCode::Esc => FilePriorityComponent::exit(app),
+            KeyCode::Enter => FilePriorityComponent::select_list(app),
             KeyCode::Char('n') => FilePriorityComponent::new_rule(app),
             KeyCode::Down => priority.move_down(),
             KeyCode::Up => priority.move_up(),

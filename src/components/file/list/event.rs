@@ -19,8 +19,8 @@ impl FileListComponent {
             KeyCode::Char(' ') => file_list.select()?,
             KeyCode::Char('s') => file_list.select_deep()?,
             KeyCode::Char('a') => file_list.select_all(),
-            KeyCode::Char('f') => FileListComponent::open_filter(app),
-            KeyCode::Char('p') => FileListComponent::open_priority(app),
+            KeyCode::Char('f') => FileListComponent::open_edit_settings(app),
+            KeyCode::Char('p') => FileListComponent::open_settings(app),
             KeyCode::Char('c') => FileListComponent::save(app),
             KeyCode::Char('n') => file_list.clear()?,
             _ => {}

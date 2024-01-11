@@ -1,15 +1,18 @@
 use std::path::PathBuf;
 
 use crate::{
+    application::{
+        app::App,
+        mode::{AppMode, TemplateForm},
+    },
+    services::{entry_filter_service, entry_priority_service},
     utils::table_util,
-    application::{ app::App, mode::{ AppMode, TemplateForm } },
-    services::{ entry_filter_service, entry_priority_service },
 };
 
 use super::state::FileListState;
 
 const HELP: &'static str =
-    "| ESC~Back | ↑ ↓ ← → Move | SPACE~Select | s~Select Deep | a~Select All | f~Filter | p~Priority | c~Create/Edit | n~New |";
+    "| ESC~Back | ↑ ↓ ← → Move | SPACE~Select | s~Select Deep | a~Select All | f~Edit Settings | p~Settings | c~Create/Edit | n~New |";
 
 pub struct FileListComponent {
     pub state: FileListState,
@@ -17,7 +20,9 @@ pub struct FileListComponent {
 
 impl FileListComponent {
     pub fn init() -> Result<Self, std::io::Error> {
-        Ok(FileListComponent { state: FileListState::init()? })
+        Ok(FileListComponent {
+            state: FileListState::init()?,
+        })
     }
 
     pub fn clear(&mut self) -> Result<(), std::io::Error> {
@@ -35,7 +40,10 @@ impl FileListComponent {
     }
 
     pub fn save(app: &mut App) {
-        app.change_mode(AppMode::TemplateForm(TemplateForm::Name), app.state.mode.clone());
+        app.change_mode(
+            AppMode::TemplateForm(TemplateForm::Name),
+            app.state.mode.clone(),
+        );
     }
 
     pub fn open(&mut self) -> Result<(), std::io::Error> {
@@ -51,7 +59,9 @@ impl FileListComponent {
             entry_filter_service::filter(entry);
             entry_priority_service::priority(entry);
 
-            self.state.history.push(self.state.table_state.selected().unwrap());
+            self.state
+                .history
+                .push(self.state.table_state.selected().unwrap());
             self.state.table_state.select(Some(0));
 
             self.state.current_path = path;
@@ -110,29 +120,36 @@ impl FileListComponent {
         self.state.set_rows();
     }
 
-    pub fn open_filter(app: &mut App) {
-        let file_list = &mut app.components.file_list;
-        if file_list.state.is_selected_dir() {
-            file_list.state.is_priority_mode = false;
-            app.components.file_filter.state.init_index_table();
-            app.change_mode(AppMode::FileFilter, AppMode::FileList);
-        }
+    pub fn open_edit_settings(app: &mut App) {
+        app.components.file_list_settings.state.init_index_table();
+        app.change_mode(AppMode::FileListSettings, AppMode::FileList);
     }
 
-    pub fn open_priority(app: &mut App) {
+    pub fn open_settings(app: &mut App) {
         let file_list = &mut app.components.file_list;
+        let settings = &mut app.components.file_list_settings;
+
+        if settings.state.seleted_items.is_empty() {
+            return;
+        }
 
         if file_list.state.is_selected() {
-            file_list.state.is_priority_mode = true;
-
             match file_list.state.is_selected_dir() {
                 true => {
-                    app.components.dir_file_priority.state.init_index_table();
-                    app.change_mode(AppMode::DirFilePriority, AppMode::FileList)
+                    let mut settings = settings.state.seleted_items.clone();
+                    settings.sort();
+
+                    match settings[0] {
+                        0 => app.change_mode(AppMode::FileFilter, AppMode::FileList),
+                        1 => app.change_mode(AppMode::DirFilePriority, AppMode::FileList),
+                        2 => app.change_mode(AppMode::DirPriority, AppMode::FileList),
+                        _ => {}
+                    }
                 }
                 false => {
-                    app.components.file_priority.state.init_index_table();
-                    app.change_mode(AppMode::FilePriority, AppMode::FileList)
+                    if settings.state.seleted_items.contains(&3) {
+                        app.change_mode(AppMode::FilePriority, AppMode::FileList)
+                    }
                 }
             }
         }

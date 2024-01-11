@@ -5,15 +5,12 @@ use tui::{
 };
 
 use crate::components::{
-    dir::{
-        filter::form::component::DirFilterFormComponent,
-        priority::{
+    dir::priority::{
             dir::form::component::DirPriorityFormComponent,
             file::form::component::DirFilePriorityFormComponent,
         },
-    },
     file::{
-        filter::form::component::FileFilterFormComponent, list::component::FileListComponent,
+        filter::form::component::FileFilterFormComponent, list::{component::FileListComponent, settings::component::FileListSettingComponent},
         priority::form::component::FilePriorityFormComponent,
     },
     helper::helper_ui,
@@ -67,8 +64,8 @@ impl App {
         match app.state.mode {
             AppMode::Tab => TabComponent::ui(app, f, &chunks),
             AppMode::MessagePopup => MessagePopupComponent::ui(f, app),
+            AppMode::FileListSettings => FileListSettingComponent::ui(app, f),
             AppMode::FileFilterForm(_) => FileFilterFormComponent::ui(app, f),
-            AppMode::DirFilterForm(_) => DirFilterFormComponent::ui(app, f),
             AppMode::DirFilePriorityForm(_) => DirFilePriorityFormComponent::ui(app, f),
             AppMode::DirPriorityForm(_) => DirPriorityFormComponent::ui(app, f),
             AppMode::FilePriorityForm(_) => FilePriorityFormComponent::ui(app, f),

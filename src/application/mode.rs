@@ -4,12 +4,10 @@ pub enum AppMode {
     FileList,
     MessagePopup,
     FileFilter,
-    DirFilter,
     DirPriority,
     DirFilePriority,
     FilePriority,
     FileFilterForm(FileFilterForm),
-    DirFilterForm(DirFilterForm),
     DirFilePriorityForm(DirFilePriorityForm),
     DirPriorityForm(DirPriorityForm),
     FilePriorityForm(FilePriorityForm),
@@ -17,6 +15,7 @@ pub enum AppMode {
     TemplateList,
     SchedulerForm(SchedulerForm),
     SchedulerList,
+    FileListSettings
 }
 
 #[derive(PartialEq, Clone)]
@@ -27,12 +26,6 @@ pub enum FileFilterForm {
     Submit,
 }
 
-#[derive(PartialEq, Clone)]
-pub enum DirFilterForm {
-    Regex,
-    Deep,
-    Submit,
-}
 
 #[derive(PartialEq, Clone)]
 pub enum DirFilePriorityForm {

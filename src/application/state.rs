@@ -1,18 +1,14 @@
 use crate::{
     components::{
-        dir::{
-            filter::{component::DirFilterComponent, form::component::DirFilterFormComponent},
-            priority::{
-                dir::{component::DirPriorityComponent, form::component::DirPriorityFormComponent},
-                file::{
-                    component::DirFilePriorityComponent,
-                    form::component::DirFilePriorityFormComponent,
-                },
+        dir::priority::{
+            dir::{component::DirPriorityComponent, form::component::DirPriorityFormComponent},
+            file::{
+                component::DirFilePriorityComponent, form::component::DirFilePriorityFormComponent,
             },
         },
         file::{
             filter::{component::FileFilterComponent, form::component::FileFilterFormComponent},
-            list::component::FileListComponent,
+            list::{component::FileListComponent, settings::component::FileListSettingComponent},
             priority::{
                 component::FilePriorityComponent, form::component::FilePriorityFormComponent,
             },
@@ -46,12 +42,10 @@ pub struct AppComponents {
     pub file_list: FileListComponent,
     pub message_popup: MessagePopupComponent,
     pub file_filter: FileFilterComponent,
-    pub dir_filter: DirFilterComponent,
     pub dir_file_priority: DirFilePriorityComponent,
     pub dir_priority: DirPriorityComponent,
     pub file_priority: FilePriorityComponent,
     pub file_filter_form: FileFilterFormComponent,
-    pub dir_filter_form: DirFilterFormComponent,
     pub dir_file_priority_form: DirFilePriorityFormComponent,
     pub dir_priority_form: DirPriorityFormComponent,
     pub file_priority_form: FilePriorityFormComponent,
@@ -59,6 +53,7 @@ pub struct AppComponents {
     pub template_list: TemplateListComponent,
     pub scheduler_form: SchedulerFormComponent,
     pub scheduler_list: SchedulerListComponent,
+    pub file_list_settings: FileListSettingComponent,
 }
 
 impl AppState {
@@ -79,12 +74,10 @@ impl AppComponents {
             file_list: FileListComponent::init()?,
             message_popup: MessagePopupComponent::init(),
             file_filter: FileFilterComponent::init(),
-            dir_filter: DirFilterComponent::init(),
             dir_file_priority: DirFilePriorityComponent::init(),
             dir_priority: DirPriorityComponent::init(),
             file_priority: FilePriorityComponent::init(),
             file_filter_form: FileFilterFormComponent::init(),
-            dir_filter_form: DirFilterFormComponent::init(),
             dir_file_priority_form: DirFilePriorityFormComponent::init(),
             dir_priority_form: DirPriorityFormComponent::init(),
             file_priority_form: FilePriorityFormComponent::init(),
@@ -92,6 +85,7 @@ impl AppComponents {
             template_list: TemplateListComponent::init(config)?,
             scheduler_form: SchedulerFormComponent::init(),
             scheduler_list: SchedulerListComponent::init(config)?,
+            file_list_settings: FileListSettingComponent::init(),
         })
     }
 }

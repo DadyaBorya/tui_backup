@@ -5,7 +5,7 @@ use crate::{ application::{ app::App, mode::AppMode }, generator::list_generator
 use super::component::FileFilterComponent;
 
 impl FileFilterComponent {
-    pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
+    pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>, chunk_index: usize) {
         let file_filter = &mut app.components.file_filter;
     
         let list = list_generator::list(
@@ -14,6 +14,6 @@ impl FileFilterComponent {
             file_filter.state.rows()
         );
     
-        f.render_stateful_widget(list, chunks[0], &mut file_filter.state.list_state);
+        f.render_stateful_widget(list, chunks[chunk_index], &mut file_filter.state.list_state);
     }
 }

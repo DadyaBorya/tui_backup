@@ -11,7 +11,6 @@ fn dir_entry_to_template_recursive(entry: &DirEntry, content: &mut String) {
 
     if !path.is_empty() {
         let file_filter = file_filter(entry);
-        let dir_filter = dir_filter(entry);
         let dir_file_priority = dir_file_priority(entry);
         let dir_priority = dir_priority(entry);
         let file_priority = file_priority(entry);
@@ -25,10 +24,9 @@ fn dir_entry_to_template_recursive(entry: &DirEntry, content: &mut String) {
         };
 
         let formatted_content = format!(
-            "{}>{}{}{}{}{}{}\n",
+            "{}>{}{}{}{}{}\n",
             path,
             file_filter,
-            dir_filter,
             dir_file_priority,
             dir_priority,
             file_priority,
@@ -53,14 +51,6 @@ fn path(entry: &DirEntry) -> String {
     }
 
     if let Some(filters) = entry.entry_file_filter.as_ref() {
-        for filter in filters.iter() {
-            if filter.root == entry_path {
-                return entry_path;
-            }
-        }
-    }
-
-    if let Some(filters) = entry.entry_dir_filter.as_ref() {
         for filter in filters.iter() {
             if filter.root == entry_path {
                 return entry_path;
@@ -108,25 +98,13 @@ fn file_filter(entry: &DirEntry) -> String {
                 strings.push(format!("{{{}, {}, {}}}", filter.regex, filter.deep, filter.content));
             }
         }
-        return format!("1[{}]", strings.join(","));
-    }
-    String::new()
-}
 
-fn dir_filter(entry: &DirEntry) -> String {
-    let mut strings = vec![];
-    let entry_path = entry.path();
-    if let Some(filters) = entry.entry_dir_filter.as_ref() {
-        if filters.is_empty() {
-            return String::new();
+        match strings.is_empty() {
+            true =>  return String::new(),
+            false =>  return format!("1[{}]", strings.join(","))
         }
 
-        for filter in filters.iter() {
-            if filter.root == entry_path {
-                strings.push(format!("{{{}, {}}}", filter.regex, filter.deep));
-            }
-        }
-        return format!("2[{}]", strings.join(","));
+       
     }
     String::new()
 }
@@ -152,7 +130,11 @@ fn dir_file_priority(entry: &DirEntry) -> String {
                 );
             }
         }
-        return format!("3[{}]", strings.join(","));
+
+        match strings.is_empty() {
+            true =>  return String::new(),
+            false =>  return format!("2[{}]", strings.join(","))
+        }
     }
     String::new()
 }
@@ -172,7 +154,11 @@ fn dir_priority(entry: &DirEntry) -> String {
                 );
             }
         }
-        return format!("4[{}]", strings.join(","));
+
+        match strings.is_empty() {
+            true =>  return String::new(),
+            false =>  return format!("3[{}]", strings.join(","))
+        }
     }
     String::new()
 }
@@ -190,7 +176,10 @@ fn file_priority(entry: &DirEntry) -> String {
                 strings.push(format!("{{{}, {}}}", priority.priority, priority.content));
             }
         }
-        return format!("5[{}]", strings.join(","));
+        match strings.is_empty() {
+            true =>  return String::new(),
+            false =>  return format!("4[{}]", strings.join(","))
+        }
     }
     String::new()
 }

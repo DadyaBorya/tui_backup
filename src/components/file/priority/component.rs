@@ -5,7 +5,7 @@ use crate::{
 
 use super::state::FilePriorityState;
 
-const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | n~New | d~Delete | e~Edit |";
+const HELP: &'static str = "| ESC~Back | ↑ Up | ↓ Down | ENTER~Select | n~New | d~Delete | e~Edit |";
 
 pub struct FilePriorityComponent {
     pub state: FilePriorityState,
@@ -17,6 +17,7 @@ impl FilePriorityComponent {
             state: FilePriorityState::init(),
         }
     }
+
 
     pub fn move_up(&mut self) {
         list_utils::move_up(&mut self.state.list_state, self.state.rules.len());
@@ -80,8 +81,23 @@ impl FilePriorityComponent {
 
     pub fn exit(app: &mut App) {
         let file_priority = &mut app.components.file_priority;
-        file_priority.state.list_state.select(None);
+
+        if let Some(_) = file_priority.state.list_state.selected() {
+            file_priority.state.list_state.select(None);
+            return;
+        }
+
+        
         app.change_mode(AppMode::FileList, AppMode::FilePriority);
+    }
+
+    pub fn select_list(app: &mut App) {
+        let file_priority = &mut app.components.file_priority;
+
+        match file_priority.state.list_state.selected() {
+            None => file_priority.state.init_index_table(),
+            _ => {}
+        };
     }
 
     pub fn new_rule(app: &mut App) {

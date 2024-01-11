@@ -7,14 +7,13 @@ use super::component::DirPriorityComponent;
 impl DirPriorityComponent {
 
     pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
-        let priority = &mut app.components.dir_priority;
 
         match key_code {
             KeyCode::Esc => DirPriorityComponent::exit(app),
-            KeyCode::Char('[') => DirPriorityComponent::prev_component(app),
+            KeyCode::Enter => DirPriorityComponent::select_list(app),
             KeyCode::Char('n') => DirPriorityComponent::new_rule(app),
-            KeyCode::Up => priority.move_up(),
-            KeyCode::Down => priority.move_down(),
+            KeyCode::Up => DirPriorityComponent::move_up(app),
+            KeyCode::Down => DirPriorityComponent::move_down(app),
             KeyCode::Char('d') => DirPriorityComponent::delete(app),
             KeyCode::Char('e') => DirPriorityComponent::edit(app),
             _ => {}

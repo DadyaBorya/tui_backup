@@ -25,12 +25,10 @@ fn get_helper_text(app: &App) -> &'static str {
         AppMode::FileList => app.components.file_list.get_helper_text(),
         AppMode::MessagePopup => app.components.message_popup.get_helper_text(),
         AppMode::FileFilter => app.components.file_filter.get_helper_text(),
-        AppMode::DirFilter => app.components.dir_filter.get_helper_text(),
         AppMode::FilePriority => app.components.file_priority.get_helper_text(),
         AppMode::DirPriority => app.components.dir_priority.get_helper_text(),
         AppMode::DirFilePriority => app.components.dir_file_priority.get_helper_text(),
         AppMode::FileFilterForm(mode) => app.components.file_filter_form.get_helper_text(&mode),
-        AppMode::DirFilterForm(mode) => app.components.dir_filter_form.get_helper_text(&mode),
         AppMode::DirFilePriorityForm(mode) =>
             app.components.dir_file_priority_form.get_helper_text(&mode),
         AppMode::DirPriorityForm(mode) => app.components.dir_priority_form.get_help_text(&mode),
@@ -39,5 +37,6 @@ fn get_helper_text(app: &App) -> &'static str {
         AppMode::TemplateList => app.components.template_list.get_helper_text(),
         AppMode::SchedulerForm(mode) => app.components.scheduler_form.get_helper_text(&mode),
         AppMode::SchedulerList => app.components.scheduler_list.get_helper_text(),
+        AppMode::FileListSettings => "", 
     }
 }

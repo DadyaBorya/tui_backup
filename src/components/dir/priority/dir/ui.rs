@@ -5,7 +5,7 @@ use crate::{ application::{ app::App, mode::AppMode }, generator::list_generator
 use super::component::DirPriorityComponent;
 
 impl DirPriorityComponent {
-    pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>) {
+    pub fn ui<B: Backend>(app: &mut App, f: &mut Frame<B>, chunks: &Vec<Rect>, chunk_index: usize) {
         let dir_priority = &mut app.components.dir_priority;
     
         let list = list_generator::list(
@@ -14,7 +14,7 @@ impl DirPriorityComponent {
             dir_priority.state.rows()
         );
     
-        f.render_stateful_widget(list, chunks[1], &mut dir_priority.state.list_state);
+        f.render_stateful_widget(list, chunks[chunk_index], &mut dir_priority.state.list_state);
     }
     
 }

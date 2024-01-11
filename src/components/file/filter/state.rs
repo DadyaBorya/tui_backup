@@ -1,6 +1,6 @@
 use tui::widgets::ListState;
 
-use crate::{ models::entry_file_filter::EntryFileFilter, utils::list_utils };
+use crate::{models::entry_file_filter::EntryFileFilter, utils::list_utils};
 
 #[derive(Default)]
 pub struct FileFilterState {

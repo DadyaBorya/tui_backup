@@ -4,7 +4,6 @@ use regex::Regex;
 
 use crate::models::{
     entry_file_filter::EntryFileFilter,
-    entry_dir_filter::EntryDirFilter,
     entry_dir_file_priority::EntryDirFilePriority,
     entry_dir_priority::EntryDirPriority,
     entry_file_priority::EntryFilePriority,
@@ -31,7 +30,6 @@ pub fn template_to_dir_entry(content: String) -> Result<Vec<DirEntry>, ()> {
         let str_path = path.as_path().display().to_string();
 
         entry.entry_file_filter = file_filter(split[1], str_path.clone())?;
-        entry.entry_dir_filter = dir_filter(split[1], str_path.clone())?;
         entry.entry_dir_file_priority = dir_file_priority(split[1], str_path.clone())?;
         entry.entry_dir_priority = dir_priority(split[1], str_path.clone())?;
         entry.entry_file_priority = file_priority(split[1], str_path.clone())?;
@@ -99,48 +97,8 @@ fn file_filter(line: &str, path: String) -> Result<Option<Vec<EntryFileFilter>>,
     Ok(Some(filters))
 }
 
-fn dir_filter(line: &str, path: String) -> Result<Option<Vec<EntryDirFilter>>, ()> {
-    let regex = Regex::new(r"2\[([^]]*)\]").unwrap();
-    let mut filters = Vec::new();
-
-    if let Some(captures) = regex.captures(line) {
-        if let Some(group) = captures.get(1) {
-            let group = group.as_str();
-            let regex = Regex::new(r"\{\s*(.+),\s*(\d+),*\s*(.*)\}").unwrap();
-
-            for cap in regex.captures_iter(group) {
-                let mut filter = EntryDirFilter::default();
-                if let Some(regex) = cap.get(1) {
-                    filter.regex = regex.as_str().to_string();
-                } else {
-                    return Err(());
-                }
-
-                if let Some(deep) = cap.get(2) {
-                    if let Ok(number) = deep.as_str().parse::<usize>() {
-                        filter.deep = number;
-                    } else {
-                        return Err(());
-                    }
-                } else {
-                    return Err(());
-                }
-                filter.root = path.clone();
-
-                filters.push(filter);
-            }
-        }
-    }
-
-    if filters.is_empty() {
-        return Ok(None);
-    }
-
-    Ok(Some(filters))
-}
-
 fn dir_file_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirFilePriority>>, ()> {
-    let regex = Regex::new(r"3\[([^]]*)\]").unwrap();
+    let regex = Regex::new(r"2\[([^]]*)\]").unwrap();
     let mut priorities = Vec::new();
 
     if let Some(captures) = regex.captures(line) {
@@ -195,7 +153,7 @@ fn dir_file_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirFile
 }
 
 fn dir_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirPriority>>, ()> {
-    let regex = Regex::new(r"4\[([^]]*)\]").unwrap();
+    let regex = Regex::new(r"3\[([^]]*)\]").unwrap();
     let mut priorities = Vec::new();
 
     if let Some(captures) = regex.captures(line) {
@@ -246,7 +204,7 @@ fn dir_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirPriority>
 }
 
 fn file_priority(line: &str, path: String) -> Result<Option<Vec<EntryFilePriority>>, ()> {
-    let regex = Regex::new(r"5\[([^]]*)\]").unwrap();
+    let regex = Regex::new(r"4\[([^]]*)\]").unwrap();
     let mut priorities = Vec::new();
 
     if let Some(captures) = regex.captures(line) {

@@ -1,5 +1,3 @@
-use crate::components::dir::filter::component::DirFilterComponent;
-use crate::components::dir::filter::form::component::DirFilterFormComponent;
 use crate::components::dir::priority::dir::component::DirPriorityComponent;
 use crate::components::dir::priority::dir::form::component::DirPriorityFormComponent;
 use crate::components::dir::priority::file::component::DirFilePriorityComponent;
@@ -7,6 +5,7 @@ use crate::components::dir::priority::file::form::component::DirFilePriorityForm
 use crate::components::file::filter::component::FileFilterComponent;
 use crate::components::file::filter::form::component::FileFilterFormComponent;
 use crate::components::file::list::component::FileListComponent;
+use crate::components::file::list::settings::component::FileListSettingComponent;
 use crate::components::file::priority::component::FilePriorityComponent;
 use crate::components::file::priority::form::component::FilePriorityFormComponent;
 use crate::components::popup::message::component::MessagePopupComponent;
@@ -31,7 +30,6 @@ impl App {
                         AppMode::FileList => FileListComponent::event(self, key.code)?,
                         AppMode::MessagePopup => MessagePopupComponent::event(self, key.code),
                         AppMode::FileFilter => FileFilterComponent::event(self, key.code)?,
-                        AppMode::DirFilter => DirFilterComponent::event(self, key.code)?,
                         AppMode::FilePriority => FilePriorityComponent::event(self, key.code)?,
                         AppMode::DirPriority => DirPriorityComponent::event(self, key.code)?,
                         AppMode::DirFilePriority => {
@@ -40,7 +38,6 @@ impl App {
                         AppMode::FileFilterForm(_) => {
                             FileFilterFormComponent::event(self, key.code)?
                         }
-                        AppMode::DirFilterForm(_) => DirFilterFormComponent::event(self, key.code)?,
                         AppMode::DirFilePriorityForm(_) => {
                             DirFilePriorityFormComponent::event(self, key.code)?
                         }
@@ -55,6 +52,8 @@ impl App {
                         AppMode::Tab => TabComponent::event(self, key.code)?,
                         AppMode::TemplateForm(_) => TemplateFormComponent::event(self, key.code)?,
                         AppMode::TemplateList => TemplateListComponent::event(self, key.code)?,
+                        AppMode::FileListSettings => FileListSettingComponent::event(self, key.code)?,
+                        
                     }
                 }
             }
