@@ -59,7 +59,7 @@ fn file_filter(line: &str, path: String) -> Result<Option<Vec<EntryFileFilter>>,
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{(\w+),\s*(\d*|\s*),*\s*(\w*)\}").unwrap();
+            let regex = Regex::new(r"\{(.+?),\s*(\d*|\s*),*\s*(.*?)\}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut filter = EntryFileFilter::default();
@@ -104,7 +104,7 @@ fn dir_file_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirFile
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*(\w+),\s*(\d*|\s*),\s*(\d+),*\s*(\w*)}").unwrap();
+            let regex = Regex::new(r"\{(.+?),\s*(\d*|\s*),\s*(\d+),*\s*(.*?)\}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut priority = EntryDirFilePriority::default();
@@ -159,7 +159,7 @@ fn dir_priority(line: &str, path: String) -> Result<Option<Vec<EntryDirPriority>
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*(\w+),\s*(\d*|\s*),\s*(\d+)}").unwrap();
+            let regex = Regex::new(r"\{(.+?),\s*(\d*|\s*),\s*(\d+)\}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut priority = EntryDirPriority::default();
@@ -210,7 +210,7 @@ fn file_priority(line: &str, path: String) -> Result<Option<Vec<EntryFilePriorit
     if let Some(captures) = regex.captures(line) {
         if let Some(group) = captures.get(1) {
             let group = group.as_str();
-            let regex = Regex::new(r"\{\s*(\d+),*\s*(.*)}").unwrap();
+            let regex = Regex::new(r"\{(\d+),*\s*(.*?)\}").unwrap();
 
             for cap in regex.captures_iter(group) {
                 let mut priority = EntryFilePriority::default();
