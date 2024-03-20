@@ -1,15 +1,16 @@
 use std::path::PathBuf;
+use std::process::{Command, Stdio};
 
 use crate::{
-    models::{ config::Config, scheduler::Scheduler },
-    application::{ app::App, mode::{ AppMode, SchedulerForm } },
+    models::{config::Config, scheduler::Scheduler},
+    application::{app::App, mode::{AppMode, SchedulerForm}},
     utils::table_util,
     services::file_service,
 };
 
 use super::state::SchedulerListState;
 
-const HELP: &'static str = "| ESC~Back | ↑ ↓ Move | d~Delete | | e~Edit |";
+const HELP: &'static str = "| ESC~Back | ↑ ↓ Move | d~Delete | | e~Edit | i~Execute |";
 
 pub struct SchedulerListComponent {
     pub state: SchedulerListState,
@@ -24,10 +25,38 @@ impl SchedulerListComponent {
 
     pub fn delete(&mut self) {
         if let Some(scheduler) = self.state.selected() {
+            if let Ok(json) = file_service::read_file(&PathBuf::from(&scheduler)) {
+                if let Ok(scheduler) = serde_json::from_str::<Scheduler>(&json) {
+                    let _ = Command::new("schtasks")
+                        .arg("/delete")
+                        .arg("/tn")
+                        .arg(scheduler.name)
+                        .arg("-f")
+                        .stdout(Stdio::null())
+                        .spawn();
+                }
+            }
             if let Ok(_) = file_service::delete_file(&PathBuf::from(scheduler)) {
                 self.state.renew();
                 self.move_up();
             }
+        }
+    }
+
+    pub fn execute(app: &mut App) {
+        let scheduler_list_state: &mut SchedulerListState =
+            &mut app.components.scheduler_list.state;
+
+        if let Some(scheduler) = scheduler_list_state.selected() {
+            let _ = Command::new("watcher_backup.exe")
+                .arg("-p")
+                .arg(scheduler)
+                .arg("-f")
+                .arg("n")
+                .spawn();
+
+            app.components.message_popup.state.edit("Executing".to_string(), "Start executing".to_string(), 60, 20);
+            app.change_mode(AppMode::MessagePopup, app.state.mode.clone());
         }
     }
 
@@ -67,7 +96,7 @@ impl SchedulerListComponent {
 
                     app.change_mode(
                         AppMode::SchedulerForm(SchedulerForm::Name),
-                        app.state.prev_mode.clone()
+                        app.state.prev_mode.clone(),
                     )
                 }
             }

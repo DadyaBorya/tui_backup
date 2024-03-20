@@ -1,13 +1,13 @@
 use crossterm::event::KeyCode;
 
-use crate::application::{ app::App, mode::{ AppMode, SchedulerForm } };
+use crate::application::{app::App, mode::{AppMode, SchedulerForm}};
 
 use super::component::SchedulerFormComponent;
 
 impl SchedulerFormComponent {
     pub fn event(app: &mut App, key_code: KeyCode) -> Result<(), std::io::Error> {
         let scheduler_form = &mut app.components.scheduler_form;
-    
+
         match &mut app.state.mode {
             AppMode::SchedulerForm(form) => {
                 match form {
@@ -122,5 +122,4 @@ impl SchedulerFormComponent {
         }
         Ok(())
     }
-    
 }

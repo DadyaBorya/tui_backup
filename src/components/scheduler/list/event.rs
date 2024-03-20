@@ -14,6 +14,7 @@ impl SchedulerListComponent {
             KeyCode::Down => template_list.move_down(),
             KeyCode::Char('d') => template_list.delete(),
             KeyCode::Char('e') => SchedulerListComponent::edit(app),
+            KeyCode::Char('i') => SchedulerListComponent::execute(app),
             _ => {}
         }
         Ok(())

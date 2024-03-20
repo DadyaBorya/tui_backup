@@ -1,6 +1,6 @@
 {
   "paths": {
-    "templates": "templates",
-    "schedulers": "schedulers"
+    "templates": "F:\\rust\\tui_backup\\templates",
+    "schedulers": "F:\\rust\\tui_backup\\schedulers"
   }
 }
