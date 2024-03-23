@@ -1,5 +1,4 @@
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
 
 use crate::{
     models::{config::Config, scheduler::Scheduler},
@@ -7,6 +6,7 @@ use crate::{
     utils::table_util,
     services::file_service,
 };
+use crate::services::task_service;
 
 use super::state::SchedulerListState;
 
@@ -23,17 +23,15 @@ impl SchedulerListComponent {
         })
     }
 
+
+
     pub fn delete(&mut self) {
         if let Some(scheduler) = self.state.selected() {
             if let Ok(json) = file_service::read_file(&PathBuf::from(&scheduler)) {
                 if let Ok(scheduler) = serde_json::from_str::<Scheduler>(&json) {
-                    let _ = Command::new("schtasks")
-                        .arg("/delete")
-                        .arg("/tn")
-                        .arg(scheduler.name)
-                        .arg("-f")
-                        .stdout(Stdio::null())
-                        .spawn();
+                    if task_service::task_exists(&scheduler.name) {
+                        task_service::task_delete(&scheduler.name);
+                    }
                 }
             }
             if let Ok(_) = file_service::delete_file(&PathBuf::from(scheduler)) {
@@ -48,12 +46,7 @@ impl SchedulerListComponent {
             &mut app.components.scheduler_list.state;
 
         if let Some(scheduler) = scheduler_list_state.selected() {
-            let _ = Command::new("watcher_backup.exe")
-                .arg("-p")
-                .arg(scheduler)
-                .arg("-f")
-                .arg("n")
-                .spawn();
+            task_service::task_execute(&scheduler);
 
             app.components.message_popup.state.edit("Executing".to_string(), "Start executing".to_string(), 60, 20);
             app.change_mode(AppMode::MessagePopup, app.state.mode.clone());

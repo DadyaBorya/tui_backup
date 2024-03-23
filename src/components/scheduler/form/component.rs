@@ -9,6 +9,7 @@ use crate::{
     services::file_service,
     utils::list_utils,
 };
+use crate::services::task_service;
 
 use super::state::SchedulerFormState;
 
@@ -59,9 +60,11 @@ impl SchedulerFormComponent {
 
         let json = serde_json::to_string_pretty(&scheduler)?;
 
-        file_service::save(&PathBuf::from(path), json)?;
+        file_service::save(&PathBuf::from(&path), json)?;
 
         state.clear();
+
+        task_service::task_init(&path);
 
         app.components.scheduler_list.state.renew();
         TabComponent::change_preview(app, 2);
