@@ -64,7 +64,7 @@ impl SchedulerFormComponent {
 
         state.clear();
 
-        task_service::task_init(&path, &app.config.paths.watcher_backup);
+        task_service::task_init(&path, &app.config.paths.config_path);
 
         app.components.scheduler_list.state.renew();
         TabComponent::change_preview(app, 2);
