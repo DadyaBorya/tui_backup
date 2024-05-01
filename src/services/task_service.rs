@@ -46,10 +46,17 @@ pub fn task_execute(path: &str) {
 
 #[cfg(target_os = "windows")]
 pub fn task_init(path: &str) {
-    let _ = Command::new("watcher_backup.exe")
+    let _ = Command::new("cmd")
+        .arg("/c")
+        .arg("start")
+        .arg("/b")
+        .arg("watcher_backup.exe")
         .arg("-p")
         .arg(path)
         .arg("-f")
         .arg("y")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .creation_flags(0x08000000)
         .spawn();
 }
