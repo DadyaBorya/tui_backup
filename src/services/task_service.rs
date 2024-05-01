@@ -45,7 +45,7 @@ pub fn task_execute(path: &str) {
 }
 
 #[cfg(target_os = "windows")]
-pub fn task_init(path: &str) {
+pub fn task_init(path: &str, config_path: &str) {
     let _ = Command::new("cmd")
         .arg("/c")
         .arg("start")
@@ -55,6 +55,8 @@ pub fn task_init(path: &str) {
         .arg(path)
         .arg("-f")
         .arg("y")
+        .arg("-c")
+        .arg(config_path)
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .creation_flags(0x08000000)

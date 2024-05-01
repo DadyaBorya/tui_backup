@@ -10,6 +10,7 @@ const PATH: &'static str = "config.json";
 pub struct AppPaths {
     pub templates: String,
     pub schedulers: String,
+    pub watcher_backup: String
 }
 
 #[derive(Debug, Deserialize, Serialize)]
