@@ -46,7 +46,7 @@ impl SchedulerListComponent {
             &mut app.components.scheduler_list.state;
 
         if let Some(scheduler) = scheduler_list_state.selected() {
-            task_service::task_execute(&scheduler);
+            task_service::task_execute(&scheduler, &app.config.paths.config_path);
 
             app.components.message_popup.state.edit("Executing".to_string(), "Start executing".to_string(), 60, 20);
             app.change_mode(AppMode::MessagePopup, app.state.mode.clone());
