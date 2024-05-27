@@ -28,6 +28,10 @@ pub fn root() -> Result<Vec<DirEntry>, std::io::Error> {
 pub fn root() -> Result<Vec<DirEntry>, std::io::Error> {
     entries(Path::new("/"))
 }
+#[cfg(target_os = "macos")]
+pub fn root() -> Result<Vec<DirEntry>, std::io::Error> {
+    entries(Path::new("/"))
+}
 
 pub fn entries(path: &Path) -> Result<Vec<DirEntry>, std::io::Error> {
     let entries = fs::read_dir(path)?;
