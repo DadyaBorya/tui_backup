@@ -34,7 +34,12 @@ pub fn task_execute(path: &str) {
 
 #[cfg(target_os = "macos")]
 pub fn task_init(path: &str, config_path: &str) {
-
+    let _ = Command::new("sh")
+        .arg("-c")
+        .arg(format!("nohup ./watcher_backup -p {} -f n > /dev/null 2>&1 &", path))
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn();
 }
 
 #[cfg(target_os = "windows")]
@@ -50,11 +55,18 @@ pub fn task_delete(task_name: &str) {
 
 #[cfg(target_os = "windows")]
 pub fn task_execute(path: &str) {
-    let _ = Command::new("sh")
-        .arg("-c")
-        .arg(format!("nohup ./watcher_backup -p {} -f n > /dev/null 2>&1 &", path))
+    let _ = Command::new("cmd")
+        .arg("/c")
+        .arg("start")
+        .arg("/b")
+        .arg("watcher_backup.exe")
+        .arg("-p")
+        .arg(path)
+        .arg("-f")
+        .arg("n")
         .stdout(Stdio::null())
         .stderr(Stdio::null())
+        .creation_flags(0x08000000)
         .spawn();
 }
 
