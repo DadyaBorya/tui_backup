@@ -1,3 +1,4 @@
+#[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 use std::process::{Command, Stdio};
 
@@ -14,6 +15,48 @@ pub fn task_exists(task_name: &str) -> bool {
     let output_text = String::from_utf8_lossy(&output.stdout);
 
     output_text.contains(task_name)
+}
+
+#[cfg(target_os = "macos")]
+pub fn task_exists(task_name: &str) -> bool {
+    let output = Command::new("launchctl")
+        .arg("list")
+        .stdout(Stdio::piped())
+        .output()
+        .expect("Failed to execute launchctl command");
+
+    let output_text = String::from_utf8_lossy(&output.stdout);
+
+    output_text.contains(task_name)
+}
+
+#[cfg(target_os = "macos")]
+pub fn task_delete(task_name: &str) {
+    let _ = Command::new("launchctl")
+        .arg("remove")
+        .arg(task_name)
+        .stdout(Stdio::null())
+        .spawn();
+}
+
+#[cfg(target_os = "macos")]
+pub fn task_execute(path: &str) {
+    let _ = Command::new("sh")
+        .arg("-c")
+        .arg(format!("{} -p {} -f n &", path, path))
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn();
+}
+
+#[cfg(target_os = "macos")]
+pub fn task_init(path: &str, config_path: &str) {
+    let _ = Command::new("sh")
+        .arg("-c")
+        .arg(format!("{} -p {} -f y -c {} &", path, path, config_path))
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn();
 }
 
 #[cfg(target_os = "windows")]
