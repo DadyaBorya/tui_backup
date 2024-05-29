@@ -23,8 +23,6 @@ impl Config {
     pub fn init() -> Result<Config, std::io::Error> {
         let contents = file_service::read_file(&PathBuf::from(PATH))?;
         let config: Config = serde_json::from_str(&contents)?;
-        println!("{contents}");
-
         Ok(config)
     }
 }
