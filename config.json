@@ -1,6 +1,12 @@
 {
+  "clouds": {
+    "mega": "mega",
+    "google_drive": ""
+  },
   "paths": {
-    "templates": "F:\\rust\\tui_backup\\templates",
-    "schedulers": "F:\\rust\\tui_backup\\schedulers"
+    "watcher_backup": "C:\\Users\\yappa\\Documents\\bach\\lolo\\watcher_backup.exe",
+    "schedulers": "C:\\Users\\yappa\\Documents\\bach\\lolo\\schedulers",
+    "config_path": "C:\\Users\\yappa\\Documents\\bach\\lolo\\config.json",
+    "templates": "C:\\Users\\yappa\\Documents\\bach\\lolo\\templates"
   }
 }
