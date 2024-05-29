@@ -13,7 +13,7 @@ pub struct FileListSettingState {
 impl FileListSettingState {
     pub fn init() -> Self {
         let mut state = FileListSettingState::default();
-        state.seleted_items.extend_from_slice(&[0, 1, 2, 3]);
+        state.seleted_items.extend_from_slice(&[0, 1, 3]);
         state
     }
 
